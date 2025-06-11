@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block body %}
+<h2>Table3 Form</h2>
+<form action="{% url 'add_data' %}" method="POST">
+    {% csrf_token %}
+    <input type="hidden" name="form_type" value="table3">
+    <label for="duration_field">Duration (e.g., DD HH:MM:SS):</label>
+    <input type="text" name="duration_field" placeholder="e.g., 5 03:00:00" required><br>
+
+    <label for="email_field">Email:</label>
+    <input type="email" name="email_field" required><br>
+
+    <button type="submit">Submit Table3</button>
+</form>
+
+<hr>
+
+<h2>Table2 Form</h2>
+<form action="{% url 'add_data' %}" method="POST">
+    {% csrf_token %}
+    <input type="hidden" name="form_type" value="table2">
+    <label for="positive_small_int">Option:</label>
+    <select name="positive_small_int">
+        <option value="1">option1</option>
+        <option value="2">option2</option>
+    </select><br>
+
+    <button type="submit">Submit Table2</button>
+</form>
+
+<hr>
+
+<h2>Table1 Form</h2>
+<form action="{% url 'add_data' %}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="hidden" name="form_type" value="table1">
+    <!-- ForeignKey and OneToOneField would typically use IDs or dropdowns populated dynamically -->
+    <label for="foreign_key">Foreign Key (Table2 ID):</label>
+    <select name="foreign_key">
+    <option value="">-- Select Table2 ID --</option>
+    {% for id in table2 %}
+        <option value="{{ id }}">{{ id }}</option>
+    {% endfor %}
+    </select><br>
+
+    <label for="one_to_one">One to One (Table2 ID):</label>
+    <select name="one_to_one">
+    <option value="">-- Select Table2 ID --</option>
+    {% for id in table2%}
+        <option value="{{ id }}">{{ id }}</option>
+    {% endfor %}
+    </select><br>
+
+    <label for="many_to_many">Many to Many (Table3 IDs, comma separated):</label>
+    <select name="many_to_many">
+    <option value="">-- Select table3 ID --</option>
+    {% for id in table3 %}
+        <option value="{{ id }}">{{ id }}</option>
+    {% endfor %}
+    </select><br>
+
+    <label for="integer_field">Integer Field:</label>
+    <input type="number" name="integer_field"><br>
+
+    <label for="float_field">Float Field:</label>
+    <input type="number" step="any" name="float_field"><br>
+
+    <label for="char_field">Char Field:</label>
+    <input type="text" name="char_field" maxlength="15" required><br>
+
+    <label for="text_field">Text Field:</label><br>
+    <textarea name="text_field"></textarea><br>
+
+    <label for="boolean_field">Boolean Field:</label>
+    <input type="checkbox" name="boolean_field"><br>
+
+    <label for="date_field">Date Field:</label>
+    <input type="date" name="date_field"><br>
+
+    <label for="time_field">Time Field:</label>
+    <input type="time" name="time_field"><br>
+
+    <label for="datetime_field">DateTime Field:</label>
+    <input type="datetime-local" name="datetime_field"><br>
+
+    <label for="image_field">Image Upload:</label>
+    <input type="file" name="image_field" accept="image/*"><br>
+
+    <label for="file_field">File Upload:</label>
+    <input type="file" name="file_field"><br>
+
+    <button type="submit">Submit Table1</button>
+</form>
+{% endblock %}
