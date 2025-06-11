@@ -34,7 +34,7 @@ class Table1(models.Model):
     integer_field = models.IntegerField(null=True, blank=True)      # Integer value (optional)
     float_field = models.FloatField(null=True, blank=True)          # Floating point number
     char_field = models.CharField(max_length=15)                    # Short text with max length
-    text_field = models.TextField(blank=True)                       # Long text (optional)
+    text_field= models.TextField(blank=True)                        # Long text (optional)
     boolean_field = models.BooleanField(default=False)              # True or False
 
     # Date and time fields

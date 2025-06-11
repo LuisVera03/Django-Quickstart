@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block body %}
+    <h2>Table3</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Duration</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in table3 %}
+            <tr>
+                <td>{{ entry.id }}</td>
+                <td>{{ entry.duration_field }}</td>
+                <td>{{ entry.emial_field }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3">Table3 is empty</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Table2</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Number choice</th>
+                <th>Option</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in table2 %}
+            <tr>
+                <td>{{ entry.id }}</td>
+                <!-- solo el id -->
+                <td>{{ entry.positive_small_int}}</td>
+                <!-- asi se ve la opcion en html -->
+                <td>{{ entry.get_positive_small_int_display }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="2">Table2 is empty</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Table1</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>ForeignKey</th>
+                <th>OneToOne</th>
+                <th>ManyToMany</th>
+                <th>Integer</th>
+                <th>Float</th>
+                <th>Char</th>
+                <th>Text</th>
+                <th>Boolean</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>DateTime</th>
+                <th>Image</th>
+                <th>File</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in table1 %}
+             <tr>
+                <td>{{ entry.id }}</td>
+                <td>{{ entry.foreign_key }}</td>
+                <td>{{ entry.one_to_one }}</td>
+                <td>
+                    {% for m in entry.many_to_many.all %}
+                        {{ m.emial_field }}{% if not forloop.last %}, {% endif %}
+                    {% empty %}
+                        -
+                    {% endfor %}
+                </td>
+                <td>{{ entry.integer_field }}</td>
+                <td>{{ entry.float_field }}</td>
+                <td>{{ entry.char_field }}</td>
+                <td>{{ entry.text_field|default:"-" }}</td>
+                <td>{{ entry.boolean_field }}</td>
+                <td>{{ entry.date_field }}</td>
+                <td>{{ entry.time_field }}</td>
+                <td>{{ entry.datetime_field }}</td>
+                <td>
+                    {% if entry.image_field %}
+                        <img src="{{ entry.image_field.url }}" alt="img" width="50">
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>
+                    {% if entry.file_field %}
+                        <a href="{{ entry.file_field.url }}">Descargar</a>
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6">Table1 is empty</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

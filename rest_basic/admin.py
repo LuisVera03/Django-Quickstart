@@ -4,3 +4,5 @@ from django.contrib import admin
 from . import models
 
 admin.site.register(models.Table3)
+admin.site.register(models.Table2)
+admin.site.register(models.Table1)
