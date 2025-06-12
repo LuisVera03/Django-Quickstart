@@ -15,7 +15,7 @@
             <tr>
                 <td>{{ entry.id }}</td>
                 <td>{{ entry.duration_field }}</td>
-                <td>{{ entry.emial_field }}</td>
+                <td>{{ entry.email_field }}</td>
             </tr>
             {% empty %}
             <tr><td colspan="3">Table3 is empty</td></tr>
@@ -75,7 +75,7 @@
                 <td>{{ entry.one_to_one }}</td>
                 <td>
                     {% for m in entry.many_to_many.all %}
-                        {{ m.emial_field }}{% if not forloop.last %}, {% endif %}
+                        {{ m.email_field }}{% if not forloop.last %}, {% endif %}
                     {% empty %}
                         -
                     {% endfor %}

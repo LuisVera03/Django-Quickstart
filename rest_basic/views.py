@@ -34,7 +34,7 @@ def add_data(request):
                 hours, minutes, seconds = map(int, time_part.split(':'))
                 duration_td = datetime.timedelta(days=int(days), hours=hours, minutes=minutes, seconds=seconds)
 
-                Table3.objects.create(duration_field=duration_td, emial_field=email)
+                Table3.objects.create(duration_field=duration_td, email_field=email)
                 return HttpResponse("Table3 created successfully.")
             except Exception as e:
                 return HttpResponse(f"Error creating Table3: {e}")

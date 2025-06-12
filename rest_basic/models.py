@@ -6,7 +6,7 @@ class Table3(models.Model):
     duration_field = models.DurationField()
 
     # Stores a valid email address (with built-in validation)
-    emial_field = models.EmailField(max_length=254, unique=True)
+    email_field = models.EmailField(max_length=254, unique=True)
     
     def __str__(self):
         return f"Table3 ID: {self.id}"
