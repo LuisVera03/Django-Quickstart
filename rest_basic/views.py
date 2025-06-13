@@ -92,7 +92,29 @@ def update_data(request):
     return render(request, 'update_data.html')
 
 def delete_data_1(request):
-    return render(request, 'delete_data_1.html')
+    active_items = Table1.objects.filter(boolean_field=True)
+    inactive_items = Table1.objects.filter(boolean_field=False)
+    deleting = None
+
+    # If a POST request is received with a delete_id, set the record as inactive
+    if request.method == 'POST' and request.POST.get('delete_id'):
+        pk = request.POST.get('delete_id')
+        entry = get_object_or_404(Table1, pk=pk)
+        entry.boolean_field = False  # Mark as inactive
+        entry.save()
+        return redirect('delete_data_1')
+
+    # If a GET request is received with a delete_id, show the confirmation prompt
+    elif request.GET.get('delete_id'):
+        pk = request.GET.get('delete_id')
+        deleting = get_object_or_404(Table1, pk=pk)
+
+    # Render the template with both active and inactive items and the item to confirm disabling
+    return render(request, 'delete_data_1.html', {
+        "active_items": active_items,
+        "inactive_items": inactive_items,
+        "deleting": deleting,
+    })
 
 def delete_data_2(request):
     records = Table1.objects.all()
