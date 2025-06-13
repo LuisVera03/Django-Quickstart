@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
 from .models import Table3, Table2, Table1
 from django.http import HttpResponse, HttpResponseRedirect
 import datetime
@@ -95,5 +95,26 @@ def delete_data_1(request):
     return render(request, 'delete_data_1.html')
 
 def delete_data_2(request):
-    return render(request, 'delete_data_2.html')
+    records = Table1.objects.all()
+    deleting = None
+
+    if request.method == 'POST' and request.POST.get('delete_id'):
+        pk = request.POST.get('delete_id')
+        entry = get_object_or_404(Table1, pk=pk)
+        # Delete associated files if they exist
+        if entry.image_field:
+            entry.image_field.delete(save=False)
+        if entry.file_field:
+            entry.file_field.delete(save=False)
+        entry.delete()
+        return redirect('delete_data_2')
+    # If an ID is provided in the request "GET", shows the confirmation
+    elif request.GET.get('delete_id'):
+        pk = request.GET.get('delete_id')
+        deleting = get_object_or_404(Table1, pk=pk)
+
+    return render(request, 'delete_data_2.html', {
+        "records": records,
+        "deleting": deleting,
+    })
 

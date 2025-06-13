@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block body %}
+<h2>Delete records permanently from Table1</h2>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>ForeignKey</th>
+            <th>OneToOne</th>
+            <th>ManyToMany</th>
+            <th>Integer</th>
+            <th>Float</th>
+            <th>Char</th>
+            <th>Text</th>
+            <th>Boolean</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>DateTime</th>
+            <th>Image</th>
+            <th>File</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for entry in records %}
+        <tr>
+            <td>{{ entry.id }}</td>
+            <td>{{ entry.foreign_key }}</td>
+            <td>{{ entry.one_to_one }}</td>
+            <td>
+                {% for m in entry.many_to_many.all %}
+                    {{ m.email_field }}{% if not forloop.last %}, {% endif %}
+                {% empty %}
+                    -
+                {% endfor %}
+            </td>
+            <td>{{ entry.integer_field }}</td>
+            <td>{{ entry.float_field }}</td>
+            <td>{{ entry.char_field }}</td>
+            <td>{{ entry.text_field|default:"-" }}</td>
+            <td>{{ entry.boolean_field }}</td>
+            <td>{{ entry.date_field }}</td>
+            <td>{{ entry.time_field }}</td>
+            <td>{{ entry.datetime_field }}</td>
+            <td>
+                {% if entry.image_field %}
+                    <img src="{{ entry.image_field.url }}" alt="img" width="50">
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+            <td>
+                {% if entry.file_field %}
+                    <a href="{{ entry.file_field.url }}">Download</a>
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+            <td>
+                <a href="{% url 'delete_data_2' %}?delete_id={{ entry.id }}">Delete</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="15">No records in Table1</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if deleting %}
+<hr>
+<h3>Are you sure you want to permanently delete the item with ID {{ deleting.id }}?</h3>
+<form method="post" action="{% url 'delete_data_2' %}">
+    {% csrf_token %}
+    <input type="hidden" name="delete_id" value="{{ deleting.id }}">
+    <button type="submit">Confirm delete</button>
+    <a href="{% url 'delete_data_2' %}">Cancel</a>
+</form>
+<hr>
+{% endif %}
+{% endblock %}
