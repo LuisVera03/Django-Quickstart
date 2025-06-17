@@ -7,6 +7,13 @@
         <meta name="viewport" content="initial-scale=1, width=device-width,shrink-to-fit=no">
     </head>
     <body>
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
         {% block body %}
         {% endblock %}
     </body>
