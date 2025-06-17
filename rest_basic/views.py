@@ -3,6 +3,8 @@ from .models import Table3, Table2, Table1
 from django.http import HttpResponse, HttpResponseRedirect
 import datetime
 
+from .forms import Table1Form, Table2Form, Table3Form
+
 # Create your views here.
 def index(request):
     return render(request, 'index.html')
@@ -50,13 +52,11 @@ def add_data(request):
 
         # --- Table1 ---
         elif form_type == 'table1':
-            print("x")
             try:
                 #Django no acepta una cadena vacía ('') como un valor válido para campos que permiten null=True o blank=True. En esos casos, necesitas pasar None.
                 foreign_key_id = request.POST.get('foreign_key') or None
                 one_to_one_id = request.POST.get('one_to_one') or None
                 many_to_many_ids = request.POST.get('many_to_many')
-                print("c")
                 table1 = Table1.objects.create(
                     foreign_key_id=foreign_key_id or None,
                     one_to_one_id=one_to_one_id or None,
@@ -71,10 +71,8 @@ def add_data(request):
                     image_field=request.FILES.get('image_field'),
                     file_field=request.FILES.get('file_field'),
                 )
-                print("B")
                 # Many-to-many linking
                 if many_to_many_ids:
-                    print("a")
                     table3_objs = Table3.objects.filter(id__in=filter(None, many_to_many_ids))
                     table1.many_to_many.set(table3_objs)
 
@@ -239,7 +237,7 @@ def delete_data_2(request):
     if request.method == 'POST' and request.POST.get('delete_id'):
         pk = request.POST.get('delete_id')
         entry = get_object_or_404(Table1, pk=pk)
-        # Delete associated files if they exist
+       # Delete associated files if they exist
         if entry.image_field:
             entry.image_field.delete(save=False)
         if entry.file_field:
@@ -255,4 +253,78 @@ def delete_data_2(request):
         "records": records,
         "deleting": deleting,
     })
+
+def crud_form(request):
+    return render(request, 'crud_form.html')
+
+def get_data_form(request):
+    table3 = Table3.objects.all()
+    table2 = Table2.objects.all()
+    table1 = Table1.objects.all()
+    return render(request, 'get_data_form.html',{"table3":table3,"table2":table2,"table1":table1})
+
+
+def form(request,table):
+    form_class = None
+    model_name = ""
+    
+    if table == "table1":
+        form_class = Table1Form
+        model_name = "Table1"
+    elif table == "table2":
+        form_class = Table2Form
+        model_name = "Table2"
+    elif table == "table3":
+        form_class = Table3Form
+        model_name = "Table3"
+    else:
+        return HttpResponse("Table is not valid", status=400)
+
+    if request.method == 'POST':
+        form = form_class(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return HttpResponse(f"{model_name} created successfully.")
+    else:
+        form = form_class()
+
+    return render(request, 'form.html', {'form': form, 'model_name': model_name})
+
+def add_data_form(request):
+    return render(request, 'add_data_form.html',)
+
+def update_form(request,table,id):
+    form_class = None
+    model_name = ""
+    
+    if table == "table1":
+        form_class = Table1Form
+        model_name = "Table1"
+        obj = get_object_or_404(Table1, pk=id)
+    elif table == "table2":
+        form_class = Table2Form
+        model_name = "Table2"
+        obj = get_object_or_404(Table2, pk=id)
+    elif table == "table3":
+        form_class = Table3Form
+        model_name = "Table3"
+        obj = get_object_or_404(Table3, pk=id)
+    else:
+        return HttpResponse("Table is not valid", status=400)
+
+    if request.method == 'POST':
+        form = form_class(request.POST, request.FILES, instance=obj)
+        if form.is_valid():
+            form.save()
+            return redirect(update_data_form)
+    else:
+        form = form_class(instance=obj)
+
+    return render(request, 'form.html', {'form': form, 'model_name': model_name})
+
+def update_data_form(request):
+    table3 = Table3.objects.all()
+    table2 = Table2.objects.all()
+    table1 = Table1.objects.all()
+    return render(request, 'update_data_form.html',{"table3":table3,"table2":table2,"table1":table1})
 
