@@ -2,6 +2,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import Table3, Table2, Table1
 from django.http import HttpResponse, HttpResponseRedirect
 import datetime
+from django.contrib import messages
+from django.utils.dateparse import parse_duration
 
 from .forms import Table1Form, Table2Form, Table3Form
 
@@ -37,18 +39,22 @@ def add_data(request):
                 duration_td = datetime.timedelta(days=int(days), hours=hours, minutes=minutes, seconds=seconds)
 
                 Table3.objects.create(duration_field=duration_td, email_field=email)
-                return HttpResponse("Table3 created successfully.")
+                messages.success(request, "Table3 created successfully.")
+                return redirect('add_data')
             except Exception as e:
-                return HttpResponse(f"Error creating Table3: {e}")
+                messages.error(request, f"Error creating Table3: {e}")
+                return redirect('add_data')
 
         # --- Table2 ---
         elif form_type == 'table2':
             choice = request.POST.get('positive_small_int')
             try:
                 Table2.objects.create(positive_small_int=int(choice))
-                return HttpResponse("Table2 created successfully.")
+                messages.success(request, "Table2 created successfully.")
+                return redirect('add_data')
             except Exception as e:
-                return HttpResponse(f"Error creating Table2: {e}")
+                messages.error(request, f"Error creating Table2: {e}")
+                return redirect('add_data')
 
         # --- Table1 ---
         elif form_type == 'table1':
@@ -76,42 +82,17 @@ def add_data(request):
                     table3_objs = Table3.objects.filter(id__in=filter(None, many_to_many_ids))
                     table1.many_to_many.set(table3_objs)
 
-                return HttpResponse("Table1 created successfully.")
+                messages.success(request, "Table1 created successfully.")
+                return redirect('add_data')
             except Exception as e:
-                return HttpResponse(f"Error creating Table1: {e}")
+                messages.error(request, f"Error creating Table1: {e}")
+                return redirect('add_data')
     else:
         #values_list() es un método de Django ORM que te permite extraer una o más columnas específicas
         #flat=True para obtener una lista simple en lugar de una lista de tuplas
         table2 = Table2.objects.values_list('id', flat=True)
         table3 = Table3.objects.values_list('id', flat=True)
         return render(request, 'add_data.html',{"table3":table3,"table2":table2})
-
-def parse_duration(duration):
-    """
-    Converts a duration string to a timedelta object.
-    Accepts formats: 'D days, HH:MM:SS', 'D HH:MM:SS', 'HH:MM:SS'
-    """
-    if not duration:
-        return None
-    duration = duration.strip()
-    try:
-        if 'day' in duration:
-            # Format: '5 days, 3:00:00'
-            parts = duration.split(',')
-            days = int(parts[0].split()[0])
-            h, m, s = map(int, parts[1].strip().split(':'))
-            return datetime.timedelta(days=days, hours=h, minutes=m, seconds=s)
-        elif ' ' in duration:
-            # Format: '5 03:00:00'
-            days, time_part = duration.split(' ')
-            h, m, s = map(int, time_part.split(':'))
-            return datetime.timedelta(days=int(days), hours=h, minutes=m, seconds=s)
-        else:
-            # Format: '03:00:00'
-            h, m, s = map(int, duration.split(':'))
-            return datetime.timedelta(hours=h, minutes=m, seconds=s)
-    except Exception:
-        return None
 
 def update_data(request):
     table1 = Table1.objects.all()
@@ -124,7 +105,7 @@ def update_data(request):
     editing_table = None
     selected_many = []
 
-    # Handle POST: save changes for the selected table and record
+    # Manejo de POST: guardar cambios
     if request.method == 'POST' and request.POST.get('edit_id') and request.POST.get('edit_table'):
         pk = request.POST.get('edit_id')
         edit_table = request.POST.get('edit_table')
@@ -143,33 +124,36 @@ def update_data(request):
                 editing.date_field = request.POST.get('date_field') or None
                 editing.time_field = request.POST.get('time_field') or None
                 editing.datetime_field = request.POST.get('datetime_field') or None
-                # Handle file/image uploads if provided
+                # Archivos
                 if request.FILES.get('image_field'):
                     editing.image_field = request.FILES.get('image_field')
                 if request.FILES.get('file_field'):
                     editing.file_field = request.FILES.get('file_field')
                 editing.save()
-                # Update ManyToMany relationships
+                # ManyToMany
                 many_to_many_ids = request.POST.getlist('many_to_many')
                 if many_to_many_ids:
                     table3_objs = Table3.objects.filter(id__in=filter(None, many_to_many_ids))
                     editing.many_to_many.set(table3_objs)
                 else:
                     editing.many_to_many.clear()
+                messages.success(request, "Table1 updated successfully.")
             elif edit_table == 'table2':
                 editing = get_object_or_404(Table2, pk=pk)
                 editing_table = 'table2'
                 editing.positive_small_int = request.POST.get('positive_small_int')
                 editing.save()
+                messages.success(request, "Table2 updated successfully.")
             elif edit_table == 'table3':
                 editing = get_object_or_404(Table3, pk=pk)
                 editing_table = 'table3'
                 editing.duration_field = parse_duration(request.POST.get('duration_field'))
                 editing.email_field = request.POST.get('email_field')
                 editing.save()
+                messages.success(request, "Table3 updated successfully.")
             return redirect('update_data')
         except Exception as e:
-            # Render the page with error message if something goes wrong
+            messages.error(request, f"Error updating: {e}")
             return render(request, 'update_data.html', {
                 "table1": table1,
                 "table2": table2,
@@ -182,7 +166,7 @@ def update_data(request):
                 "error": str(e),
             })
 
-    # Handle GET: show edit form for the selected record
+    # Manejo de GET: mostrar formulario de edición
     elif request.GET.get('edit_id') and request.GET.get('edit_table'):
         pk = request.GET.get('edit_id')
         editing_table = request.GET.get('edit_table')
@@ -216,6 +200,7 @@ def delete_data_1(request):
         entry = get_object_or_404(Table1, pk=pk)
         entry.boolean_field = False  # Mark as inactive
         entry.save()
+        messages.success(request, "Record disabled successfully.")
         return redirect('delete_data_1')
 
     # If a GET request is received with a delete_id, show the confirmation prompt
@@ -243,6 +228,7 @@ def delete_data_2(request):
         if entry.file_field:
             entry.file_field.delete(save=False)
         entry.delete()
+        messages.success(request, "Record permanently deleted.")
         return redirect('delete_data_2')
     # If an ID is provided in the request "GET", shows the confirmation
     elif request.GET.get('delete_id'):
@@ -284,7 +270,10 @@ def form(request,table):
         form = form_class(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            return HttpResponse(f"{model_name} created successfully.")
+            messages.success(request, f"{model_name} created successfully.")
+            return redirect(add_data_form)
+        else:
+            messages.error(request, "Invalid form.")
     else:
         form = form_class()
 
@@ -316,7 +305,10 @@ def update_form(request,table,id):
         form = form_class(request.POST, request.FILES, instance=obj)
         if form.is_valid():
             form.save()
+            messages.success(request, f"{model_name} updated successfully.")
             return redirect(update_data_form)
+        else:
+            messages.error(request, "Invalid form.")
     else:
         form = form_class(instance=obj)
 
