@@ -1,5 +1,7 @@
 from django.db import models
 
+
+
 # Create your models here.
 class Table3(models.Model):
     # Stores a time duration (e.g., 5 days, 3 hours)
