@@ -1,22 +1,36 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Table3, Table2, Table1
 from django.http import HttpResponse, HttpResponseRedirect
+
+#data
+from .models import Table3, Table2, Table1
 import datetime
-from django.contrib import messages
 from django.utils.dateparse import parse_duration
 
+#message
+from django.contrib import messages
+#forms
 from .forms import Table1Form, Table2Form, Table3Form
 
+#user
+from django.contrib.auth.models import User
+from django.views.decorators.http import require_GET, require_POST
+import re
+import string
+
 # Create your views here.
+@require_GET
 def index(request):
     return render(request, 'index.html')
 
+@require_GET
 def rest_basic(request):
     return render(request, 'rest_basic.html')
 
+@require_GET
 def crud(request):
     return render(request, 'crud.html')
 
+@require_GET
 def get_data(request):
     table3 = Table3.objects.all()
     table2 = Table2.objects.all()
@@ -240,15 +254,16 @@ def delete_data_2(request):
         "deleting": deleting,
     })
 
+@require_GET
 def crud_form(request):
     return render(request, 'crud_form.html')
 
+@require_GET
 def get_data_form(request):
     table3 = Table3.objects.all()
     table2 = Table2.objects.all()
     table1 = Table1.objects.all()
     return render(request, 'get_data_form.html',{"table3":table3,"table2":table2,"table1":table1})
-
 
 def form(request,table):
     form_class = None
@@ -279,8 +294,9 @@ def form(request,table):
 
     return render(request, 'form.html', {'form': form, 'model_name': model_name})
 
+@require_GET
 def add_data_form(request):
-    return render(request, 'add_data_form.html',)
+    return render(request, 'add_data_form.html')
 
 def update_form(request,table,id):
     form_class = None
@@ -314,9 +330,53 @@ def update_form(request,table,id):
 
     return render(request, 'form.html', {'form': form, 'model_name': model_name})
 
+@require_GET
 def update_data_form(request):
     table3 = Table3.objects.all()
     table2 = Table2.objects.all()
     table1 = Table1.objects.all()
     return render(request, 'update_data_form.html',{"table3":table3,"table2":table2,"table1":table1})
 
+@require_GET
+def user_account(request):
+    return render(request, 'user_account.html')
+
+def register(request):
+    if request.method == 'POST':
+        username = request.POST.get('username', '').strip()
+        email = request.POST.get('email', '').strip()
+        password1 = request.POST.get('password1', '')
+        password2 = request.POST.get('password2', '')
+
+        if password1 != password2:
+            messages.error(request, "Passwords do not match.")
+            return render(request, 'register.html')
+
+        if len(password1) < 8 or len(password1) > 14:
+            messages.error(request, "Password must be between 8 and 14 characters.")
+            return render(request, 'register.html')
+
+
+        #????????????
+        #????????????
+
+        special_characters = string.punctuation
+        if not re.search(r'[A-Za-z]', password1) or not re.search(r'\d', password1) or not any(char in special_characters for char in password1):
+            messages.error(request, "Password must include letters, numbers, and special characters.")
+            return render(request, 'register.html')
+
+        if User.objects.filter(username=username).exists():
+            messages.error(request, "Username already exists.")
+            return render(request, 'register.html')
+
+        if User.objects.filter(email=email).exists():
+            messages.error(request, "Email is already in use.")
+            return render(request, 'register.html')
+
+        # Create the user
+        User.objects.create_user(username=username, password=password1, email=email)
+        messages.success(request, "User registered successfully.")
+        
+        #return redirect('login')  # or wherever you want to redirect
+        
+    return render(request, 'register.html')
