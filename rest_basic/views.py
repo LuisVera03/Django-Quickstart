@@ -407,3 +407,13 @@ def user_login(request):
             return render(request, 'login.html')
     
     return render(request, 'login.html')
+
+@login_required
+def profile(request):
+    user = request.user
+    context = {
+        'user': user,
+        'username': user.username,
+        'email': user.email,
+    }
+    return render(request, 'profile.html', context)
