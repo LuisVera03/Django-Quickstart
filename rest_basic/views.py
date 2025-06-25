@@ -417,3 +417,9 @@ def profile(request):
         'email': user.email,
     }
     return render(request, 'profile.html', context)
+
+@login_required
+def user_logout(request):
+    logout(request)
+    messages.success(request, f"Session closed successfully.")
+    return redirect(user_account)
