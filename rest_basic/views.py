@@ -13,9 +13,13 @@ from .forms import Table1Form, Table2Form, Table3Form
 
 #user
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import  login_required
 from django.views.decorators.http import require_GET, require_POST
 import re
 import string
+
+#auth
+from django.contrib.auth import authenticate, login, logout
 
 # Create your views here.
 @require_GET
@@ -380,3 +384,42 @@ def register(request):
         #return redirect('login')  # or wherever you want to redirect
         
     return render(request, 'register.html')
+
+def user_login(request):
+    if request.method == 'POST':
+        username = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '')
+        
+        if not username or not password:
+            messages.error(request, "Please provide both username and password.")
+            return render(request, 'login.html')
+        
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None:
+            login(request, user)
+            messages.success(request, f"Welcome, {user.username}!")
+            
+            return redirect(user_account)
+        else:
+            # Invalid credentials
+            messages.error(request, "Invalid username or password.")
+            return render(request, 'login.html')
+    
+    return render(request, 'login.html')
+
+@login_required
+def profile(request):
+    user = request.user
+    context = {
+        'user': user,
+        'username': user.username,
+        'email': user.email,
+    }
+    return render(request, 'profile.html', context)
+
+@login_required
+def user_logout(request):
+    logout(request)
+    messages.success(request, f"Session closed successfully.")
+    return redirect(user_account)

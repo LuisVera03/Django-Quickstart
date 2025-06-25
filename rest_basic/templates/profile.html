@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block body %}
+<h2>User Profile</h2>
+
+<!-- User information -->
+<div class="profile-info">
+    <table>
+        <tr>
+            <td><strong>Username:</strong></td>
+            <td>{{ username }}</td>
+        </tr>
+        <tr>
+            <td><strong>Email:</strong></td>
+            <td>{{ email|default:"-" }}</td>
+        </tr>
+    </table>
+</div>
+
+<!-- Actions -->
+<div class="profile-actions">
+    <p><a href="{% url 'user_account' %}">Back</a></p>
+    <p><a href="{% url 'logout' %}">Log Out</a></p>
+</div>
+
+{% endblock %}

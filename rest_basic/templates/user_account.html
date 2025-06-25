@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 
 {% block body %}
-<p><a href="{% url 'register' %}">register</a></p>
+
+{% if user.is_authenticated %}
+    <p><a href="{% url 'profile' %}">View Profile</a></p>
+{% else %}
+    <p><a href="{% url 'login' %}">Log In</a></p>
+    <p><a href="{% url 'register' %}">Sign Up</a></p>
+{% endif %}
 
 {% endblock %}
