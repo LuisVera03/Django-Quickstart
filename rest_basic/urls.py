@@ -2,9 +2,8 @@ from django.urls import path
 
 from . import views
 
-
 urlpatterns = [
-    path('',views.index),
+    path('', views.index, name='index'),  # Agregué name='index'
     path('rest_basic', views.rest_basic, name='rest_basic'),
 
     path('crud', views.crud, name='crud'),
@@ -26,4 +25,8 @@ urlpatterns = [
     path('login', views.user_login, name='login'),
     path('logout', views.user_logout, name='logout'),
     path('profile', views.profile, name='profile'),
+    path('user_management', views.user_management, name='user_management'),
+    
+    # Test URL - remove in production
+    path('test_403', views.test_403, name='test_403'),
 ]
