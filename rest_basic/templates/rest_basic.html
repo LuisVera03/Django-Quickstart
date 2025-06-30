@@ -3,5 +3,9 @@
 {% block body %}
 <p><a href="{% url 'crud' %}">crud</a></p>
 <p><a href="{% url 'crud_form' %}">crud form</a></p>
-<p><a href="{% url 'user_account' %}">user account</a></p>
+{% if user.is_authenticated %}
+    <p><a href="{% url 'profile' %}">user account</a></p>
+{% else %}
+    <p><a href="{% url 'login' %}">Log In</a></p>
+{% endif %}
 {% endblock %}

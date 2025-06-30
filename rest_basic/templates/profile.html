@@ -3,24 +3,38 @@
 {% block body %}
 <h2>User Profile</h2>
 
-<!-- User information -->
-<div class="profile-info">
-    <table>
-        <tr>
-            <td><strong>Username:</strong></td>
-            <td>{{ username }}</td>
-        </tr>
-        <tr>
-            <td><strong>Email:</strong></td>
-            <td>{{ email|default:"-" }}</td>
-        </tr>
-    </table>
-</div>
+<table>
+    <tr>
+        <td><strong>Username:</strong></td>
+        <td>{{ username }}</td>
+    </tr>
+    <tr>
+        <td><strong>Email:</strong></td>
+        <td>{{ email|default:"-" }}</td>
+    </tr>
+    <tr>
+        <td><strong>Role:</strong></td>
+        <td>{{ role }}</td>
+    </tr>
+</table>
 
-<!-- Actions -->
-<div class="profile-actions">
-    <p><a href="{% url 'user_account' %}">Back</a></p>
-    <p><a href="{% url 'logout' %}">Log Out</a></p>
-</div>
+{% if permissions %}
+    <h3>Permissions:</h3>
+    <ul>
+        {% for permission in permissions %}
+            <li>{{ permission }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% if role == 'Administrator' %}
+    <h3>Administration Panel</h3>
+    <p><a href="{% url 'user_management' %}">Manage Users</a></p>
+{% endif %}
+
+<p><a href="{% url 'index' %}">Home</a></p>
+<p><a href="{% url 'crud' %}">CRUD</a></p>
+<p><a href="{% url 'crud_form' %}">CRUD Form</a></p>
+<p><a href="{% url 'logout' %}">Log Out</a></p>
 
 {% endblock %}
