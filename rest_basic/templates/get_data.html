@@ -36,13 +36,13 @@
             {% for entry in table2 %}
             <tr>
                 <td>{{ entry.id }}</td>
-                <!-- solo el id -->
+                <!-- only the id -->
                 <td>{{ entry.positive_small_int}}</td>
-                <!-- asi se ve la opcion en html -->
+                <!-- this is how the option looks in html -->
                 <td>{{ entry.get_positive_small_int_display }}</td>
             </tr>
             {% empty %}
-            <tr><td colspan="2">Table2 is empty</td></tr>
+            <tr><td colspan="3">Table2 is empty</td></tr>
             {% endfor %}
         </tbody>
     </table>

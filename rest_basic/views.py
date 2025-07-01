@@ -12,14 +12,26 @@ from django.contrib import messages
 from .forms import Table1Form, Table2Form, Table3Form
 
 #user
-from django.contrib.auth.models import User
-from django.contrib.auth.decorators import  login_required
+from django.contrib.auth.models import User, Group
+from django.contrib.auth.decorators import  login_required, permission_required
 from django.views.decorators.http import require_GET, require_POST
 import re
 import string
 
 #auth
 from django.contrib.auth import authenticate, login, logout
+
+###### 
+# Used to test the error 403
+from django.core.exceptions import PermissionDenied
+
+@login_required
+def test_403(request):
+    """
+    Shall remove this in production
+    """
+    raise PermissionDenied("This is a test 403 error")
+###### 
 
 # Create your views here.
 @require_GET
@@ -34,13 +46,17 @@ def rest_basic(request):
 def crud(request):
     return render(request, 'crud.html')
 
+
+
 @require_GET
+@permission_required('rest_basic.view_data', raise_exception=True)
 def get_data(request):
     table3 = Table3.objects.all()
     table2 = Table2.objects.all()
     table1 = Table1.objects.all()
     return render(request, 'get_data.html',{"table3":table3,"table2":table2,"table1":table1})
 
+@permission_required('rest_basic.add_data', raise_exception=True)
 def add_data(request):
     if request.method == 'POST':
         form_type = request.POST.get('form_type')
@@ -77,7 +93,7 @@ def add_data(request):
         # --- Table1 ---
         elif form_type == 'table1':
             try:
-                #Django no acepta una cadena vacía ('') como un valor válido para campos que permiten null=True o blank=True. En esos casos, necesitas pasar None.
+                # Django doesn't accept empty string ('') as valid value for fields that allow null=True or blank=True. In those cases, you need to pass None.
                 foreign_key_id = request.POST.get('foreign_key') or None
                 one_to_one_id = request.POST.get('one_to_one') or None
                 many_to_many_ids = request.POST.get('many_to_many')
@@ -112,6 +128,7 @@ def add_data(request):
         table3 = Table3.objects.values_list('id', flat=True)
         return render(request, 'add_data.html',{"table3":table3,"table2":table2})
 
+@permission_required('rest_basic.change_data', raise_exception=True)
 def update_data(request):
     table1 = Table1.objects.all()
     table2 = Table2.objects.all()
@@ -207,6 +224,7 @@ def update_data(request):
         "table3_ids": table3_ids,
     })
 
+@permission_required('rest_basic.change_data', raise_exception=True)
 def delete_data_1(request):
     active_items = Table1.objects.filter(boolean_field=True)
     inactive_items = Table1.objects.filter(boolean_field=False)
@@ -233,6 +251,7 @@ def delete_data_1(request):
         "deleting": deleting,
     })
 
+@permission_required('rest_basic.delete_data', raise_exception=True)
 def delete_data_2(request):
     records = Table1.objects.all()
     deleting = None
@@ -263,12 +282,14 @@ def crud_form(request):
     return render(request, 'crud_form.html')
 
 @require_GET
+@permission_required('rest_basic.view_data', raise_exception=True)
 def get_data_form(request):
     table3 = Table3.objects.all()
     table2 = Table2.objects.all()
     table1 = Table1.objects.all()
     return render(request, 'get_data_form.html',{"table3":table3,"table2":table2,"table1":table1})
 
+@permission_required('rest_basic.add_data', raise_exception=True)
 def form(request,table):
     form_class = None
     model_name = ""
@@ -299,9 +320,11 @@ def form(request,table):
     return render(request, 'form.html', {'form': form, 'model_name': model_name})
 
 @require_GET
+@permission_required('rest_basic.add_data', raise_exception=True)
 def add_data_form(request):
     return render(request, 'add_data_form.html')
 
+@permission_required('rest_basic.change_data', raise_exception=True)
 def update_form(request,table,id):
     form_class = None
     model_name = ""
@@ -335,6 +358,7 @@ def update_form(request,table,id):
     return render(request, 'form.html', {'form': form, 'model_name': model_name})
 
 @require_GET
+@permission_required('rest_basic.view_data', raise_exception=True)
 def update_data_form(request):
     table3 = Table3.objects.all()
     table2 = Table2.objects.all()
@@ -343,7 +367,16 @@ def update_data_form(request):
 
 @require_GET
 def user_account(request):
-    return render(request, 'user_account.html')
+    context = {}
+    if request.user.is_authenticated:
+        if request.user.groups.filter(name='Admins').exists():
+            context['role'] = 'Administrator'
+        elif request.user.groups.filter(name='Customers').exists():
+            context['role'] = 'Customer'
+        else:
+            context['role'] = 'No role assigned'
+    
+    return render(request, 'user_account.html', context)
 
 def register(request):
     if request.method == 'POST':
@@ -376,12 +409,15 @@ def register(request):
         if User.objects.filter(email=email).exists():
             messages.error(request, "Email is already in use.")
             return render(request, 'register.html')
-
-        # Create the user
-        User.objects.create_user(username=username, password=password1, email=email)
+        
+        # Create the user and assign to the Customers group
+        user = User.objects.create_user(username=username, password=password1, email=email)
+        viewer_group = Group.objects.get(name='Customers')
+        user.groups.add(viewer_group)
+        
         messages.success(request, "User registered successfully.")
         
-        #return redirect('login')  # or wherever you want to redirect
+        return redirect('login')  # or wherever you want to redirect
         
     return render(request, 'register.html')
 
@@ -398,9 +434,7 @@ def user_login(request):
         
         if user is not None:
             login(request, user)
-            messages.success(request, f"Welcome, {user.username}!")
-            
-            return redirect(user_account)
+            return redirect(profile)
         else:
             # Invalid credentials
             messages.error(request, "Invalid username or password.")
@@ -411,10 +445,27 @@ def user_login(request):
 @login_required
 def profile(request):
     user = request.user
+    
+    # Determine user role
+    if user.groups.filter(name='Admins').exists():
+        role = 'Administrator'
+    elif user.groups.filter(name='Customers').exists():
+        role = 'Customer'
+    else:
+        role = 'No role assigned'
+    
+    # Get user permissions
+    user_permissions = []
+    for group in user.groups.all():
+        for permission in group.permissions.all():
+            user_permissions.append(permission.name)
+    
     context = {
         'user': user,
         'username': user.username,
         'email': user.email,
+        'role': role,
+        'permissions': user_permissions,
     }
     return render(request, 'profile.html', context)
 
@@ -423,3 +474,50 @@ def user_logout(request):
     logout(request)
     messages.success(request, f"Session closed successfully.")
     return redirect(user_account)
+
+# User management view (only for admins)
+@login_required
+@permission_required('rest_basic.manage_users', raise_exception=True)
+def user_management(request):
+    if request.method == 'POST':
+        user_id = request.POST.get('user_id')
+        new_role = request.POST.get('role')
+        
+        try:
+            target_user = User.objects.get(id=user_id)
+            
+            # Remove from all groups
+            target_user.groups.clear()
+            
+            # Assign new group
+            if new_role == 'admin':
+                admin_group = Group.objects.get(name='Admins')
+                target_user.groups.add(admin_group)
+            elif new_role == 'customer':
+                customer_group = Group.objects.get(name='Customers')
+                target_user.groups.add(customer_group)
+            
+            messages.success(request, f"Permissions updated for {target_user.username}")
+        except User.DoesNotExist:
+            messages.error(request, "User not found.")
+        except Exception as e:
+            messages.error(request, f"Error updating permissions: {e}")
+    
+    # Get all users with their roles
+    users_with_roles = []
+    for user in User.objects.all():
+        if user.groups.filter(name='Admins').exists():
+            role = 'Administrator'
+        elif user.groups.filter(name='Customers').exists():
+            role = 'Customer'
+        else:
+            role = 'No role'
+        
+        users_with_roles.append({
+            'user': user,
+            'role': role
+        })
+    
+    return render(request, 'user_management.html', {
+        'users_with_roles': users_with_roles
+    })
