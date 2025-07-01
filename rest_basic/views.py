@@ -93,7 +93,7 @@ def add_data(request):
         # --- Table1 ---
         elif form_type == 'table1':
             try:
-                #Django no acepta una cadena vacía ('') como un valor válido para campos que permiten null=True o blank=True. En esos casos, necesitas pasar None.
+                # Django doesn't accept empty string ('') as valid value for fields that allow null=True or blank=True. In those cases, you need to pass None.
                 foreign_key_id = request.POST.get('foreign_key') or None
                 one_to_one_id = request.POST.get('one_to_one') or None
                 many_to_many_ids = request.POST.get('many_to_many')
