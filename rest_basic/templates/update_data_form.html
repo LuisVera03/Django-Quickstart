@@ -9,6 +9,7 @@
                 <th>ID</th>
                 <th>Duration</th>
                 <th>Email</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
@@ -20,7 +21,7 @@
                 <td><a href="{% url 'update_form' 'table3' entry.id %}">Update</a></td>
             </tr>
             {% empty %}
-            <tr><td colspan="3">Table3 is empty</td></tr>
+            <tr><td colspan="4">Table3 is empty</td></tr>
             {% endfor %}
         </tbody>
     </table>
@@ -32,20 +33,21 @@
                 <th>ID</th>
                 <th>Number choice</th>
                 <th>Option</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
             {% for entry in table2 %}
             <tr>
                 <td>{{ entry.id }}</td>
-                <!-- solo el id -->
+                <!-- only the id -->
                 <td>{{ entry.positive_small_int}}</td>
-                <!-- asi se ve la opcion en html -->
+                <!-- this is how the option looks in html -->
                 <td>{{ entry.get_positive_small_int_display }}</td>
                 <td><a href="{% url 'update_form' 'table2' entry.id %}">Update</a></td>
             </tr>
             {% empty %}
-            <tr><td colspan="2">Table2 is empty</td></tr>
+            <tr><td colspan="4">Table2 is empty</td></tr>
             {% endfor %}
         </tbody>
     </table>
@@ -68,6 +70,7 @@
                 <th>DateTime</th>
                 <th>Image</th>
                 <th>File</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
@@ -100,7 +103,7 @@
                 </td>
                 <td>
                     {% if entry.file_field %}
-                        <a href="{{ entry.file_field.url }}">Descargar</a>
+                        <a href="{{ entry.file_field.url }}">Download</a>
                     {% else %}
                         -
                     {% endif %}
@@ -108,7 +111,7 @@
                 <td><a href="{% url 'update_form' 'table1' entry.id %}">Update</a></td>
             </tr>
             {% empty %}
-            <tr><td colspan="6">Table1 is empty</td></tr>
+            <tr><td colspan="15">Table1 is empty</td></tr>
             {% endfor %}
         </tbody>
     </table>
