@@ -30,6 +30,7 @@
 {% if role == 'Administrator' %}
     <h3>Administration Panel</h3>
     <p><a href="{% url 'user_management' %}">Manage Users</a></p>
+    <p><a href="{% url 'user_logs' %}">User Logs</a></p>
 {% endif %}
 
 <p><a href="{% url 'index' %}">Home</a></p>

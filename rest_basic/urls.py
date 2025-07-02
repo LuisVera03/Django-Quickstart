@@ -26,6 +26,7 @@ urlpatterns = [
     path('logout', views.user_logout, name='logout'),
     path('profile', views.profile, name='profile'),
     path('user_management', views.user_management, name='user_management'),
+    path('user_logs', views.user_logs, name='user_logs'),
     
     # Test URL - remove in production
     path('test_403', views.test_403, name='test_403'),

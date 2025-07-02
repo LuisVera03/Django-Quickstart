@@ -39,7 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    #para los mensjaes
+    'django_auto_logout',
 
+    #Apps
     'rest_basic',
 ]
 
@@ -51,6 +54,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    # Extra middleware que agregue yo
+    'django_auto_logout.middleware.auto_logout',
 ]
 
 ROOT_URLCONF = 'django_quickstart.urls'
@@ -66,6 +72,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                # Agregue esto para los mensajes de sesión
+                'django_auto_logout.context_processors.auto_logout_client',
             ],
         },
     },
@@ -128,7 +136,19 @@ STATIC_URL = 'static/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
+#Media files settings
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+#Session timeout settings
+LOGIN_URL = '/login'
+from datetime import timedelta
+AUTO_LOGOUT = {
+    'IDLE_TIME': timedelta(hours=1),  # minutos de inactividad antes de desloguear 1h
+    'SESSION_TIME': timedelta(hours=6),  # minutos totales de sesión, sin importar actividad 6h
+    'MESSAGE': 'Your session has expired due to inactivity. Please log in again.',
+    'REDIRECT_TO_LOGIN_IMMEDIATELY': True,  # redirige directamente al login sin mostrar alerta
+}
+
