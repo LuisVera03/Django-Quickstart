@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 
 #data
-from .models import Table3, Table2, Table1
+from .models import Table3, Table2, Table1, UserLog
 import datetime
 from django.utils.dateparse import parse_duration
 
@@ -432,6 +432,7 @@ def user_login(request):
         
         user = authenticate(request, username=username, password=password)
         
+            
         if user is not None:
             login(request, user)
             return redirect(profile)
@@ -440,6 +441,9 @@ def user_login(request):
             messages.error(request, "Invalid username or password.")
             return render(request, 'login.html')
     
+    logout_msg = request.session.pop('logout_message', None)
+    if logout_msg:
+        messages.warning(request, logout_msg)
     return render(request, 'login.html')
 
 @login_required
@@ -520,4 +524,11 @@ def user_management(request):
     
     return render(request, 'user_management.html', {
         'users_with_roles': users_with_roles
+    })
+
+@login_required
+def user_logs(request):
+    logs = UserLog.objects.filter().order_by('-timestamp')
+    return render(request, 'user_logs.html', {
+        'logs': logs
     })
