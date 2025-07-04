@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block body %}
+<h1>Examples of {{ type }}</h1>
+<br>
+<h3>{{ query1_name }}</h3> 
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>ForeignKey</th>
+            <th>OneToOne</th>
+            <th>ManyToMany</th>
+            <th>Integer</th>
+            <th>Float</th>
+            <th>Char</th>
+            <th>Text</th>
+            <th>Boolean</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>DateTime</th>
+            <th>Image</th>
+            <th>File</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for entry in query1 %}
+         <tr>
+            <td>{{ entry.id }}</td>
+            <td>{{ entry.foreign_key }}</td>
+            <td>{{ entry.one_to_one }}</td>
+            <td>
+                {% for m in entry.many_to_many.all %}
+                    {{ m.email_field }}{% if not forloop.last %}, {% endif %}
+                {% empty %}
+                    -
+                {% endfor %}
+            </td>
+            <td>{{ entry.integer_field }}</td>
+            <td>{{ entry.float_field }}</td>
+            <td>{{ entry.char_field }}</td>
+            <td>{{ entry.text_field|default:"-" }}</td>
+            <td>{{ entry.boolean_field }}</td>
+            <td>{{ entry.date_field }}</td>
+            <td>{{ entry.time_field }}</td>
+            <td>{{ entry.datetime_field }}</td>
+            <td>
+                {% if entry.image_field %}
+                    <img src="{{ entry.image_field.url }}" alt="img" width="50">
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+            <td>
+                {% if entry.file_field %}
+                    <a href="{{ entry.file_field.url }}">Download</a>
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6">Table1 is empty</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+<br>
+{% if query2 %}
+<h3>{{ query2_name }}</h3>   
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>ForeignKey</th>
+            <th>OneToOne</th>
+            <th>ManyToMany</th>
+            <th>Integer</th>
+            <th>Float</th>
+            <th>Char</th>
+            <th>Text</th>
+            <th>Boolean</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>DateTime</th>
+            <th>Image</th>
+            <th>File</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for entry in query2 %}
+         <tr>
+            <td>{{ entry.id }}</td>
+            <td>{{ entry.foreign_key }}</td>
+            <td>{{ entry.one_to_one }}</td>
+            <td>
+                {% for m in entry.many_to_many.all %}
+                    {{ m.email_field }}{% if not forloop.last %}, {% endif %}
+                {% empty %}
+                    -
+                {% endfor %}
+            </td>
+            <td>{{ entry.integer_field }}</td>
+            <td>{{ entry.float_field }}</td>
+            <td>{{ entry.char_field }}</td>
+            <td>{{ entry.text_field|default:"-" }}</td>
+            <td>{{ entry.boolean_field }}</td>
+            <td>{{ entry.date_field }}</td>
+            <td>{{ entry.time_field }}</td>
+            <td>{{ entry.datetime_field }}</td>
+            <td>
+                {% if entry.image_field %}
+                    <img src="{{ entry.image_field.url }}" alt="img" width="50">
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+            <td>
+                {% if entry.file_field %}
+                    <a href="{{ entry.file_field.url }}">Download</a>
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6">Table1 is empty</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+{% endblock %}

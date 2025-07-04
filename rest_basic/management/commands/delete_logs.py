@@ -1,17 +1,16 @@
+
 from django.core.management.base import BaseCommand
 from rest_basic.models import UserLog
+from django.utils.timezone import now
 from datetime import timedelta
-from django.utils import timezone
+
 
 class Command(BaseCommand):
-    help = 'Archive old logs'
+    help = 'Delete user logs older than 90 days.'
 
-    def handle(self, *args, **kwargs):
-        # borra los logs de usuario más antiguos que 90 días
-        threshold = timezone.now() - timedelta(days=90)
-        old_logs = UserLog.objects.filter(timestamp__lt=threshold)
-
-        # Eliminar si querés
-        old_logs.delete()
-        self.stdout.write("Old logs archived and deleted.")
+    def handle(self, *args, **options):
+        """Delete UserLog entries older than 90 days."""
+        threshold = now() - timedelta(days=90)
+        deleted_count, _ = UserLog.objects.filter(timestamp__lt=threshold).delete()
+        self.stdout.write(self.style.SUCCESS(f"{deleted_count} old user logs deleted."))
 

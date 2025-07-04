@@ -26,16 +26,15 @@
         {% endfor %}
     </ul>
 {% endif %}
-
+<br>
 {% if role == 'Administrator' %}
     <h3>Administration Panel</h3>
     <p><a href="{% url 'user_management' %}">Manage Users</a></p>
     <p><a href="{% url 'user_logs' %}">User Logs</a></p>
 {% endif %}
+<hr>
 
-<p><a href="{% url 'index' %}">Home</a></p>
-<p><a href="{% url 'crud' %}">CRUD</a></p>
-<p><a href="{% url 'crud_form' %}">CRUD Form</a></p>
+<p><a href="{% url 'home_rest_basic' %}">Home</a></p>
 <p><a href="{% url 'logout' %}">Logout</a></p>
 
 {% endblock %}

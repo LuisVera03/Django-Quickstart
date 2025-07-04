@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block body %}
+<h1>Examples of {{ type }}</h1>
+<br>
+{% for name, desc, value in value_pairs %}
+<h3>{{ name }}</h3>
+<p>{{ desc }}:
+{% if value|length > 1 and value.0 is not string %}
+    <ul>
+      {% for v in value %}
+        <li>{{ v }}</li>
+      {% endfor %}
+    </ul>
+{% else %}
+    <b>{{ value }}</b>
+  {% endif %}
+</p>
+{% endfor %}
+
+{% endblock %}

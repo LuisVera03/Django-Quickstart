@@ -11,7 +11,9 @@
         <div>
             User: {{ user.username }} | 
             Role: {% if user.groups.all.0.name == 'Admins' %}Administrator{% elif user.groups.all.0.name == 'Customers' %}Customer{% else %}No role assigned{% endif %} | 
-            <a href="{% url 'logout' %}">Logout</a>
+            <a href="{% url 'home_rest_basic' %}">Home</a> |
+            <a href="{% url 'profile' %}">Profile</a> |
+            <a href="{% url 'logout' %}">Logout</a> | 
         </div>
         <hr>
         {% endif %}
@@ -19,7 +21,7 @@
         {% if messages %}
             <ul class="messages">
                 {% for message in messages %}
-                    <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                    <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|safe }}</li>
                 {% endfor %}
             </ul>
         {% endif %}

@@ -21,6 +21,10 @@ import string
 #auth
 from django.contrib.auth import authenticate, login, logout
 
+# Max
+from django.db.models import Max, Count, Q
+
+
 ###### 
 # Used to test the error 403
 from django.core.exceptions import PermissionDenied
@@ -40,13 +44,15 @@ def index(request):
 
 @require_GET
 def rest_basic(request):
-    return render(request, 'rest_basic.html')
+    return redirect('login')
+
+@require_GET
+def home_rest_basic(request):
+    return render(request, 'home_rest_basic.html')
 
 @require_GET
 def crud(request):
     return render(request, 'crud.html')
-
-
 
 @require_GET
 @permission_required('rest_basic.view_data', raise_exception=True)
@@ -291,19 +297,13 @@ def get_data_form(request):
 
 @permission_required('rest_basic.add_data', raise_exception=True)
 def form(request,table):
-    form_class = None
-    model_name = ""
-    
-    if table == "table1":
-        form_class = Table1Form
-        model_name = "Table1"
-    elif table == "table2":
-        form_class = Table2Form
-        model_name = "Table2"
-    elif table == "table3":
-        form_class = Table3Form
-        model_name = "Table3"
-    else:
+    form_map = {
+        "table1": (Table1Form, "Table1"),
+        "table2": (Table2Form, "Table2"),
+        "table3": (Table3Form, "Table3"),
+    }
+    form_class, model_name = form_map.get(table, (None, None))
+    if not form_class:
         return HttpResponse("Table is not valid", status=400)
 
     if request.method == 'POST':
@@ -312,8 +312,7 @@ def form(request,table):
             form.save()
             messages.success(request, f"{model_name} created successfully.")
             return redirect(add_data_form)
-        else:
-            messages.error(request, "Invalid form.")
+        messages.error(request, "Invalid form.")
     else:
         form = form_class()
 
@@ -365,18 +364,6 @@ def update_data_form(request):
     table1 = Table1.objects.all()
     return render(request, 'update_data_form.html',{"table3":table3,"table2":table2,"table1":table1})
 
-@require_GET
-def user_account(request):
-    context = {}
-    if request.user.is_authenticated:
-        if request.user.groups.filter(name='Admins').exists():
-            context['role'] = 'Administrator'
-        elif request.user.groups.filter(name='Customers').exists():
-            context['role'] = 'Customer'
-        else:
-            context['role'] = 'No role assigned'
-    
-    return render(request, 'user_account.html', context)
 
 def register(request):
     if request.method == 'POST':
@@ -477,7 +464,7 @@ def profile(request):
 def user_logout(request):
     logout(request)
     messages.success(request, f"Session closed successfully.")
-    return redirect(user_account)
+    return redirect('login')
 
 # User management view (only for admins)
 @login_required
@@ -531,4 +518,128 @@ def user_logs(request):
     logs = UserLog.objects.filter().order_by('-timestamp')
     return render(request, 'user_logs.html', {
         'logs': logs
+    })
+
+def making_queries(request):
+    return render(request, 'making_queries.html')
+
+def filter_example(request):
+    """
+    Example of filtering data based on user input.
+    This is a placeholder function to demonstrate how you might filter data.
+    """
+    # Example of filter lookups:
+    # __in = en
+    # __contains = contiene
+    # __icontains = contiene (case insensitive)
+    # __startswith = empieza con
+    # __istartswith = empieza con (case insensitive)
+    # __endswith = termina con
+    # __iendswith = termina con (case insensitive)
+    # __exact = exacto
+    # __iexact = exacto (case insensitive)
+    # __regex = expresión regular
+    # __iregex = expresión regular (case insensitive)
+    # __gt = mayor que
+    # __lt = menor que
+    # __gte = mayor o igual
+    # __lte = menor o igual
+
+    filtered_data = Table1.objects.filter(integer_field__gte=5)  # Example filter
+    filtered_data_1 = Table1.objects.filter(integer_field=1)
+    return render(request, 'queries.html', {
+        'type': 'Filter',
+        'query1_name': 'Entries with integer_field >= 5',
+        'query2_name': 'Entries with integer_field = 1',
+        'query1': filtered_data,
+        'query2': filtered_data_1
+    })
+
+def exclude_example(request):
+    """
+    Example of excluding data based on user input.
+    This is a placeholder function to demonstrate how you might exclude data.
+    """
+    excluded_data = Table1.objects.exclude(boolean_field=True)  # Example exclude
+    return render(request, 'queries.html', {
+        'type': 'Exclude',
+        'query1_name': 'Entries excluding boolean field = True',
+        'query2_name': '',
+        'query1': excluded_data,
+        'query2': None
+    })
+
+def slice_example(request):
+    """
+    Example of slicing data based on user input.
+    This is a placeholder function to demonstrate how you might slice data.
+    """
+    sliced_data = Table1.objects.all()[:3]  # Example slice
+    return render(request, 'queries.html', {
+        'type': 'Slice',
+        'query1_name': 'First 3 entries from Table1',
+        'query2_name': '',
+        'query1': sliced_data,
+        'query2': None
+    })
+
+def prefetch_related_example(request):
+    """
+    Example of prefetching related data.
+    This is a placeholder function to demonstrate how you might prefetch data.
+    """
+    # Retrieves all Table1 objects and, in a single additional query,
+    # fetches all many-to-many relationships with Table3 for each object.
+    # This way, accessing obj.many_to_many.all() does not generate extra queries (optimizes access).
+    prefetch_data = Table1.objects.prefetch_related('many_to_many')
+    
+    return render(request, 'queries.html', {
+        'type': 'Prefetch Related',
+        'query1_name': 'Table1 with prefetched many-to-many relationships with Table3',
+        'query2_name': '',
+        'query1': prefetch_data,
+        'query2': None
+    })
+
+def Q_example(request):
+    q_data_or = Table1.objects.filter(Q(integer_field__gt=5) | Q(boolean_field=True))
+    q_data_and = Table1.objects.filter(Q(integer_field__gt=5) & Q(boolean_field=True))
+
+    return render(request, 'queries.html', {
+        'type': 'Q',
+        'query1_name': 'Table1 where integer_field > 5 OR boolean_field is True',
+        'query2_name': 'Table1 where integer_field > 5 AND boolean_field is True',
+        'query1': q_data_or,
+        'query2': q_data_and
+    })
+
+def query_values_example(request):
+    """
+    Example of counting data based on user input.
+    This is a placeholder function to demonstrate how you might count data.
+    """
+    count_data = Table1.objects.count()  # Example count
+    max_value = Table1.objects.aggregate(Max('integer_field'))
+    count_many_to_many = Table1.objects.annotate(num_table3=Count('many_to_many'))
+    count_many_to_many = [
+        f"Table1 entry with id {obj.id} has {obj.num_table3} many-to-many relationship(s) with Table3."
+        for obj in count_many_to_many
+    ]
+    value_names = [
+        'Count',
+        'Aggregated Max Value',
+        'Count of ManyToMany Relations'
+    ]
+    value_description = [
+        'Total number of records in Table1',
+        'Maximum value of the integer_field field in Table1',
+        'Count of related Table3 entries in Table1'
+    ]
+    for obj in Table1.objects.annotate(num_table3=Count('many_to_many')):
+        print(obj.id, obj.num_table3)
+    values = [count_data, max_value['integer_field__max'],count_many_to_many]
+    value_pairs = list(zip(value_names, value_description, values))
+    return render(request, 'values_query.html', {
+        'type': 'Single values',
+        'value_pairs': value_pairs,
     })
