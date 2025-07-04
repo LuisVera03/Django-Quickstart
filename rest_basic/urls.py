@@ -5,6 +5,7 @@ from . import views
 urlpatterns = [
     path('', views.index, name='index'),
     path('rest_basic', views.rest_basic, name='rest_basic'),
+    path('home_rest_basic', views.home_rest_basic, name='home_rest_basic'),
 
     path('crud', views.crud, name='crud'),
     path('get_data', views.get_data, name='get_data'),
@@ -20,7 +21,6 @@ urlpatterns = [
     path('add_data_form', views.add_data_form, name='add_data_form'),
     path('update_data_form', views.update_data_form, name='update_data_form'),
 
-    path('user_account', views.user_account, name='user_account'),
     path('register', views.register, name='register'),
     path('login', views.user_login, name='login'),
     path('logout', views.user_logout, name='logout'),
@@ -28,6 +28,13 @@ urlpatterns = [
     path('user_management', views.user_management, name='user_management'),
     path('user_logs', views.user_logs, name='user_logs'),
     
+    path('making_queries', views.making_queries, name='making_queries'),
+    path('filter_example', views.filter_example, name='filter_example'),
+    path('exclude_example', views.exclude_example, name='exclude_example'),
+    path('slice_example', views.slice_example, name='slice_example'),
+    path('prefetch_related_example', views.prefetch_related_example, name='prefetch_related_example'),
+    path('Q_example', views.Q_example, name='Q_example'),
+    path('query_values_example', views.query_values_example, name='query_values_example'),
     # Test URL - remove in production
     path('test_403', views.test_403, name='test_403'),
 ]

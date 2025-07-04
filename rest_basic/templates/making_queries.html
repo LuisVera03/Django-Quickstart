@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block body %}
+<h1>Examples of Making Queries</h1>
+<p><a href="{% url 'filter_example' %}">Filter</a></p>
+<p><a href="{% url 'exclude_example' %}">Exclude</a></p>
+<p><a href="{% url 'slice_example' %}">Slice</p>
+<p><a href="{% url 'query_values_example' %}">Single values</a></p>
+<p><a href="{% url 'prefetch_related_example' %}">Prefetch Related</a></p>
+<p><a href="{% url 'Q_example' %}">Q objects</a></p>
+
+<br>
+<p><a href="{% url 'home_rest_basic' %}">Home</a></p>
+{% endblock %}

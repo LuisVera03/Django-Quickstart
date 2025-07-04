@@ -146,9 +146,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 LOGIN_URL = '/login'
 from datetime import timedelta
 AUTO_LOGOUT = {
-    'IDLE_TIME': timedelta(hours=1),  # minutos de inactividad antes de desloguear 1h
+    'IDLE_TIME': timedelta(seconds=1),  # minutos de inactividad antes de desloguear 1h
     'SESSION_TIME': timedelta(hours=6),  # minutos totales de sesión, sin importar actividad 6h
-    'MESSAGE': 'Your session has expired due to inactivity. Please log in again.',
+    'MESSAGE': 'Your session has expired due to inactivity. <a href="/login">Please log in again</a>.',
     'REDIRECT_TO_LOGIN_IMMEDIATELY': True,  # redirige directamente al login sin mostrar alerta
 }
 
