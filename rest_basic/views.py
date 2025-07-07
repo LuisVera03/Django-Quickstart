@@ -22,8 +22,8 @@ import string
 #auth
 from django.contrib.auth import authenticate, login, logout
 
-# Max
-from django.db.models import Max, Count, Q
+# Django ORM imports
+from django.db.models import Max, Count, Q, Min, Avg, F
 
 
 ###### 
@@ -664,31 +664,195 @@ def Q_example(request):
 
 def query_values_example(request):
     """
-    Example of counting data based on user input.
-    This is a placeholder function to demonstrate how you might count data.
+    Example of aggregate functions and counting data.
+    This demonstrates various aggregate functions like Count, Max, Min, and Avg.
     """
-    count_data = Table1.objects.count()  # Example count
+    # Count and basic aggregates
+    count_data = Table1.objects.count()
     max_value = Table1.objects.aggregate(Max('integer_field'))
+    min_integer = Table1.objects.aggregate(Min('integer_field'))
+    min_float = Table1.objects.aggregate(Min('float_field'))
+    min_date = Table1.objects.aggregate(Min('date_field'))
+    avg_integer = Table1.objects.aggregate(Avg('integer_field'))
+    avg_float = Table1.objects.aggregate(Avg('float_field'))
+    
+    # Count many-to-many relationships
     count_many_to_many = Table1.objects.annotate(num_table3=Count('many_to_many'))
     count_many_to_many = [
         f"Table1 entry with id {obj.id} has {obj.num_table3} many-to-many relationship(s) with Table3."
         for obj in count_many_to_many
     ]
+    
     value_names = [
-        'Count',
-        'Aggregated Max Value',
-        'Count of ManyToMany Relations'
+        'Total Count',
+        'Max Integer Field',
+        'Min Integer Field',
+        'Min Float Field',
+        'Min Date Field',
+        'Average Integer Field',
+        'Average Float Field',
+        'ManyToMany Relations Count'
     ]
     value_description = [
         'Total number of records in Table1',
-        'Maximum value of the integer_field field in Table1',
-        'Count of related Table3 entries in Table1'
+        'Maximum value of the integer_field in Table1',
+        'Minimum value of the integer_field in Table1',
+        'Minimum value of the float_field in Table1',
+        'Earliest date in date_field in Table1',
+        'Average value of the integer_field in Table1',
+        'Average value of the float_field in Table1',
+        'Count of related Table3 entries for each Table1 record'
     ]
-    for obj in Table1.objects.annotate(num_table3=Count('many_to_many')):
-        print(obj.id, obj.num_table3)
-    values = [count_data, max_value['integer_field__max'],count_many_to_many]
+    values = [
+        count_data,
+        max_value['integer_field__max'],
+        min_integer['integer_field__min'],
+        min_float['float_field__min'],
+        min_date['date_field__min'],
+        round(avg_integer['integer_field__avg'], 2) if avg_integer['integer_field__avg'] else None,
+        round(avg_float['float_field__avg'], 2) if avg_float['float_field__avg'] else None,
+        count_many_to_many
+    ]
     value_pairs = list(zip(value_names, value_description, values))
     return render(request, 'values_query.html', {
-        'type': 'Single values',
+        'type': 'Aggregate Functions & Counts',
         'value_pairs': value_pairs,
     })
+
+def all_example(request):
+    """
+    Example of retrieving all data.
+    This demonstrates the .all() method which returns all objects in the database.
+    """
+    all_table1 = Table1.objects.all()
+    all_table2 = Table2.objects.all()
+    all_table3 = Table3.objects.all()
+    
+    # Create a combined context for all tables
+    context = {
+        'type': 'All',
+        'table1_data': all_table1,
+        'table2_data': all_table2,
+        'table3_data': all_table3,
+        'table1_count': all_table1.count(),
+        'table2_count': all_table2.count(),
+        'table3_count': all_table3.count(),
+    }
+    
+    return render(request, 'all_queries.html', context)
+
+def get_example(request):
+    """
+    Example of getting a single object.
+    This demonstrates the .get() method which returns a single object matching the given parameters.
+    """
+    try:
+        # Get first entry or None if it doesn't exist
+        first_table1 = Table1.objects.filter(id=1).first()
+        # Get entry with highest integer_field value
+        max_integer_entry = Table1.objects.filter(integer_field__isnull=False).order_by('-integer_field').first()
+        
+        get_data = [first_table1] if first_table1 else []
+        get_data_2 = [max_integer_entry] if max_integer_entry else []
+        
+        return render(request, 'queries.html', {
+            'type': 'Get',
+            'query1_name': 'First Table1 entry (ID=1) if exists',
+            'query2_name': 'Table1 entry with highest integer_field value',
+            'query1': get_data,
+            'query2': get_data_2
+        })
+    except Exception as e:
+        return render(request, 'queries.html', {
+            'type': 'Get',
+            'query1_name': 'Error occurred',
+            'query2_name': str(e),
+            'query1': [],
+            'query2': []
+        })
+
+def order_by_example(request):
+    """
+    Example of ordering data.
+    This demonstrates the .order_by() method which sorts the QuerySet by given fields.
+    """
+    # Order by integer_field ascending
+    ordered_asc = Table1.objects.order_by('integer_field')
+    # Order by integer_field descending
+    ordered_desc = Table1.objects.order_by('-integer_field')
+    
+    return render(request, 'queries.html', {
+        'type': 'Order By',
+        'query1_name': 'Table1 entries ordered by integer_field (ascending)',
+        'query2_name': 'Table1 entries ordered by integer_field (descending)',
+        'query1': ordered_asc,
+        'query2': ordered_desc
+    })
+
+def exists_example(request):
+    """
+    Example of checking existence.
+    This demonstrates the .exists() method which returns True/False if any records match.
+    """
+    # Check if any Table1 entries exist with boolean_field=True
+    has_active = Table1.objects.filter(boolean_field=True).exists()
+    # Check if any Table1 entries exist with integer_field > 10
+    has_high_values = Table1.objects.filter(integer_field__gt=10).exists()
+    
+    # Create simple data for template display
+    existence_results = [
+        f"Records with boolean_field=True exist: {has_active}",
+        f"Records with integer_field > 10 exist: {has_high_values}"
+    ]
+    
+    value_names = ['Boolean Field Check', 'Integer Field Check']
+    value_description = [
+        'Checks if any records have boolean_field=True',
+        'Checks if any records have integer_field > 10'
+    ]
+    values = [has_active, has_high_values]
+    value_pairs = list(zip(value_names, value_description, values))
+    
+    return render(request, 'values_query.html', {
+        'type': 'Exists Check',
+        'value_pairs': value_pairs,
+    })
+
+def select_related_example(request):
+    """
+    Example of using select_related for ForeignKey and OneToOne relationships.
+    This optimizes database queries by fetching related objects in a single query.
+    """
+    # Fetch Table1 objects with their related ForeignKey and OneToOne objects
+    select_related_data = Table1.objects.select_related('foreign_key', 'one_to_one')
+    
+    return render(request, 'queries.html', {
+        'type': 'Select Related',
+        'query1_name': 'Table1 with select_related ForeignKey and OneToOne relationships',
+        'query2_name': '',
+        'query1': select_related_data,
+        'query2': None
+    })
+
+def f_example(request):
+    """
+    Example of using F() expressions for field references.
+    This demonstrates F() objects which represent the value of a model field.
+    """
+    # Find entries where integer_field equals float_field (converted to int)
+    # Note: This is a conceptual example - actual comparison depends on your data
+    f_comparison = Table1.objects.filter(integer_field__isnull=False, float_field__isnull=False)
+    
+    # Example using F() in annotations - add 10 to integer_field
+    f_annotation = Table1.objects.filter(integer_field__isnull=False).annotate(
+        integer_plus_ten=F('integer_field') + 10
+    )[:5]  # Limit to first 5 for display
+    
+    return render(request, 'queries.html', {
+        'type': 'F() Expression',
+        'query1_name': 'Table1 entries with non-null integer and float fields',
+        'query2_name': 'Table1 entries with integer_field + 10 annotation (first 5)',
+        'query1': f_comparison,
+        'query2': f_annotation
+    })
+
