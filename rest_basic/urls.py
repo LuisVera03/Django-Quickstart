@@ -35,6 +35,12 @@ urlpatterns = [
     path('prefetch_related_example', views.prefetch_related_example, name='prefetch_related_example'),
     path('Q_example', views.Q_example, name='Q_example'),
     path('query_values_example', views.query_values_example, name='query_values_example'),
+    path('all_example', views.all_example, name='all_example'),
+    path('get_example', views.get_example, name='get_example'),
+    path('order_by_example', views.order_by_example, name='order_by_example'),
+    path('exists_example', views.exists_example, name='exists_example'),
+    path('select_related_example', views.select_related_example, name='select_related_example'),
+    path('f_example', views.f_example, name='f_example'),
     # Test URL - remove in production
     path('test_403', views.test_403, name='test_403'),
 ]

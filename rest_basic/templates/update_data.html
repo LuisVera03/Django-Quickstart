@@ -180,9 +180,9 @@
                     <label>Char: <input type="text" name="char_field" value="{{ editing.char_field }}"></label>
                     <label>Text: <input type="text" name="text_field" value="{{ editing.text_field }}"></label>
                     <label>Boolean: <input type="checkbox" name="boolean_field" {% if editing.boolean_field %}checked{% endif %}></label>
-                    <label>Date: <input type="date" name="date_field" value="{{ editing.date_field }}"></label>
-                    <label>Time: <input type="time" name="time_field" value="{{ editing.time_field }}"></label>
-                    <label>DateTime: <input type="datetime-local" name="datetime_field" value="{{ editing.datetime_field|date:'Y-m-d\\TH:i' }}"></label>
+                    <label>Date: <input type="date" name="date_field" value="{% if editing.date_field %}{{ editing.date_field|date:'Y-m-d' }}{% endif %}"></label>
+                    <label>Time: <input type="time" name="time_field" value="{% if editing.time_field %}{{ editing.time_field|time:'H:i' }}{% endif %}"></label>
+                    <label>DateTime: <input type="datetime-local" name="datetime_field" value="{% if editing.datetime_field %}{{ editing.datetime_field|date:'Y-m-d\\TH:i' }}{% endif %}"></label>
                     <br>
                     <strong>Upload image (optional):</strong> <input type="file" name="image_field">
                     {% if editing.image_field %}
