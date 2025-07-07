@@ -4,7 +4,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 #data
 from .models import Table3, Table2, Table1, UserLog
 import datetime
-from django.utils.dateparse import parse_duration
+from django.utils.dateparse import parse_duration, parse_date, parse_time, parse_datetime
+from django.utils import timezone
 
 #message
 from django.contrib import messages
@@ -103,6 +104,27 @@ def add_data(request):
                 foreign_key_id = request.POST.get('foreign_key') or None
                 one_to_one_id = request.POST.get('one_to_one') or None
                 many_to_many_ids = request.POST.get('many_to_many')
+                
+                # Handle date field
+                date_field_value = request.POST.get('date_field')
+                parsed_date = None
+                if date_field_value and date_field_value.strip():
+                    parsed_date = parse_date(date_field_value.strip())
+                
+                # Handle time field
+                time_field_value = request.POST.get('time_field')
+                parsed_time = None
+                if time_field_value and time_field_value.strip():
+                    parsed_time = parse_time(time_field_value.strip())
+                
+                # Handle datetime field with timezone awareness
+                datetime_field_value = request.POST.get('datetime_field')
+                parsed_datetime = None
+                if datetime_field_value and datetime_field_value.strip():
+                    parsed_datetime = parse_datetime(datetime_field_value.strip())
+                    if parsed_datetime and timezone.is_naive(parsed_datetime):
+                        parsed_datetime = timezone.make_aware(parsed_datetime)
+                
                 table1 = Table1.objects.create(
                     foreign_key_id=foreign_key_id or None,
                     one_to_one_id=one_to_one_id or None,
@@ -111,9 +133,9 @@ def add_data(request):
                     char_field=request.POST.get('char_field'),
                     text_field=request.POST.get('text_field', ''),
                     boolean_field=bool(request.POST.get('boolean_field')),
-                    date_field=request.POST.get('date_field') or None,
-                    time_field=request.POST.get('time_field') or None,
-                    datetime_field=request.POST.get('datetime_field') or None,
+                    date_field=parsed_date,
+                    time_field=parsed_time,
+                    datetime_field=parsed_datetime,
                     image_field=request.FILES.get('image_field'),
                     file_field=request.FILES.get('file_field'),
                 )
@@ -162,15 +184,42 @@ def update_data(request):
                 editing.char_field = request.POST.get('char_field')
                 editing.text_field = request.POST.get('text_field', '')
                 editing.boolean_field = bool(request.POST.get('boolean_field'))
-                editing.date_field = request.POST.get('date_field') or None
-                editing.time_field = request.POST.get('time_field') or None
-                editing.datetime_field = request.POST.get('datetime_field') or None
+                
+                # Handle date field
+                date_field_value = request.POST.get('date_field')
+                if date_field_value:
+                    editing.date_field = parse_date(date_field_value)
+                else:
+                    editing.date_field = None
+                    
+                # Handle time field
+                time_field_value = request.POST.get('time_field')
+                if time_field_value:
+                    editing.time_field = parse_time(time_field_value)
+                else:
+                    editing.time_field = None
+                    
+                # Handle datetime field with timezone awareness
+                datetime_field_value = request.POST.get('datetime_field')
+                if datetime_field_value:
+                    parsed_datetime = parse_datetime(datetime_field_value)
+                    if parsed_datetime:
+                        # If the datetime is naive, make it timezone-aware
+                        if timezone.is_naive(parsed_datetime):
+                            parsed_datetime = timezone.make_aware(parsed_datetime)
+                        editing.datetime_field = parsed_datetime
+                    else:
+                        editing.datetime_field = None
+                else:
+                    editing.datetime_field = None
                 # Archivos
                 if request.FILES.get('image_field'):
                     editing.image_field = request.FILES.get('image_field')
                 if request.FILES.get('file_field'):
                     editing.file_field = request.FILES.get('file_field')
+                
                 editing.save()
+                
                 # ManyToMany
                 many_to_many_ids = request.POST.getlist('many_to_many')
                 if many_to_many_ids:
