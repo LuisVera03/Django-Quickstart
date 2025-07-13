@@ -965,11 +965,6 @@ def export_excel(request):
             datetime_val,
         ])
 
-    columns = [
-        "ID", "Integer", "Float", "Char", "Text",
-        "Boolean", "Date", "Time", "Datetime"
-    ]
-
     width = [5, 10, 10, 15, 25, 20, 15, 12, 22]
 
     for i, ancho in enumerate(width, start=1):
