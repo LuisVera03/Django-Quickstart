@@ -25,10 +25,17 @@ from django.contrib.auth import authenticate, login, logout
 # Django ORM imports
 from django.db.models import Max, Count, Q, Min, Avg, F
 
+#pdf / excel
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import A4
+from openpyxl import Workbook
+from django.utils.timezone import is_aware
+from openpyxl.utils import get_column_letter
 
 ###### 
 # Used to test the error 403
 from django.core.exceptions import PermissionDenied
+
 
 @login_required
 def test_403(request):
@@ -856,3 +863,117 @@ def f_example(request):
         'query2': f_annotation
     })
 
+def html_modify(request):
+    return render(request, 'html_modify.html')
+
+def html_example(request):
+    return render(request, "html_example.html", {
+        "title": "Welcome",
+        "user": request.user,
+        "date": timezone.now(),
+        "number": 1234567,
+        "products": [
+            {"name": "Mouse", "price": 10.5, "stock": 5},
+            {"name": "Keyboard", "price": 20.0, "stock": 0},
+        ],
+        "my_dict": {"key": "example value"},
+        "my_list": ["Item 1", "Item 2"],
+        "long_text": "This is a very very long text that will be truncated.",
+        "range": range(1, 6),
+    })
+
+def export_to_file(request): 
+    return render(request, 'export_to_file.html')
+
+def export_pdf(request):
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="table1.pdf"'
+
+    p = canvas.Canvas(response, pagesize=A4)
+    width, height = A4
+    y = height - 50
+    x = 50
+    p.setFont("Helvetica", 10)
+
+    p.drawString(x, y, "Listado de registros Table1")
+    y -= 30
+
+    registros = Table1.objects.all()
+
+    for reg in registros:
+        texto = (
+            f"ID: {reg.id} | "
+            f"Int: {reg.integer_field} | "
+            f"Float: {reg.float_field} | "
+            f"Text: {reg.char_field} | "
+            f"Bool: {reg.boolean_field} | "
+            f"Date: {reg.datetime_field.strftime('%Y-%m-%d %H:%M')} |"
+        )
+        p.drawString(x, y, texto)
+        y -= 15
+
+        if y < 60:
+            p.showPage()
+            y = height - 50
+            p.setFont("Helvetica", 10)
+
+    p.showPage()
+    p.save()
+    return response
+
+def export_excel(request):
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = 'attachment; filename="table1.xlsx"'
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Table1"
+
+    # Encabezados
+    ws.append([
+        "ID", "Integer", "Float", "Char", "Text",
+        "Boolean", "Date", "Time", "Datetime"
+    ])
+
+    registros = Table1.objects.all()
+
+    for reg in registros:
+        # Remove timezone info for Excel compatibility
+        datetime_val = reg.datetime_field
+        if datetime_val and is_aware(datetime_val):
+            datetime_val = datetime_val.replace(tzinfo=None)
+        else:
+            datetime_val = reg.datetime_field
+
+        time_val = reg.time_field
+        if time_val and is_aware(time_val):
+            time_val = time_val.replace(tzinfo=None)
+        else:
+            time_val = reg.time_field
+
+        ws.append([
+            reg.id,
+            reg.integer_field,
+            reg.float_field,
+            reg.char_field,
+            reg.text_field,
+            reg.boolean_field,
+            reg.date_field,
+            time_val,
+            datetime_val,
+        ])
+
+    columns = [
+        "ID", "Integer", "Float", "Char", "Text",
+        "Boolean", "Date", "Time", "Datetime"
+    ]
+
+    width = [5, 10, 10, 15, 25, 20, 15, 12, 22]
+
+    for i, ancho in enumerate(width, start=1):
+        col_letter = get_column_letter(i)
+        ws.column_dimensions[col_letter].width = ancho
+    wb.save(response)
+    return response
