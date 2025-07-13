@@ -41,6 +41,13 @@ urlpatterns = [
     path('exists_example', views.exists_example, name='exists_example'),
     path('select_related_example', views.select_related_example, name='select_related_example'),
     path('f_example', views.f_example, name='f_example'),
+
+    path('html_modify', views.html_modify, name='html_modify'),
+    path('html_example', views.html_example, name='html_example'),
+
+    path('export_to_file', views.export_to_file, name='export_to_file'),
+    path('export_pdf', views.export_pdf, name='export_pdf'),
+    path('export_excel', views.export_excel, name='export_excel'),
     # Test URL - remove in production
     path('test_403', views.test_403, name='test_403'),
 ]
