@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 
 #data
 from .models import Table3, Table2, Table1, UserLog
@@ -18,6 +18,10 @@ from django.contrib.auth.decorators import  login_required, permission_required
 from django.views.decorators.http import require_GET, require_POST
 import re
 import string
+
+#email
+from django.core.mail import send_mail
+from django.conf import settings
 
 #auth
 from django.contrib.auth import authenticate, login, logout
@@ -38,11 +42,24 @@ from django.core.exceptions import PermissionDenied
 
 
 @login_required
+def test_400(request):
+    return HttpResponse("Bad Request - Invalid parameters", status=400)
+
+@login_required
 def test_403(request):
     """
     Shall remove this in production
     """
     raise PermissionDenied("This is a test 403 error")
+
+@login_required
+def test_404(request):
+    raise Http404("This page does not exist - test 404 error")
+
+@login_required
+def test_500(request):
+    raise Exception("This is a test 500 internal server error")
+
 ###### 
 
 # Create your views here.
@@ -972,3 +989,39 @@ def export_excel(request):
         ws.column_dimensions[col_letter].width = ancho
     wb.save(response)
     return response
+
+@login_required
+def email_send(request):
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        email = request.POST.get('email', '').strip()
+        subject = request.POST.get('subject', '').strip()
+        message = request.POST.get('message', '').strip()
+        
+        try:
+            # email content
+            email_subject = f"{subject}"
+            email_message = f"""
+Name: {name}
+Email: {email}
+
+Message: {message}
+"""
+            
+            # How to send the email
+            send_mail(
+                email_subject,
+                email_message,
+                settings.EMAIL_HOST_USER,
+                [settings.CONTACT_EMAIL], # If want resend any email change this to "email" variable
+                fail_silently=False,
+            )
+            
+            messages.success(request, 'Your message has been sent successfully.')
+            return redirect('email_send')
+            
+        except Exception as e:
+            messages.error(request, f'Error sending message: {str(e)}')
+            return render(request, 'email_send.html')
+    
+    return render(request, 'email_send.html')

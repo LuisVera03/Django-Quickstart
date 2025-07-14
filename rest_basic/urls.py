@@ -48,6 +48,12 @@ urlpatterns = [
     path('export_to_file', views.export_to_file, name='export_to_file'),
     path('export_pdf', views.export_pdf, name='export_pdf'),
     path('export_excel', views.export_excel, name='export_excel'),
+    
+    path('send_email', views.email_send, name='email_send'),
+    
     # Test URL - remove in production
+    path('test_400', views.test_400, name='test_400'),
     path('test_403', views.test_403, name='test_403'),
+    path('test_404', views.test_404, name='test_404'),
+    path('test_500', views.test_500, name='test_500'),
 ]
