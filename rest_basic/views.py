@@ -19,6 +19,10 @@ from django.views.decorators.http import require_GET, require_POST
 import re
 import string
 
+#email
+from django.core.mail import send_mail
+from django.conf import settings
+
 #auth
 from django.contrib.auth import authenticate, login, logout
 
@@ -972,3 +976,39 @@ def export_excel(request):
         ws.column_dimensions[col_letter].width = ancho
     wb.save(response)
     return response
+
+@login_required
+def email_send(request):
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        email = request.POST.get('email', '').strip()
+        subject = request.POST.get('subject', '').strip()
+        message = request.POST.get('message', '').strip()
+        
+        try:
+            # email content
+            email_subject = f"{subject}"
+            email_message = f"""
+Name: {name}
+Email: {email}
+
+Message: {message}
+"""
+            
+            # How to send the email
+            send_mail(
+                email_subject,
+                email_message,
+                settings.EMAIL_HOST_USER,
+                [settings.CONTACT_EMAIL], # If want resend any email change this to "email" variable
+                fail_silently=False,
+            )
+            
+            messages.success(request, 'Your message has been sent successfully.')
+            return redirect('email_send')
+            
+        except Exception as e:
+            messages.error(request, f'Error sending message: {str(e)}')
+            return render(request, 'email_send.html')
+    
+    return render(request, 'email_send.html')
