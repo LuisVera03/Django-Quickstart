@@ -26,12 +26,22 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 ]
 
-# Custom 403 handler function
+def custom_bad_request_view(request, exception):
+    return render(request, 'error_400.html', status=400)
+
 def custom_permission_denied_view(request, exception):
     return render(request, 'error_403.html', status=403)
 
-# Set the custom handler - IMPORTANTE: debe estar después de la función
+def custom_page_not_found_view(request, exception):
+    return render(request, 'error_404.html', status=404)
+
+def custom_server_error_view(request):
+    return render(request, 'error_500.html', status=500)
+
+handler400 = custom_bad_request_view
 handler403 = custom_permission_denied_view
+handler404 = custom_page_not_found_view
+handler500 = custom_server_error_view
 
 #Solo en desarrollo NO en produccion (produccion poner en nginx)
 if settings.DEBUG:

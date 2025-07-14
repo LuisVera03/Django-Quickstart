@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 
 #data
 from .models import Table3, Table2, Table1, UserLog
@@ -42,11 +42,24 @@ from django.core.exceptions import PermissionDenied
 
 
 @login_required
+def test_400(request):
+    return HttpResponse("Bad Request - Invalid parameters", status=400)
+
+@login_required
 def test_403(request):
     """
     Shall remove this in production
     """
     raise PermissionDenied("This is a test 403 error")
+
+@login_required
+def test_404(request):
+    raise Http404("This page does not exist - test 404 error")
+
+@login_required
+def test_500(request):
+    raise Exception("This is a test 500 internal server error")
+
 ###### 
 
 # Create your views here.
