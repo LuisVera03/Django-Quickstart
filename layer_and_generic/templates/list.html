@@ -1,0 +1,16 @@
+{% extends "LAG/base.html" %}
+
+{% block body %}
+<h1>Table1 List</h1>
+<a href="{% url 'create' %}">Create New</a>
+<ul>
+  {% for obj in table1_list %}
+    <li>
+      <a href="{% url 'detail' obj.pk %}">{{ obj }}</a>
+      | <a href="{% url 'update' obj.pk %}">Edit</a>
+      | <a href="{% url 'delete' obj.pk %}">Delete</a>
+    </li>
+  {% endfor %}
+</ul>
+
+{% endblock %}

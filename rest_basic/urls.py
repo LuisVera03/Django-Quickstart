@@ -21,8 +21,8 @@ urlpatterns = [
     path('add_data_form', views.add_data_form, name='add_data_form'),
     path('update_data_form', views.update_data_form, name='update_data_form'),
 
-    path('register', views.register, name='register'),
-    path('login', views.user_login, name='login'),
+    path('user_register', views.user_register, name='user_register'),
+    path('user_login', views.user_login, name='user_login'),
     path('logout', views.user_logout, name='logout'),
     path('profile', views.profile, name='profile'),
     path('user_management', views.user_management, name='user_management'),
@@ -56,4 +56,5 @@ urlpatterns = [
     path('test_403', views.test_403, name='test_403'),
     path('test_404', views.test_404, name='test_404'),
     path('test_500', views.test_500, name='test_500'),
+
 ]
