@@ -69,7 +69,7 @@ def index(request):
 
 @require_GET
 def rest_basic(request):
-    return redirect('login')
+    return redirect('user_login')
 
 @require_GET
 def home_rest_basic(request):
@@ -438,7 +438,7 @@ def update_data_form(request):
     return render(request, 'update_data_form.html',{"table3":table3,"table2":table2,"table1":table1})
 
 
-def register(request):
+def user_register(request):
     if request.method == 'POST':
         username = request.POST.get('username', '').strip()
         email = request.POST.get('email', '').strip()
@@ -447,11 +447,11 @@ def register(request):
 
         if password1 != password2:
             messages.error(request, "Passwords do not match.")
-            return render(request, 'register.html')
+            return render(request, 'RB/register.html')
 
         if len(password1) < 8 or len(password1) > 14:
             messages.error(request, "Password must be between 8 and 14 characters.")
-            return render(request, 'register.html')
+            return render(request, 'RB/register.html')
 
 
         #????????????
@@ -460,15 +460,15 @@ def register(request):
         special_characters = string.punctuation
         if not re.search(r'[A-Za-z]', password1) or not re.search(r'\d', password1) or not any(char in special_characters for char in password1):
             messages.error(request, "Password must include letters, numbers, and special characters.")
-            return render(request, 'register.html')
+            return render(request, 'RB/register.html')
 
         if User.objects.filter(username=username).exists():
             messages.error(request, "Username already exists.")
-            return render(request, 'register.html')
+            return render(request, 'RB/register.html')
 
         if User.objects.filter(email=email).exists():
             messages.error(request, "Email is already in use.")
-            return render(request, 'register.html')
+            return render(request, 'RB/register.html')
         
         # Create the user and assign to the Customers group
         user = User.objects.create_user(username=username, password=password1, email=email)
@@ -477,9 +477,9 @@ def register(request):
         
         messages.success(request, "User registered successfully.")
         
-        return redirect('login')  # or wherever you want to redirect
+        return redirect('user_login') 
         
-    return render(request, 'register.html')
+    return render(request, 'RB/register.html')
 
 def user_login(request):
     if request.method == 'POST':
@@ -488,7 +488,7 @@ def user_login(request):
         
         if not username or not password:
             messages.error(request, "Please provide both username and password.")
-            return render(request, 'login.html')
+            return render(request, 'RB/login.html')
         
         user = authenticate(request, username=username, password=password)
         
@@ -499,12 +499,12 @@ def user_login(request):
         else:
             # Invalid credentials
             messages.error(request, "Invalid username or password.")
-            return render(request, 'login.html')
+            return render(request, 'RB/login.html')
     
     logout_msg = request.session.pop('logout_message', None)
     if logout_msg:
         messages.warning(request, logout_msg)
-    return render(request, 'login.html')
+    return render(request, 'RB/login.html')
 
 @login_required
 def profile(request):
@@ -537,7 +537,7 @@ def profile(request):
 def user_logout(request):
     logout(request)
     messages.success(request, f"Session closed successfully.")
-    return redirect('login')
+    return redirect('user_login')
 
 # User management view (only for admins)
 @login_required

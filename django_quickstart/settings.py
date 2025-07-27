@@ -43,6 +43,7 @@ INSTALLED_APPS = [
 
     #Apps
     'rest_basic',
+    'layer_and_generic',
 ]
 
 MIDDLEWARE = [
@@ -142,12 +143,12 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 #Session timeout settings
-LOGIN_URL = '/login'
+LOGIN_URL = '/'
 from datetime import timedelta
 AUTO_LOGOUT = {
     'IDLE_TIME': timedelta(hours=1),  # minutos de inactividad antes de desloguear 1h
-    'SESSION_TIME': timedelta(hours=6),  # minutos totales de sesión, sin importar actividad 6h
-    'MESSAGE': 'Your session has expired due to inactivity. <a href="/login">Please log in again</a>.',
+    'SESSION_TIME': timedelta(hours=1),  # minutos totales de sesión, sin importar actividad 6h
+    'MESSAGE': 'Your session has expired due to inactivity. Please log in again.',
     'REDIRECT_TO_LOGIN_IMMEDIATELY': True,  # redirige directamente al login sin mostrar alerta
 }
 
