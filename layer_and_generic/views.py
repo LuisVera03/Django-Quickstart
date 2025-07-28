@@ -16,7 +16,8 @@ from rest_basic.models import Table1
 ## Login / Register
 #
 
-# Handles user login.
+# Handle user login.
+
 class LoginView(View):
     def get(self, request):
         if request.user.is_authenticated:
