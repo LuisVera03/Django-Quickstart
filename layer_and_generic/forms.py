@@ -1,6 +1,6 @@
 from django import forms
 import re
-from rest_basic.models import Table1
+from rest_basic.models import Table1, Table2, Table3
 
 # Forms for user login
 class LoginForm(forms.Form):
@@ -38,26 +38,42 @@ class Table1Form(forms.ModelForm):
             'char_field', 'text_field', 'boolean_field',
             'integer_field', 'float_field', 'date_field',
             'time_field', 'datetime_field', 'image_field',
-            'file_field'
+            'file_field', 'foreign_key', 'one_to_one', 'many_to_many'
         ]
         widgets = {
-            'date_field': forms.DateInput(attrs={'type': 'date'}),
-            'time_field': forms.TimeInput(attrs={'type': 'time'}),
-            'datetime_field': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'char_field': forms.TextInput(attrs={'class': 'form-control'}),
+            'text_field': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'boolean_field': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'integer_field': forms.NumberInput(attrs={'class': 'form-control'}),
+            'float_field': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+            'date_field': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'time_field': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
+            'datetime_field': forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-control'}),
+            'image_field': forms.FileInput(attrs={'class': 'form-control'}),
+            'file_field': forms.FileInput(attrs={'class': 'form-control'}),
+            'foreign_key': forms.Select(attrs={'class': 'form-control'}),
+            'one_to_one': forms.Select(attrs={'class': 'form-control'}),
+            'many_to_many': forms.CheckboxSelectMultiple(),
         }
 
-
-class Table1Form(forms.ModelForm):
+class Table2Form(forms.ModelForm):
     class Meta:
-        model = Table1
-        fields = [
-            'char_field', 'text_field', 'boolean_field',
-            'integer_field', 'float_field', 'date_field',
-            'time_field', 'datetime_field', 'image_field',
-            'file_field'
-        ]
+        model = Table2
+        fields = '__all__'
         widgets = {
-            'date_field': forms.DateInput(attrs={'type': 'date'}),
-            'time_field': forms.TimeInput(attrs={'type': 'time'}),
-            'datetime_field': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'char_field': forms.TextInput(attrs={'class': 'form-control'}),
+            'text_field': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'boolean_field': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'integer_field': forms.NumberInput(attrs={'class': 'form-control'}),
+        }
+
+class Table3Form(forms.ModelForm):
+    class Meta:
+        model = Table3
+        fields = '__all__'
+        widgets = {
+            'char_field': forms.TextInput(attrs={'class': 'form-control'}),
+            'text_field': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'boolean_field': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'integer_field': forms.NumberInput(attrs={'class': 'form-control'}),
         }
