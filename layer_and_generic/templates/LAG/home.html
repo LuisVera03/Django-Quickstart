@@ -3,5 +3,12 @@
 {% block body %}
 <h2>Home Page</h2>
 
-<a href="{% url 'list' %}">CRUD of Table 1 as generic views</a>
+<p><a href="{% url 'list' %}">CRUD of Table 1 as generic views</a></p>
+
+<hr>
+
+<h3>CRUD Operations with Layers</h3>
+<p><a href="{% url 'table1_list' %}">CRUD of Table1 with layers ({{ total_table1|default:0 }} records)</a></p>
+<p><a href="{% url 'table2_list' %}">CRUD of Table2 with layers ({{ total_table2|default:0 }} records)</a></p>
+<p><a href="{% url 'table3_list' %}">CRUD of Table3 with layers ({{ total_table3|default:0 }} records)</a></p>
 {% endblock %}

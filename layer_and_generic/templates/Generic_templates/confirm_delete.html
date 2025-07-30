@@ -1,0 +1,12 @@
+{% extends "LAG/base.html" %}
+
+{% block body %}
+<h1>Delete {{ table_name }}</h1>
+<p>Are you sure you want to delete "{{ object }}"?</p>
+<form method="post">
+  {% csrf_token %}
+  <button type="submit">Yes, delete</button>
+</form>
+<a href="{% url list_url %}">Cancel</a> |
+<a href="{% url 'home' %}">Home</a>
+{% endblock %}
