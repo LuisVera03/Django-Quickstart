@@ -1,13 +1,12 @@
 {% extends "LAG/base.html" %}
 
 {% block body %}
-<h1>{% if object %}Update{% else %}Create{% endif %} Table1</h1>
+<h1>{% if object %}Update{% else %}Create{% endif %} {{ table_name }}</h1>
 <form method="post" enctype="multipart/form-data">
   {% csrf_token %}
   {{ form.as_p }}
   <button type="submit">Save</button>
 </form>
-<a href="{% url 'list' %}">Back</a>
-
-
+<a href="{% url list_url %}">Back</a> |
+<a href="{% url 'home' %}">Home</a>
 {% endblock %}
