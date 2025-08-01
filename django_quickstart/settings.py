@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     #Apps
     'rest_basic',
     'layer_and_generic',
+    'json_app.apps.JsonAppConfig', # Need use this form if there are additional settings in the app, obviously this is an example
 ]
 
 MIDDLEWARE = [

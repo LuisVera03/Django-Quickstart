@@ -1,0 +1,57 @@
+{% extends "json_app/base.html" %}
+
+{% block body %}
+<h2>User Profile</h2>
+
+<div id="profile-content">
+    <p>Cargando perfil...</p>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const profileContainer = document.getElementById('profile-content');
+
+    fetch('{% url "json_app:profile" %}?format=json', {
+        headers: {
+            'Accept': 'application/json'
+        }
+    })
+    .then(res => res.ok ? res.json() : Promise.reject(res))
+    .then(data => {
+        profileContainer.innerHTML = renderProfile(data);
+    })
+    .catch(error => {
+        profileContainer.innerHTML = '<p>Error retrieving profile data.</p>';
+    });
+
+    function renderProfile(data) {
+        const { username, email, role, user_id, permissions, groups, is_admin } = data;
+
+        let html = `
+            <table>
+                <tr><td><strong>Username:</strong></td><td>${username}</td></tr>
+                <tr><td><strong>Email:</strong></td><td>${email || '-'}</td></tr>
+                <tr><td><strong>Role:</strong></td><td>${role}</td></tr>
+                <tr><td><strong>User ID:</strong></td><td>${user_id}</td></tr>
+            </table>
+        `;
+
+        if (permissions?.length) {
+            html += `
+                <h3>Permissions:</h3>
+                <ul>${permissions.map(p => `<li>${p}</li>`).join('')}</ul>
+            `;
+        }
+
+        if (groups?.length) {
+            html += `
+                <h3>Groups:</h3>
+                <ul>${groups.map(g => `<li>${g}</li>`).join('')}</ul>
+            `;
+        }
+
+        return html;
+    }
+});
+</script>
+{% endblock %}

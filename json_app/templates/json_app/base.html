@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>JSON App</title>
+    <link href="" rel="icon">
+    <meta name="viewport" content="initial-scale=1, width=device-width, shrink-to-fit=no">
+    <style>
+        #password-requirements {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 0.5em;
+        }
+        #password-requirements li {
+            color: red;
+        }
+        #password-requirements li.valid {
+            color: green;
+            text-decoration: line-through;
+        }
+    </style>
+</head>
+<body>
+    {% if user.is_authenticated %}
+        <div>
+            User: {{ user.username }} |
+            <a href="{% url 'json_app:home' %}">Home</a> | 
+            <a href="{% url 'json_app:profile' %}">Profile</a> |
+            <a href="{% url 'json_app:user_logout' %}">Logout</a> | 
+        </div>
+        <hr>
+    {% endif %}
+    
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|safe }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% block body %}{% endblock %}
+</body>
+</html>
