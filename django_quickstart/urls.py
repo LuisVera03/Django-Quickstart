@@ -23,9 +23,11 @@ from django.conf.urls.static import static
 
 from layer_and_generic import views as layer_and_generic_views
 from rest_basic import views as rest_basic_views
+
 urlpatterns = [
     path('', include('rest_basic.urls')),
     path('layer_and_generic/', include('layer_and_generic.urls')),
+    path('json_app/', include('json_app.urls')),
     path('admin/', admin.site.urls),
 
     path('layer_and_generic/login/', layer_and_generic_views.LoginView.as_view(), name='login_layer_and_generic'),
