@@ -51,6 +51,10 @@ class Table1(models.Model):
     def __str__(self):
         return f"Table1 ID: {self.id}"
     
+    def get_file_field_url(self, field_name):
+        file_field = getattr(self, field_name)
+        return file_field.url if file_field else None
+    
 class UserLog(models.Model):
     EVENT_CHOICES = [
         ('login', 'Login'),

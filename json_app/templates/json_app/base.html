@@ -24,9 +24,9 @@
     {% if user.is_authenticated %}
         <div>
             User: {{ user.username }} |
-            <a href="{% url 'json_app:home' %}">Home</a> | 
-            <a href="{% url 'json_app:profile' %}">Profile</a> |
-            <a href="{% url 'json_app:user_logout' %}">Logout</a> | 
+            <a href="{% url 'home' %}">Home</a> | 
+            <a href="{% url 'profile' %}">Profile</a> |
+            <a href="{% url 'user_logout' %}">Logout</a> | 
         </div>
         <hr>
     {% endif %}

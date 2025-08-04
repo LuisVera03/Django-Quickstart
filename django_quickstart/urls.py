@@ -23,6 +23,7 @@ from django.conf.urls.static import static
 
 from layer_and_generic import views as layer_and_generic_views
 from rest_basic import views as rest_basic_views
+from json_app import views as json_app_views
 
 urlpatterns = [
     path('', include('rest_basic.urls')),
@@ -31,6 +32,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     path('layer_and_generic/login/', layer_and_generic_views.LoginView.as_view(), name='login_layer_and_generic'),
+    path('json/login/', json_app_views.home, name='login_json'),
 ]
 
 def custom_bad_request_view(request, exception):

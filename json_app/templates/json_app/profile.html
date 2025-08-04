@@ -11,7 +11,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const profileContainer = document.getElementById('profile-content');
 
-    fetch('{% url "json_app:profile" %}?format=json', {
+    fetch('{% url "profile" %}?format=json', {
         headers: {
             'Accept': 'application/json'
         }
