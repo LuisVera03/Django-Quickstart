@@ -5,10 +5,502 @@
 
 {% if user.is_authenticated %}
     <p>User is Authenticated</p>
+    {% csrf_token %}
+    <ul>
+        <li><a href="#" onclick="showTable('table1')">Table 1</a></li>
+        <li><a href="#" onclick="showTable('table2')">Table 2</a></li>
+        <li><a href="#" onclick="showTable('table3')">Table 3</a></li>
+    </ul>
+
+    <div id="tableDiv"></div>
+
+    <!-- Modal for create/edit -->
+    <div id="crudModal" style="display:none; position:fixed; top:10%; left:10%; background:#fff; border:1px solid #ccc; padding:20px; z-index:1000; min-width:350px;">
+        <h2 id="crudTitle"></h2>
+        <form id="crudForm" onsubmit="submitCrud(event)">
+            <input type="hidden" id="crudTable">
+            <input type="hidden" id="crudId">
+            <div id="formFields"></div>
+            <button type="submit" id="crudSubmitBtn">Save</button>
+        </form>
+        <button type="button" onclick="closeCrud()">Close</button>
+    </div>
+
+    <style>
+        table.crud-table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 10px;
+        }
+        table.crud-table th, table.crud-table td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        table.crud-table th {
+            background-color: #f2f2f2;
+        }
+        table.crud-table img {
+            max-width: 50px;
+            max-height: 50px;
+        }
+    </style>
+
+    <script>
+    let currentTable = '';
+    let currentData = [];
+    let table2Options = [];
+    let table3Options = [];
+
+    function getCrudUrl(table) {
+        return `/json_app/${table}/`;
+    }
+
+    function showTable(table) {
+        currentTable = table;
+        fetch(getCrudUrl(table), {method: 'GET'})
+            .then(response => response.json())
+            .then(data => {
+                currentData = data.data;
+                // Solo para Table1, guarda las opciones
+                if (table === 'table1') {
+                    table2Options = data.table2_options || [];
+                    table3Options = data.table3_options || [];
+                }
+                renderTable();
+            });
+    }
+
+    function renderTable() {
+        if (!currentData.length) {
+            document.getElementById('tableDiv').innerHTML = '<p>No entries found.</p>';
+            return;
+        }
+        let fields = Object.keys(currentData[0]);
+        let html = `<h2>${currentTable.replace('table', 'Table ')}</h2>`;
+        html += `<button onclick="openCrudModal('create')">Add New Entry</button>`;
+        html += `<table class="crud-table"><thead><tr>`;
+        fields.forEach(f => html += `<th>${formatHeader(f)}</th>`);
+        html += `<th>Actions</th></tr></thead><tbody>`;
+        currentData.forEach(row => {
+            html += `<tr>`;
+            fields.forEach(f => html += `<td>${formatCell(f, row[f])}</td>`);
+            html += `<td>
+                <button onclick="openCrudModal('edit', ${row.id})">Edit</button>
+                <button onclick="deleteEntry(${row.id})">Delete</button>
+            </td>`;
+            html += `</tr>`;
+        });
+        html += `</tbody></table>`;
+        document.getElementById('tableDiv').innerHTML = html;
+    }
+
+    function formatHeader(field) {
+        // Capitalize and add spaces for better readability
+        return field.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    }
+
+    function formatCell(field, value) {
+        // Table1: image_field, file_field, boolean_field
+        if (field === 'image_field') {
+            if (value) {
+                return `<img src="${value}" alt="img">`;
+            } else {
+                return '-';
+            }
+        }
+        if (field === 'file_field') {
+            if (value) {
+                return `<a href="${value}" download>Download</a>`;
+            } else {
+                return '-';
+            }
+        }
+        if (field === 'boolean_field') {
+            return value ? 'True' : 'False';
+        }
+        
+        // Manejar campos de fecha y hora
+        if (field === 'date_field' && value) {
+            return new Date(value).toLocaleDateString();
+        }
+        if (field === 'time_field' && value) {
+            return value;
+        }
+        if (field === 'datetime_field' && value) {
+            return new Date(value).toLocaleString();
+        }
+        
+        if (field === 'duration_field' && value) {
+            const regex = /P(?:(\d+)D)?T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/;
+            const match = value.match(regex);
+
+            if (!match) return null;
+
+            const days = parseInt(match[1] || 0);
+            const hours = parseInt(match[2] || 0);
+            const minutes = parseInt(match[3] || 0);
+            const seconds = parseInt(match[4] || 0);
+            return `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`;
+        }
+        // Manejar foreign_key y one_to_one
+        if ((field === 'foreign_key' || field === 'one_to_one') && value) {
+            if (typeof value === 'object' && value.positive_small_int !== undefined) {
+                return `Table2 id:${value.id} (${value.positive_small_int})`;
+            }
+            return '-';
+        }
+        
+        // Manejar many_to_many
+        if (field === 'many_to_many') {
+            if (Array.isArray(value) && value.length) {
+                return value.map(item => 
+                    typeof item === 'object' ? 
+                    `Table3 id:${item.id} (${item.email_field})` : 
+                    item
+                ).join(', ');
+            }
+            return '-';
+        }
+
+        // Show empty as dash
+        if (value === null || value === undefined || value === '') {
+            return '-';
+        }
+        
+        return value;
+    }
+
+    function openCrudModal(mode, id=null) {
+        document.getElementById('crudTable').value = currentTable;
+        document.getElementById('crudId').value = id || '';
+        document.getElementById('crudModal').style.display = 'block';
+        document.getElementById('crudTitle').innerText = mode === 'create' ? 'Create Entry' : 'Edit Entry';
+        document.getElementById('crudSubmitBtn').innerText = mode === 'create' ? 'Create' : 'Update';
+
+        let data = {};
+        if (mode === 'edit' && id) {
+            data = currentData.find(d => d.id == id) || {};
+        }
+
+        // Siempre carga las opciones de Table2 y Table3 al abrir el modal para Table1
+        if (currentTable === 'table1') {
+            fetch(getCrudUrl('table1'), {method: 'GET'})
+                .then(response => response.json())
+                .then(resp => {
+                    table2Options = resp.table2_options || [];
+                    table3Options = resp.table3_options || [];
+                    renderFormFields(data);
+                });
+        } else {
+            renderFormFields(data);
+        }
+    }
+
+    function renderFormFields(data = {}) {
+    const fields = currentData.length ? Object.keys(currentData[0]).filter(f => f !== 'id') : [];
+    const formFields = [];
+
+    fields.forEach(field => {
+        if (currentTable === 'table1') {
+            switch(field) {
+                case 'foreign_key':
+                case 'one_to_one':
+                    formFields.push(renderSelect(field, table2Options, data[field]?.id));
+                    break;
+                
+                case 'many_to_many':
+                    formFields.push(renderMultiSelect(field, table3Options, (data[field] || []).map(item => item.id)));
+                    break;
+                
+                case 'image_field':
+                case 'file_field':
+                    formFields.push(renderFileInput(field, data[field]));
+                    break;
+                
+                case 'boolean_field':
+                    formFields.push(renderCheckbox(field, data[field]));
+                    break;
+                
+                case 'date_field':
+                    formFields.push(renderDateInput(field, data[field]));
+                    break;
+                
+                case 'time_field':
+                    formFields.push(renderTimeInput(field, data[field]));
+                    break;
+                
+                case 'datetime_field':
+                    formFields.push(renderDateTimeInput(field, data[field]));
+                    break;
+                default:
+                    formFields.push(renderTextInput(field, data[field]));
+            }
+        } else {
+            formFields.push(renderTextInput(field, data[field]));
+        }
+    });
+
+    document.getElementById('formFields').innerHTML = formFields.join('');
+}
+
+// Helper functions for rendering form fields
+function renderSelect(field, options, selectedId) {
+    return `
+        <label>${formatHeader(field)}:
+            <select name="${field}">
+                <option value="">-- Select ${formatHeader(field)} --</option>
+                ${options.map(opt => `
+                    <option value="${opt.id}" ${selectedId === opt.id ? 'selected' : ''}>
+                        ${opt.id} - Table2 (${opt.positive_small_int})
+                    </option>
+                `).join('')}
+            </select>
+        </label><br>`;
+}
+
+function renderMultiSelect(field, options, selectedIds) {
+    return `
+        <label>${formatHeader(field)}:
+            <select name="${field}" multiple>
+                ${options.map(opt => `
+                    <option value="${opt.id}" ${selectedIds.includes(opt.id) ? 'selected' : ''}>
+                        ${opt.id} - Table3 (${opt.email_field})
+                    </option>
+                `).join('')}
+            </select>
+        </label><br>`;
+}
+
+function renderFileInput(field, currentValue) {
+    return `
+        <label>${formatHeader(field)}:
+            <input type="file" name="${field}">
+            ${currentValue ? `<br>Current: ${currentValue}` : ''}
+        </label><br>`;
+}
+
+function renderCheckbox(field, checked) {
+    return `
+        <label>${formatHeader(field)}:
+            <input type="checkbox" name="${field}" ${checked ? 'checked' : ''}>
+        </label><br>`;
+}
+
+function renderDateInput(field, value) {
+    return `
+        <label>${formatHeader(field)}:
+            <input type="date" name="${field}" value="${value ? value.split('T')[0] : ''}">
+        </label><br>`;
+}
+
+function renderTimeInput(field, value) {
+    return `
+        <label>${formatHeader(field)}:
+            <input type="time" name="${field}" value="${value || ''}">
+        </label><br>`;
+}
+
+function renderDateTimeInput(field, value) {
+    return `
+        <label>${formatHeader(field)}:
+            <input type="datetime-local" name="${field}" 
+                value="${value ? value.replace('Z', '') : ''}">
+        </label><br>`;
+}
+
+function renderDurationInput(field, value) {
+    let days = 0, hours = 0, minutes = 0;
+
+    if (value) {
+        let parts = value.trim().split(',');
+        if (parts.length === 2) {
+            days = parseInt(parts[0]);
+            [hours, minutes] = parts[1].trim().split(':').map(Number);
+        } else {
+            [hours, minutes] = parts[0].split(':').map(Number);
+        }
+    }
+
+    return `
+        <label>${formatHeader(field)}:<br>
+            Días: <input type="number" name="${field}_days" value="${days}" min="0" style="width: 60px;">
+            Horas: <input type="number" name="${field}_hours" value="${hours}" min="0" max="23" style="width: 60px;">
+            Minutos: <input type="number" name="${field}_minutes" value="${minutes}" min="0" max="59" style="width: 60px;">
+        </label><br>`;
+}
+
+function renderTextInput(field, value) {
+    return `<label>${formatHeader(field)}: <input name="${field}" value="${value || ''}"></label><br>`;
+}
+    // Keep only the essential functions and modify submitCrud
+function submitCrud(e) {
+    e.preventDefault();
+    const form = document.getElementById('crudForm');
+    const table = form.elements['crudTable'].value;
+    const id = form.elements['crudId'].value;
+    const method = id ? 'PUT' : 'POST';
+    const url = getCrudUrl(table);
+
+    // Check if we have files
+    const hasFiles = (
+        (form.elements['image_field']?.files?.length > 0) || 
+        (form.elements['file_field']?.files?.length > 0)
+    );
+
+    // Prepare base data object
+    const jsonData = prepareFormData(form);
+    
+    // Add the ID for PUT requests
+    if (method === 'PUT') {
+        jsonData.id = parseInt(id);
+    }
+
+    if (hasFiles) {
+        // Handle files with base64
+        handleFilesAndSubmit(form, jsonData, url, method);
+    } else {
+        // Direct JSON submission for no files
+        submitJsonData(jsonData, url, method);
+    }
+}
+
+function prepareFormData(form) {
+    const jsonData = {};
+    
+    for (const field of form.elements) {
+        if (!field.name || field.name === 'crudTable' || field.name === 'crudId') continue;
+
+        if (field.name === 'many_to_many' && field.multiple) {
+            jsonData[field.name] = Array.from(field.selectedOptions).map(opt => ({
+                id: parseInt(opt.value)
+            }));
+        } else if (field.name === 'foreign_key' || field.name === 'one_to_one') {
+            jsonData[field.name] = field.value ? { id: parseInt(field.value) } : null;
+        } else if (field.type === 'checkbox') {
+            jsonData[field.name] = field.checked;
+        } else if (field.type !== 'file') {
+            jsonData[field.name] = field.value || null;
+        }
+    }
+
+    return jsonData;
+}
+
+function handleFilesAndSubmit(form, jsonData, url, method) {
+    const filePromises = [];
+    const fileFields = ['image_field', 'file_field'];
+
+    fileFields.forEach(fieldName => {
+        const fileInput = form.elements[fieldName];
+        if (fileInput?.files?.length > 0) {
+            const file = fileInput.files[0];
+            const promise = new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    resolve({
+                        fieldName,
+                        fileName: file.name,
+                        content: reader.result
+                    });
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+            filePromises.push(promise);
+        }
+    });
+
+    Promise.all(filePromises)
+        .then(files => {
+            files.forEach(file => {
+                jsonData[file.fieldName] = {
+                    name: file.fileName,
+                    content: file.content
+                };
+            });
+            return submitJsonData(jsonData, url, method);
+        })
+        .catch(handleError);
+}
+
+function submitJsonData(jsonData, url, method) {
+    return fetch(url, {
+        method: method,
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify(jsonData)
+    })
+    .then(handleResponse)
+    .then(data => {
+        showTable(document.getElementById('crudTable').value);
+        closeCrud();
+    })
+    .catch(handleError);
+}
+
+function handleResponse(response) {
+    if (!response.ok) {
+        return response.text().then(text => {
+            try {
+                const json = JSON.parse(text);
+                throw new Error(json.error || 'Server error');
+            } catch (e) {
+                throw new Error(text || `HTTP error! status: ${response.status}`);
+            }
+        });
+    }
+    return response.json();
+}
+
+function handleError(error) {
+    console.error('Error:', error);
+    let errorMessage = error.message || 'An unknown error occurred';
+    if (errorMessage.includes("codec can't decode")) {
+        errorMessage = 'Error processing file upload. Please try again.';
+    }
+    alert(`Error: ${errorMessage}`);
+}
+
+    function deleteEntry(id) {
+        if (!confirm('Are you sure you want to delete this entry?')) return;
+        let url = getCrudUrl(currentTable);
+        fetch(url, {
+            method: 'DELETE',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({id: id})
+        })
+        .then(response => {
+            showTable(currentTable);
+        });
+    }
+
+    function closeCrud() {
+        document.getElementById('crudModal').style.display = 'none';
+        document.getElementById('crudForm').reset();
+    }
+
+    function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+    </script>
 {% else %}
     <h2>Log in to continue</h2>
-    <p><a href="{% url 'json_app:user_login' %}">Login</a></p>
-    <p><a href="{% url 'json_app:user_register' %}">Sign Up</a></p>
+    <p><a href="{% url 'user_login' %}">Login</a></p>
+    <p><a href="{% url 'user_register' %}">Sign Up</a></p>
 {% endif %}
 
 {% endblock %}
