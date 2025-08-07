@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 
 {% block body %}
-<a href="{% url 'rest_basic' %}">Rest Basic</a>
+<a href="{% url 'login_rest_basic' %}">Rest Basic</a>
 <p><a href="{% url 'login_layer_and_generic' %}">Layer and generic</a></p>
-<p><a href="{% url 'login_json' %}">JSON App</a></p>
+<p><a href="{% url 'login_json' %}">JSON</a></p>
+<p><a href="{% url 'login_channels' %}">Channels</a></p>
 {% endblock %}

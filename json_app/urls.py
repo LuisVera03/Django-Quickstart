@@ -3,11 +3,11 @@ from . import views
 
 
 urlpatterns = [
-    path('', views.home, name='home'),
-    path('register/', views.user_register, name='user_register'),
-    path('login/', views.user_login, name='user_login'),
-    path('profile/', views.profile, name='profile'),
-    path('logout/', views.user_logout, name='user_logout'),
+    path('home_json', views.home, name='home_json'),
+    path('register_json/', views.user_register, name='register_json'),
+    path('login_json/', views.user_login, name='login_json'),
+    path('logout_json/', views.user_logout, name='logout_json'),
+    path('profile_json/', views.profile, name='profile_json'),
 
     # CRUD endpoints for JSON fetch
     path('table1/', views.table1_crud, name='table1_crud'),

@@ -156,11 +156,11 @@ class LoginView(FormView):
     """Handles user login using FormView"""
     template_name = 'LAG/login.html'
     form_class = LoginForm
-    success_url = reverse_lazy('home')
+    success_url = reverse_lazy('home_layer_and_generic')
     
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            return redirect('home')
+            return redirect('home_layer_and_generic')
         return super().dispatch(request, *args, **kwargs)
     
     def form_valid(self, form):
@@ -175,7 +175,7 @@ class RegisterView(FormView):
     """Handles user registration using FormView"""
     template_name = 'LAG/register.html'
     form_class = RegisterForm
-    success_url = reverse_lazy('login')
+    success_url = reverse_lazy('login_layer_and_generic')
     
     def form_valid(self, form):
         user = register_user(**form.cleaned_data)
@@ -190,7 +190,7 @@ class LogoutView(View):
     """Handles user logout"""
     def get(self, request):
         perform_logout(request)
-        return redirect('login')
+        return redirect('login_layer_and_generic')
 
 @login_required
 def home(request):

@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>JSON App</title>
+    <title>Channels app</title>
     <link href="" rel="icon">
     <meta name="viewport" content="initial-scale=1, width=device-width, shrink-to-fit=no">
     <style>
@@ -24,9 +24,8 @@
     {% if user.is_authenticated %}
         <div>
             User: {{ user.username }} |
-            <a href="{% url 'home_json' %}">Home</a> | 
-            <a href="{% url 'profile_json' %}">Profile</a> |
-            <a href="{% url 'logout_json' %}">Logout</a> | 
+            <a href="{% url 'home_channels' %}">Home</a> |
+            <a href="{% url 'logout_channels' %}">Log out</a> 
         </div>
         <hr>
     {% endif %}

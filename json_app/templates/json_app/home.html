@@ -499,8 +499,8 @@ function handleError(error) {
     </script>
 {% else %}
     <h2>Log in to continue</h2>
-    <p><a href="{% url 'user_login' %}">Login</a></p>
-    <p><a href="{% url 'user_register' %}">Sign Up</a></p>
+    <p><a href="{% url 'login_json' %}">Login</a></p>
+    <p><a href="{% url 'register_json' %}">Sign Up</a></p>
 {% endif %}
 
 {% endblock %}

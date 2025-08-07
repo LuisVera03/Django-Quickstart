@@ -12,8 +12,8 @@
             User: {{ user.username }} | 
             Role: {% if user.groups.all.0.name == 'Admins' %}Administrator{% elif user.groups.all.0.name == 'Customers' %}Customer{% else %}No role assigned{% endif %} | 
             <a href="{% url 'home_rest_basic' %}">Home</a> |
-            <a href="{% url 'profile' %}">Profile</a> |
-            <a href="{% url 'logout' %}">Logout</a> | 
+            <a href="{% url 'profile_rest_basic' %}">Profile</a> |
+            <a href="{% url 'logout_rest_basic' %}">Logout</a> | 
         </div>
         <hr>
         {% endif %}

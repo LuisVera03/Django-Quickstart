@@ -4,9 +4,16 @@ from . import views
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('rest_basic', views.rest_basic, name='rest_basic'),
+    path('rest_basic/', views.rest_basic, name='rest_basic'),
     path('home_rest_basic', views.home_rest_basic, name='home_rest_basic'),
 
+    path('register_rest_basic/', views.user_register, name='register_rest_basic'),
+    path('login_rest_basic/', views.user_login, name='login_rest_basic'),
+    path('logout_rest_basic/', views.user_logout, name='logout_rest_basic'),
+    path('profile_rest_basic/', views.profile, name='profile_rest_basic'),
+    path('user_management', views.user_management, name='user_management'),
+    path('user_logs', views.user_logs, name='user_logs'),
+    
     path('crud', views.crud, name='crud'),
     path('get_data', views.get_data, name='get_data'),
     path('add_data', views.add_data, name='add_data'),
@@ -21,13 +28,6 @@ urlpatterns = [
     path('add_data_form', views.add_data_form, name='add_data_form'),
     path('update_data_form', views.update_data_form, name='update_data_form'),
 
-    path('user_register', views.user_register, name='user_register'),
-    path('user_login', views.user_login, name='user_login'),
-    path('logout', views.user_logout, name='logout'),
-    path('profile', views.profile, name='profile'),
-    path('user_management', views.user_management, name='user_management'),
-    path('user_logs', views.user_logs, name='user_logs'),
-    
     path('making_queries', views.making_queries, name='making_queries'),
     path('filter_example', views.filter_example, name='filter_example'),
     path('exclude_example', views.exclude_example, name='exclude_example'),

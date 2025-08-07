@@ -62,7 +62,7 @@ def user_register(request):
         user.groups.add(customer_group)
 
         messages.success(request, "User registered successfully.")
-        return redirect('user_login')
+        return redirect('login_json')
 
     return render(request, 'json_app/signup.html')
 
@@ -80,7 +80,7 @@ def user_login(request):
             
         if user is not None:
             login(request, user)
-            return redirect('home')
+            return redirect('home_json')
         else:
             messages.error(request, "Invalid username or password.")
             return render(request, 'json_app/login.html')
@@ -131,7 +131,7 @@ def profile(request):
 def user_logout(request):
     logout(request)
     messages.success(request, f"Session closed successfully.")
-    return redirect('user_login')
+    return redirect('login_json')
 
 @csrf_exempt
 def table1_crud(request):
