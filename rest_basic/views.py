@@ -69,7 +69,7 @@ def index(request):
 
 @require_GET
 def rest_basic(request):
-    return redirect('user_login')
+    return redirect('login_rest_basic')
 
 @require_GET
 def home_rest_basic(request):
@@ -477,7 +477,7 @@ def user_register(request):
         
         messages.success(request, "User registered successfully.")
         
-        return redirect('user_login') 
+        return redirect('login_rest_basic') 
         
     return render(request, 'RB/register.html')
 
@@ -537,7 +537,7 @@ def profile(request):
 def user_logout(request):
     logout(request)
     messages.success(request, f"Session closed successfully.")
-    return redirect('user_login')
+    return redirect('login_rest_basic')
 
 # User management view (only for admins)
 @login_required

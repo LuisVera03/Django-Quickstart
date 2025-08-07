@@ -1,0 +1,15 @@
+{% extends "channels/base.html" %}
+
+{% block body %}
+<h1>Channels</h1>
+
+{% if user.is_authenticated %}
+    <p>User is Authenticated</p>
+
+{% else %}
+    <h2>Log in to continue</h2>
+    <p><a href="{% url 'login_channels' %}">Login</a></p>
+    <p><a href="{% url 'register_channels' %}">Sign Up</a></p>
+{% endif %}
+
+{% endblock %}

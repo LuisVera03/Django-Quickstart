@@ -12,10 +12,10 @@ from .views import (
 
 urlpatterns = [
     # Authentication URLs
-    path('login/', LoginView.as_view(), name='login'),
-    path('register/', RegisterView.as_view(), name='register'),
-    path('logout/', LogoutView.as_view(), name='logout'),
-    path('', home, name='home'),  # Home page
+    path('home_layer_and_generic', home, name='home_layer_and_generic'),
+    path('register_layer_and_generic/', RegisterView.as_view(), name='register_layer_and_generic'),
+    path('login_layer_and_genericn/', LoginView.as_view(), name='login_layer_and_generic'),
+    path('logout_layer_and_generic/', LogoutView.as_view(), name='logout_layer_and_generic'),
     
     # Table1 CRUD (Legacy URLs for backward compatibility)
     path('ListView/', Table1ListView.as_view(), name='list'),
