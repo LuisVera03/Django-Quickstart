@@ -1,4 +1,4 @@
-{% extends "channels/base.html" %}
+{% extends "asgi/base.html" %}
 
 {% block body %}
 <h2>Log In</h2>
@@ -10,6 +10,6 @@
     <p><button type="submit" >Log in</button></p>
 </form>
 
-<p><a href="{% url 'register_channels' %}">Don't have an account? Sign up here</a></p>
+<p><a href="{% url 'register_asgi' %}">Don't have an account? Sign up here</a></p>
 <p><a href="{% url 'index' %}">Back to main page</a></p>
 {% endblock %}

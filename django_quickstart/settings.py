@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'rest_basic',
     'layer_and_generic',
     'json_app',
-    'channels',
+    'asgi',
 ]
 
 MIDDLEWARE = [

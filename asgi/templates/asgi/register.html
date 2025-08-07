@@ -1,4 +1,4 @@
-{% extends "LAG/base.html" %}
+{% extends "asgi/base.html" %}
 
 {% block body %}
 <h2>Sign Up</h2>
@@ -8,5 +8,5 @@
     {{ form.as_p }}
     <button type="submit">Create an account</button>
 </form>
-<p>Already have an account? <a href="{% url 'login_channels' %}">Log in here</a></p>
+<p>Already have an account? <a href="{% url 'login_asgi' %}">Log in here</a></p>
 {% endblock %}
