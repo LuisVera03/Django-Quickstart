@@ -12,23 +12,23 @@ def register_view(request):
         form = UserCreationForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('home_channels')  # o donde quieras
+            return redirect('home_asgi')  # o donde quieras
     else:
         form = UserCreationForm()
-    return render(request, 'channels/register.html', {'form': form})
+    return render(request, 'asgi/register.html', {'form': form})
 
 class LoginView(LoginView):
-    template_name = 'channels/login.html'
+    template_name = 'asgi/login.html'
     def get_success_url(self):
-        return reverse_lazy('home_channels')
+        return reverse_lazy('home_asgi')
 
 
 @login_required
-def logout_channels(request):
+def logout_asgi(request):
     logout(request)
-    return render(request, 'channels/home.html')
+    return render(request, 'asgi/home.html')
 
 @login_required
-def home_channels(request):
-    return render(request, 'channels/home.html')
+def home_asgi(request):
+    return render(request, 'asgi/home.html')
 

@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Channels app</title>
+    <title>Asgi app</title>
     <link href="" rel="icon">
     <meta name="viewport" content="initial-scale=1, width=device-width, shrink-to-fit=no">
     <style>
@@ -24,8 +24,8 @@
     {% if user.is_authenticated %}
         <div>
             User: {{ user.username }} |
-            <a href="{% url 'home_channels' %}">Home</a> |
-            <a href="{% url 'logout_channels' %}">Log out</a> 
+            <a href="{% url 'home_asgi' %}">Home</a> |
+            <a href="{% url 'logout_asgi' %}">Log out</a> 
         </div>
         <hr>
     {% endif %}
