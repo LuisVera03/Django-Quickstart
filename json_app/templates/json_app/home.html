@@ -497,6 +497,10 @@ function handleError(error) {
     return cookieValue;
 }
     </script>
+
+    <h2>Search on Table 1</h2>
+    <a href="{% url 'search_json' %}">Search View</a>
+
 {% else %}
     <h2>Log in to continue</h2>
     <p><a href="{% url 'login_json' %}">Login</a></p>
