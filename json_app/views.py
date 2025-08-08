@@ -334,3 +334,48 @@ def table3_crud(request):
         Table3.objects.filter(id=data['id']).delete()
         return JsonResponse({'message': 'Deleted'}, status=204)
 
+@login_required
+def search_view(request):
+    return render(request, 'json_app/search.html')
+
+@csrf_exempt
+@login_required
+def search_all_data(request):
+    """Returns all Table1 data on JSON"""
+    if request.method == 'GET':
+        queryset = Table1.objects.all().prefetch_related('many_to_many', 'foreign_key', 'one_to_one')
+        
+        items = []
+        for obj in queryset:
+            item_dict = {
+                'id': obj.id,
+                'char_field': obj.char_field,
+                'text_field': obj.text_field,
+                'integer_field': obj.integer_field,
+                'float_field': obj.float_field,
+                'boolean_field': obj.boolean_field,
+                'date_field': obj.date_field.isoformat() if obj.date_field else None,
+                'time_field': obj.time_field.isoformat() if obj.time_field else None,
+                'datetime_field': obj.datetime_field.isoformat() if obj.datetime_field else None,
+                'image_field': obj.get_file_field_url('image_field'),
+                'file_field': obj.get_file_field_url('file_field'),
+                'foreign_key': {
+                    'id': obj.foreign_key.id, 
+                    'positive_small_int': obj.foreign_key.positive_small_int,
+                    'display': obj.foreign_key.get_positive_small_int_display()
+                } if obj.foreign_key else None,
+                'one_to_one': {
+                    'id': obj.one_to_one.id, 
+                    'positive_small_int': obj.one_to_one.positive_small_int,
+                    'display': obj.one_to_one.get_positive_small_int_display()
+                } if obj.one_to_one else None,
+                'many_to_many': list(obj.many_to_many.values('id', 'email_field', 'duration_field'))
+            }
+            items.append(item_dict)
+        
+        return JsonResponse({
+            'data': items, 
+            'count': len(items),
+            'message': 'All data loaded successfully'
+        })
+    return JsonResponse({'error': 'Method not allowed'}, status=405)

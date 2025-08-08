@@ -1,0 +1,211 @@
+{% extends 'json_app/base.html' %}
+{% block body %}
+<h2>Search on Table 1</h2>
+<input type="text" id="searchInput" placeholder="Search..." autocomplete="off" class="form-control" style="max-width:300px;">
+<div id="loadingMessage">
+    <p>Loading all data...</p>
+</div>
+<div id="results">
+    <!-- display the results -->
+</div>
+
+<script>
+class OptimizedSearch {
+    constructor() {
+        this.allData = [];
+        this.input = document.getElementById('searchInput');
+        this.resultsDiv = document.getElementById('results');
+        this.loadingDiv = document.getElementById('loadingMessage');
+        this.searchTimeout = null;
+        
+        this.init();
+    }
+    
+    async init() {
+        await this.loadAllData();
+        this.setupEventListeners();
+        this.performSearch(''); // Show all results
+    }
+    
+    async loadAllData() {
+        try {
+            const response = await fetch('{% url "search_all_json" %}');
+            if (!response.ok) {
+                throw new Error(`HTTP error ${response.status}`);
+            }
+            
+            const data = await response.json();
+            this.allData = data.data;
+            this.loadingDiv.style.display = 'none';
+            
+        } catch (error) {
+            this.loadingDiv.innerHTML = `<p style="color: red;">Error loading data: ${error.message}</p>`;
+            console.error('Error loading data:', error);
+            this.input.disabled = true;
+            this.input.placeholder = "Search unavailable - data loading failed";
+        }
+    }
+    
+    setupEventListeners() {
+        this.input.addEventListener('input', (e) => {
+            clearTimeout(this.searchTimeout);
+            this.searchTimeout = setTimeout(() => {
+                this.performSearch(e.target.value);
+            }, 150); // Reduced timeout for better responsiveness
+        });
+    }
+    
+    performSearch(query) {
+        const startTime = performance.now();
+        const searchTerm = query.toLowerCase().trim();
+        
+        let filteredData = this.allData;
+        
+        if (searchTerm) {
+            filteredData = this.allData.filter(item => {
+                // Search in char_field
+                if (item.char_field && item.char_field.toLowerCase().includes(searchTerm)) {
+                    return true;
+                }
+                
+                // Search in text_field
+                if (item.text_field && item.text_field.toLowerCase().includes(searchTerm)) {
+                    return true;
+                }
+                
+                // Search in integer_field (convert to string for partial matching)
+                if (item.integer_field && item.integer_field.toString().includes(searchTerm)) {
+                    return true;
+                }
+                
+                // Search in float_field (convert to string for partial matching)
+                if (item.float_field && item.float_field.toString().includes(searchTerm)) {
+                    return true;
+                }
+                
+                // Search in boolean_field (convert to readable text)
+                const boolText = item.boolean_field ? 'yes true' : 'no false';
+                if (boolText.includes(searchTerm)) {
+                    return true;
+                }
+                
+                // Search in foreign_key display text
+                if (item.foreign_key && item.foreign_key.display && 
+                    item.foreign_key.display.toLowerCase().includes(searchTerm)) {
+                    return true;
+                }
+                
+                // Search in many_to_many email fields
+                if (item.many_to_many && Array.isArray(item.many_to_many)) {
+                    for (let mtm of item.many_to_many) {
+                        if (mtm.email_field && mtm.email_field.toLowerCase().includes(searchTerm)) {
+                            return true;
+                        }
+                    }
+                }
+                
+                // Search in date fields (basic string search)
+                if (item.date_field && item.date_field.includes(searchTerm)) {
+                    return true;
+                }
+                
+                if (item.datetime_field && item.datetime_field.includes(searchTerm)) {
+                    return true;
+                }
+                
+                return false;
+            });
+        }
+        
+        const endTime = performance.now();
+        const searchTime = (endTime - startTime).toFixed(2);
+        
+        this.displayResults(filteredData, query, searchTime);
+    }
+    
+    displayResults(data, query, searchTime) {
+        if (data.length === 0) {
+            this.resultsDiv.innerHTML = '<p>No results found.</p>';
+        } else {
+            let html = `<table border="1" style="border-collapse: collapse; width: 100%; margin-top: 10px;">`;
+            html += `<thead>
+                        <tr style="background-color: #f5f5f5;">
+                            <th style="padding: 8px;">ID</th>
+                            <th style="padding: 8px;">Char Field</th>
+                            <th style="padding: 8px;">Text Field</th>
+                            <th style="padding: 8px;">Integer</th>
+                            <th style="padding: 8px;">Float</th>
+                            <th style="padding: 8px;">Boolean</th>
+                            <th style="padding: 8px;">Date</th>
+                            <th style="padding: 8px;">Foreign Key</th>
+                            <th style="padding: 8px;">Many to Many</th>
+                        </tr>
+                     </thead>
+                     <tbody>`;
+            
+            data.forEach(item => {
+                // Highlight search terms in results
+                const highlightedChar = this.highlightSearchTerm(item.char_field || 'N/A', query);
+                const highlightedText = this.highlightSearchTerm(item.text_field || 'N/A', query);
+                
+                html += `<tr>
+                    <td style="padding: 6px;">${item.id}</td>
+                    <td style="padding: 6px;">${highlightedChar}</td>
+                    <td style="padding: 6px;">${highlightedText}</td>
+                    <td style="padding: 6px;">${item.integer_field || 'N/A'}</td>
+                    <td style="padding: 6px;">${item.float_field || 'N/A'}</td>
+                    <td style="padding: 6px;">${item.boolean_field ? 'Yes' : 'No'}</td>
+                    <td style="padding: 6px;">${item.date_field || 'N/A'}</td>
+                    <td style="padding: 6px;">${item.foreign_key ? `ID: ${item.foreign_key.id} (${item.foreign_key.display})` : 'N/A'}</td>
+                    <td style="padding: 6px;">${this.formatManyToMany(item.many_to_many)}</td>
+                </tr>`;
+            });
+            
+            html += '</tbody></table>';
+            this.resultsDiv.innerHTML = html;
+        }
+    }
+    
+    highlightSearchTerm(text, searchTerm) {
+        if (!searchTerm || text === 'N/A') return text;
+        
+        const regex = new RegExp(`(${searchTerm})`, 'gi');
+        return text.replace(regex, '<mark style="background-color: yellow;">$1</mark>');
+    }
+    
+    formatManyToMany(mtmArray) {
+        if (!mtmArray || mtmArray.length === 0) return 'N/A';
+        return mtmArray.map(item => item.email_field).join(', ');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    new OptimizedSearch();
+});
+</script>
+
+<style>
+    #results table {
+        font-size: 0.9em;
+    }
+    
+    #results th {
+        background-color: #f8f9fa;
+        font-weight: bold;
+        text-align: left;
+    }
+    
+    #results tr:nth-child(even) {
+        background-color: #f8f9fa;
+    }
+    
+    #results tr:hover {
+        background-color: #e9ecef;
+    }
+    
+    mark {
+        padding: 2px 4px;
+        border-radius: 3px;
+    }
+</style>
+{% endblock %}

@@ -13,4 +13,8 @@ urlpatterns = [
     path('table1/', views.table1_crud, name='table1_crud'),
     path('table2/', views.table2_crud, name='table2_crud'),
     path('table3/', views.table3_crud, name='table3_crud'),
+    
+    # Table1 search
+    path('search_json/', views.search_view, name='search_json'),
+    path('search_all_json/', views.search_all_data, name='search_all_json'),
 ]
