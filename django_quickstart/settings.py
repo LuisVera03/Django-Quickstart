@@ -40,13 +40,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     #para los mensjaes
     'django_auto_logout',
-    # channels 
-    'channels',
     #Apps
     'rest_basic',
     'layer_and_generic',
     'json_app',
-    'asgi',
 ]
 
 MIDDLEWARE = [
