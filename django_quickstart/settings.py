@@ -90,9 +90,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     },
-    'rest_basic': {
+    'rest': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.rest_basic',
+        'NAME': BASE_DIR / 'db.rest',
     }
 }
 
