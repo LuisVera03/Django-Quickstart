@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     #para los mensjaes
     'django_auto_logout',
     #Apps
-    'rest_basic',
+    'rest',
     'layer_and_generic',
     'json_app',
 ]
