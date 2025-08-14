@@ -1,6 +1,6 @@
 
 from django.core.management.base import BaseCommand
-from rest_basic.models import UserLog
+from rest.models import UserLog
 from django.utils.timezone import now
 from datetime import timedelta
 

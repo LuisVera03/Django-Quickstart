@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
-from rest_basic.models import Table1, Table2, Table3
+from rest.models import Table1, Table2, Table3
 
 class Command(BaseCommand):
     help = 'Setup groups and permissions for the application'
