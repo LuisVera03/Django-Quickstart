@@ -9,7 +9,7 @@ from django.urls import reverse_lazy
 from django.contrib import messages
 
 from .forms import LoginForm, RegisterForm, Table1Form, Table2Form, Table3Form
-from rest_basic.models import Table1, Table2, Table3
+from rest.models import Table1, Table2, Table3
 
 # Services
 from .services import (

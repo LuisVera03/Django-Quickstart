@@ -14,7 +14,7 @@ import string
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files.base import ContentFile
-from rest_basic.models import Table1, Table2, Table3
+from rest.models import Table1, Table2, Table3
 import json
 import base64
 from django.db import transaction

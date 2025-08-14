@@ -1,6 +1,6 @@
 from django import forms
 import re
-from rest_basic.models import Table1, Table2, Table3
+from rest.models import Table1, Table2, Table3
 
 # Forms for user login
 class LoginForm(forms.Form):

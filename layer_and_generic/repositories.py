@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import transaction
-from rest_basic.models import Table1, Table2, Table3
+from rest.models import Table1, Table2, Table3
 
 # User
 def get_user_by_username(username):
