@@ -51,6 +51,8 @@ urlpatterns = [
     
     path('send_email', views.email_send, name='email_send'),
     
+    path('template_tags', views.template_tags, name='template_tags'),
+
     # Test URL - remove in production
     path('test_400', views.test_400, name='test_400'),
     path('test_403', views.test_403, name='test_403'),

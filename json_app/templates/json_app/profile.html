@@ -8,22 +8,27 @@
 </div>
 
 <script>
+// Fetch user profile data from the server
 document.addEventListener('DOMContentLoaded', () => {
+    // Ensure the profile content is empty before fetching
     const profileContainer = document.getElementById('profile-content');
-
+    // Clear previous content
     fetch('{% url "profile_json" %}?format=json', {
         headers: {
             'Accept': 'application/json'
         }
     })
+    // Fetch the profile data
     .then(res => res.ok ? res.json() : Promise.reject(res))
+    // Render the profile data
     .then(data => {
         profileContainer.innerHTML = renderProfile(data);
     })
+    // Handle errors
     .catch(error => {
         profileContainer.innerHTML = '<p>Error retrieving profile data.</p>';
     });
-
+    // Function to render the profile data
     function renderProfile(data) {
         const { username, email, role, user_id, permissions, groups, is_admin } = data;
 

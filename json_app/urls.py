@@ -3,7 +3,8 @@ from . import views
 
 
 urlpatterns = [
-    path('home_json', views.home, name='home_json'),
+    path('home_json/', views.home, name='home_json'),
+    # User authentication endpoints
     path('register_json/', views.user_register, name='register_json'),
     path('login_json/', views.user_login, name='login_json'),
     path('logout_json/', views.user_logout, name='logout_json'),

@@ -10,7 +10,10 @@
 </div>
 
 <script>
+// Optimized search functionality
+// This script will handle the search input, fetch all data, and display results efficiently
 class OptimizedSearch {
+    // Initializes the search functionality
     constructor() {
         this.allData = [];
         this.input = document.getElementById('searchInput');
@@ -21,13 +24,16 @@ class OptimizedSearch {
         this.init();
     }
     
+    // Initializes the search by loading all data and setting up event listeners
     async init() {
         await this.loadAllData();
         this.setupEventListeners();
         this.performSearch(''); // Show all results
     }
     
+    // Fetches all data from the server
     async loadAllData() {
+        // Show loading message
         try {
             const response = await fetch('{% url "search_all_json" %}');
             if (!response.ok) {
@@ -37,7 +43,7 @@ class OptimizedSearch {
             const data = await response.json();
             this.allData = data.data;
             this.loadingDiv.style.display = 'none';
-            
+        // Hide loading message
         } catch (error) {
             this.loadingDiv.innerHTML = `<p style="color: red;">Error loading data: ${error.message}</p>`;
             console.error('Error loading data:', error);
@@ -46,6 +52,7 @@ class OptimizedSearch {
         }
     }
     
+    // Sets up event listeners for the search input
     setupEventListeners() {
         this.input.addEventListener('input', (e) => {
             clearTimeout(this.searchTimeout);
@@ -55,6 +62,7 @@ class OptimizedSearch {
         });
     }
     
+    // Performs the search based on the input value
     performSearch(query) {
         const startTime = performance.now();
         const searchTerm = query.toLowerCase().trim();
@@ -123,6 +131,7 @@ class OptimizedSearch {
         this.displayResults(filteredData, query, searchTime);
     }
     
+    // Displays the search results in a table format
     displayResults(data, query, searchTime) {
         if (data.length === 0) {
             this.resultsDiv.innerHTML = '<p>No results found.</p>';
@@ -166,6 +175,7 @@ class OptimizedSearch {
         }
     }
     
+    // Highlights the search term in the text
     highlightSearchTerm(text, searchTerm) {
         if (!searchTerm || text === 'N/A') return text;
         
@@ -173,12 +183,14 @@ class OptimizedSearch {
         return text.replace(regex, '<mark style="background-color: yellow;">$1</mark>');
     }
     
+    // Formats many-to-many relationships for display
     formatManyToMany(mtmArray) {
         if (!mtmArray || mtmArray.length === 0) return 'N/A';
         return mtmArray.map(item => item.email_field).join(', ');
     }
 }
 
+// Initialize the search functionality when the DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     new OptimizedSearch();
 });
