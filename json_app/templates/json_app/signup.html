@@ -31,6 +31,7 @@
 <p>Already have an account? <a href="{% url 'login_json' %}">Log in here</a></p>
 
 <script>
+// Password validation script
 document.addEventListener('DOMContentLoaded', function() {
     const passwordInput = document.getElementById('password1');
 
@@ -39,9 +40,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const numberEl = document.getElementById('number');
     const specialEl = document.getElementById('special');
 
+    // Validate password on input
     passwordInput.addEventListener('input', function() {
         const password = passwordInput.value;
 
+        // Check length
         if (password.length >= 8 && password.length <= 18) {
             lengthEl.classList.add('valid');
             lengthEl.classList.remove('invalid');
@@ -49,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function() {
             lengthEl.classList.remove('valid');
             lengthEl.classList.add('invalid');
         }
-
+        // Check for at least one letter, number, and special character
         if (/[A-Za-z]/.test(password)) {
             letterEl.classList.add('valid');
             letterEl.classList.remove('invalid');
@@ -58,6 +61,7 @@ document.addEventListener('DOMContentLoaded', function() {
             letterEl.classList.add('invalid');
         }
 
+        // Check for at least one number
         if (/\d/.test(password)) {
             numberEl.classList.add('valid');
             numberEl.classList.remove('invalid');
@@ -66,6 +70,7 @@ document.addEventListener('DOMContentLoaded', function() {
             numberEl.classList.add('invalid');
         }
 
+        // Check for at least one special character
         if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
             specialEl.classList.add('valid');
             specialEl.classList.remove('invalid');

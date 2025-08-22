@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% load tags_example %}
+
+{% block body %}
+<h2>Template Tags Example</h2>
+<p>Here is an example of using template tags:</p>
+
+Integer
+<p>{{ data.integer_field }}</p>
+
+Integer plus 10
+<p>{{ data.integer_field|plus:10 }}</p>
+
+Float
+<p>Float: {{ data.float_field }}</p>
+
+Float minus 1.5
+<p>{{ data.float_field|minus:1.5 }}</p>
+
+<p>Char</p>
+<p>{{ data.char_field }}</p>
+
+<p>Char in uppercase</p>
+<p>{{ data.char_field|upper }}</p>
+
+<p>Text</p>
+<p>{{ data.text_field }}</p>
+
+<p>Text in lower case</p>
+<p>{{ data.text_field|lower }}</p>
+{% endblock %}

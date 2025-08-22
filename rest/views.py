@@ -1025,3 +1025,7 @@ Message: {message}
             return render(request, 'email_send.html')
     
     return render(request, 'email_send.html')
+
+def template_tags(request):
+    data = Table1.objects.first()
+    return render(request, 'template_tags.html', {'data': data})

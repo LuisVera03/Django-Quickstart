@@ -26,7 +26,10 @@
             User: {{ user.username }} |
             <a href="{% url 'home_json' %}">Home</a> | 
             <a href="{% url 'profile_json' %}">Profile</a> |
-            <a href="{% url 'logout_json' %}">Logout</a> | 
+            <form action="{% url 'logout_json' %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" style="background:none; border:none; color:blue; cursor:pointer;">Logout</button>
+            </form> | 
         </div>
         <hr>
     {% endif %}

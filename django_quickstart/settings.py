@@ -57,6 +57,7 @@ MIDDLEWARE = [
 
     # Extra middleware que agregue yo
     'django_auto_logout.middleware.auto_logout',
+    'rest.middleware.ExecutionTimeMiddleware',  # Middleware para medir el tiempo de ejecución
 ]
 
 ROOT_URLCONF = 'django_quickstart.urls'
