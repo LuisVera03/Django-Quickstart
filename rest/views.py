@@ -535,9 +535,10 @@ def profile(request):
 
 @login_required
 def user_logout(request):
-    logout(request)
-    messages.success(request, f"Session closed successfully.")
-    return redirect('login_rest_basic')
+    if request.method == 'POST':
+        logout(request)
+        messages.success(request, f"Session closed successfully.")
+        return redirect('login_rest_basic')
 
 # User management view (only for admins)
 @login_required

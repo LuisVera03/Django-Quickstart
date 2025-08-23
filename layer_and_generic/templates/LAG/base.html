@@ -11,7 +11,10 @@
         <div>
             User: {{ user.username }} | 
             <a href="{% url 'home_layer_and_generic' %}">Home</a> |
-            <a href="{% url 'logout_layer_and_generic' %}">Logout</a> | 
+            <form action="{% url 'logout_layer_and_generic' %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" style="background:none; border:none; color:blue; cursor:pointer;">Logout</button>
+            </form> |
         </div>
         <hr>
         {% endif %}

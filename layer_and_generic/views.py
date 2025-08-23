@@ -188,7 +188,7 @@ class RegisterView(FormView):
 
 class LogoutView(View):
     """Handles user logout"""
-    def get(self, request):
+    def post(self, request):
         perform_logout(request)
         return redirect('login_layer_and_generic')
 
