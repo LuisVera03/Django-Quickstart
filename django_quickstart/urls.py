@@ -32,6 +32,9 @@ urlpatterns = [
 
     path('layer_and_generic/login/', layer_and_generic_views.LoginView.as_view(), name='login_layer_and_generic'),
     path('json/login/', json_app_views.user_login, name='login_json'),
+    
+    # Flatpages URLs
+    path('pages/', include('django.contrib.flatpages.urls')),
 ]
 
 def custom_bad_request_view(request, exception):

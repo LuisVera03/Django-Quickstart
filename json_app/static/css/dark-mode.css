@@ -1,0 +1,40 @@
+/* Minimal CSS variables for dark mode */
+:root {
+    --bg-color: #ffffff;
+    --text-color: #333333;
+    --nav-bg: #f8f9fa;
+    --link-color: #0066cc;
+    --table-header-bg: #f8f9fa;
+    --table-border: #dee2e6;
+}
+
+[data-theme="dark"] {
+    --bg-color: #1a1a1a;
+    --text-color: #e0e0e0;
+    --nav-bg: #2d2d2d;
+    --link-color: #66b3ff;
+    --table-header-bg: #404040;
+    --table-border: #555555;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.navbar, .nav-bar {
+    background-color: var(--nav-bg);
+}
+
+a {
+    color: var(--link-color);
+}
+
+.dark-mode-toggle {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    cursor: pointer;
+    text-decoration: underline;
+}

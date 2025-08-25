@@ -15,6 +15,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files.base import ContentFile
 from rest.models import Table1, Table2, Table3
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import json
 import base64
 from django.db import transaction
@@ -163,36 +164,92 @@ def table1_crud(request):
     else:
         return JsonResponse({'error': 'Method not allowed'}, status=405)
 
-# Handles GET requests for Table1 objects
+# Handles GET requests for Table1 objects with pagination
 def table1_crud_get(request):
-    # Prefetch related objects to reduce database queries
-    table1_objects = Table1.objects.all().prefetch_related(
-        'many_to_many',
-        'foreign_key',
-        'one_to_one'
-    )
-    # Serialize the objects
-    items = []
-    for obj in table1_objects:
-        item_dict = {
-            field.name: getattr(obj, field.name) if field.name not in ['image_field', 'file_field'] else (obj.get_file_field_url(field.name) if getattr(obj, field.name) else None)
-            for field in obj._meta.fields
-        }
-        item_dict['foreign_key'] = {'id': obj.foreign_key.id, 'positive_small_int': obj.foreign_key.positive_small_int} if obj.foreign_key else None
-        item_dict['one_to_one'] = {'id': obj.one_to_one.id, 'positive_small_int': obj.one_to_one.positive_small_int} if obj.one_to_one else None
-        item_dict['many_to_many'] = list(obj.many_to_many.values('id', 'email_field'))
-        
-        items.append(item_dict)
+    # Parse pagination parameters - defaults to page 1 with 5 items per page
+    page = request.GET.get('page', 1)
+    raw_page_size = request.GET.get('page_size', 5)
+    try:
+        page_size = int(raw_page_size)
+    except (TypeError, ValueError):
+        page_size = 5
+    # Enforce reasonable limits for page size
+    if page_size < 1:
+        page_size = 5
+    if page_size > 100:
+        page_size = 100
 
-    # Get options for select fields
+    # Explicit ordering prevents UnorderedObjectListWarning
+    queryset = Table1.objects.all().order_by('id').prefetch_related('many_to_many', 'foreign_key', 'one_to_one')
+    total = queryset.count()
+    
+    # Only enable pagination if we have 5 or more items
+    if total >= 5:
+        # Use Django's Paginator for proper pagination handling
+        paginator = Paginator(queryset, page_size)
+        try:
+            page_obj = paginator.page(page)
+        except PageNotAnInteger:
+            page_obj = paginator.page(1)
+            page = 1
+        except EmptyPage:
+            # If page is out of range, return last page
+            page_obj = paginator.page(paginator.num_pages)
+            page = paginator.num_pages
+        
+        items = _serialize_table1_objects(page_obj.object_list)
+        pagination_payload = {
+            'enabled': True,
+            'page': int(page),
+            'page_size': page_size,
+            'total_items': paginator.count,
+            'total_pages': paginator.num_pages,
+            'has_next': page_obj.has_next(),
+            'has_previous': page_obj.has_previous(),
+        }
+    else:
+        # Return all items without pagination for small datasets
+        items = _serialize_table1_objects(queryset)
+        pagination_payload = {'enabled': False, 'total_items': total}
+
+    # Get options for foreign key and many-to-many fields
     table2_options = list(Table2.objects.all().values('id', 'positive_small_int'))
     table3_options = list(Table3.objects.all().values('id', 'email_field'))
 
     return JsonResponse({
         'data': items,
+        'pagination': pagination_payload,
         'table2_options': table2_options,
         'table3_options': table3_options
-    }, safe=False)
+    })
+
+
+def _serialize_table1_objects(queryset):
+    """Helper function to serialize Table1 objects with proper field handling"""
+    items = []
+    for obj in queryset:
+        # Handle file fields specially to get proper URLs
+        item_dict = {
+            field.name: (
+                getattr(obj, field.name) 
+                if field.name not in ['image_field', 'file_field'] 
+                else obj.get_file_field_url(field.name) if getattr(obj, field.name) else None
+            )
+            for field in obj._meta.fields
+        }
+        
+        # Serialize relationship fields with proper structure
+        item_dict['foreign_key'] = (
+            {'id': obj.foreign_key.id, 'positive_small_int': obj.foreign_key.positive_small_int} 
+            if obj.foreign_key else None
+        )
+        item_dict['one_to_one'] = (
+            {'id': obj.one_to_one.id, 'positive_small_int': obj.one_to_one.positive_small_int} 
+            if obj.one_to_one else None
+        )
+        item_dict['many_to_many'] = list(obj.many_to_many.values('id', 'email_field'))
+        items.append(item_dict)
+    return items
 
 # Handles POST requests for creating Table1 objects
 def table1_crud_post(request):
@@ -232,10 +289,23 @@ def handle_table1_crud(request, obj_id):
                 except ValueError:
                     return JsonResponse({'error': f'Invalid base64 data for {field}'}, status=400)
 
-        # Handle foreign key relationships
-        foreign_key_id = data.pop('foreign_key', {}).get('id') if 'foreign_key' in data else None
-        one_to_one_id = data.pop('one_to_one', {}).get('id') if 'one_to_one' in data else None
-        many_to_many_ids = [item['id'] for item in data.pop('many_to_many', [])]
+        # Handle relationship payloads safely to prevent AttributeError
+        # Extract foreign key ID if payload is a valid dict, otherwise set to None
+        fk_payload = data.pop('foreign_key', None)
+        foreign_key_id = fk_payload.get('id') if isinstance(fk_payload, dict) else None
+
+        # Extract one-to-one relationship ID safely
+        oto_payload = data.pop('one_to_one', None)
+        one_to_one_id = oto_payload.get('id') if isinstance(oto_payload, dict) else None
+
+        # Extract many-to-many IDs from list of objects, ensuring safety
+        m2m_payload = data.pop('many_to_many', [])
+        if not isinstance(m2m_payload, list):
+            m2m_payload = []
+        many_to_many_ids = [
+            item.get('id') for item in m2m_payload 
+            if isinstance(item, dict) and 'id' in item
+        ]
 
         # Get or create the object
         if obj_id:
@@ -311,13 +381,77 @@ def table1_crud_delete(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
+# Helper function to handle paginated GET requests for simple models
+def _handle_simple_table_get(model_class, request):
+    """
+    Generic pagination handler for simple CRUD operations.
+    
+    Args:
+        model_class: Django model class (Table2 or Table3)
+        request: HTTP request object
+    
+    Returns:
+        JsonResponse with paginated data and pagination metadata
+    """
+    page = request.GET.get('page', 1)
+    raw_page_size = request.GET.get('page_size', 5)
+    
+    # Validate and sanitize page size parameter
+    try:
+        page_size = int(raw_page_size)
+    except (TypeError, ValueError):
+        page_size = 5
+    
+    # Enforce page size limits for performance and usability
+    if page_size < 1:
+        page_size = 10
+    if page_size > 100:
+        page_size = 100
+    
+    # Explicit ordering to prevent UnorderedObjectListWarning
+    queryset = model_class.objects.all().order_by('id')
+    total = queryset.count()
+    
+    # Enable pagination only when there are 5 or more records
+    if total >= 5:
+        paginator = Paginator(queryset, page_size)
+        
+        # Handle page validation and edge cases
+        try:
+            page_obj = paginator.page(page)
+            page_number = int(page)
+        except PageNotAnInteger:
+            page_obj = paginator.page(1)
+            page_number = 1
+        except EmptyPage:
+            page_obj = paginator.page(paginator.num_pages)
+            page_number = paginator.num_pages
+        
+        items = list(page_obj.object_list.values())
+        pagination_payload = {
+            'enabled': True,
+            'page': page_number,
+            'page_size': page_size,
+            'total_items': paginator.count,
+            'total_pages': paginator.num_pages,
+            'has_next': page_obj.has_next(),
+            'has_previous': page_obj.has_previous(),
+        }
+    else:
+        # Return all items without pagination for small datasets
+        items = list(queryset.values())
+        pagination_payload = {'enabled': False, 'total_items': total}
+    
+    return JsonResponse({'data': items, 'pagination': pagination_payload}, status=200)
+
 # CRUD views for Table2 and Table3
 @csrf_exempt
 def table2_crud(request):
+    """
+    CRUD endpoint for Table2 model with pagination support.
+    """
     if request.method == 'GET':
-        # Fetch all Table2 objects
-        items = list(Table2.objects.all().values())
-        return JsonResponse({'data': items}, status=200)
+        return _handle_simple_table_get(Table2, request)
     elif request.method == 'POST':
         # Create a new Table2 object
         data = json.loads(request.body)
@@ -339,10 +473,11 @@ def table2_crud(request):
 
 @csrf_exempt
 def table3_crud(request):
+    """
+    CRUD endpoint for Table3 model with pagination support.
+    """
     if request.method == 'GET':
-        # Fetch all Table3 objects
-        items = list(Table3.objects.all().values())
-        return JsonResponse({'data': items}, status=200)
+        return _handle_simple_table_get(Table3, request)
     elif request.method == 'POST':
         # Create a new Table3 object
         data = json.loads(request.body)

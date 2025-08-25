@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    'django.contrib.flatpages',
     #para los mensjaes
     'django_auto_logout',
     #Apps
@@ -54,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
 
     # Extra middleware que agregue yo
     'django_auto_logout.middleware.auto_logout',
@@ -65,7 +68,7 @@ ROOT_URLCONF = 'django_quickstart.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -75,6 +78,8 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 # Agregue esto para los mensajes de sesión
                 'django_auto_logout.context_processors.auto_logout_client',
+                # Context processor for dark mode
+                'json_app.context_processors.dark_mode_context',
             ],
         },
     },
@@ -163,3 +168,6 @@ EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')
 CONTACT_EMAIL = config('CONTACT_EMAIL')
+
+# Site ID for flatpages
+SITE_ID = 1

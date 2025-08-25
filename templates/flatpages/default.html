@@ -2,24 +2,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>JSON App</title>
-    <link href="" rel="icon">
-    <meta name="viewport" content="initial-scale=1, width=device-width, shrink-to-fit=no">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ flatpage.title }} - Django Quickstart</title>
     <link rel="stylesheet" href="{% static 'css/dark-mode.css' %}">
-    <style>
-        #password-requirements {
-            list-style: none;
-            padding-left: 0;
-            margin-top: 0.5em;
-        }
-        #password-requirements li {
-            color: red;
-        }
-        #password-requirements li.valid {
-            color: green;
-            text-decoration: line-through;
-        }
-    </style>
 </head>
 <body{% if dark_mode %} data-theme="dark"{% endif %}>
     {% if user.is_authenticated %}
@@ -48,7 +34,14 @@
         </ul>
     {% endif %}
 
-    {% block body %}{% endblock %}
+    <h1>{{ flatpage.title }}</h1>
+    <div>
+        {{ flatpage.content|safe }}
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Django Quickstart. All rights reserved.</p>
+    </footer>
     
     <script src="{% static 'scripts/dark-mode.js' %}"></script>
 </body>
