@@ -19,6 +19,16 @@
 let currentData = [];
 let table2Options = [];
 let table3Options = [];
+let currentTable = null;
+let paginationInfo = {enabled:false, page:1, page_size:5, total_pages:1, has_next:false, has_previous:false, total_items:0};
+
+function loadStoredPageSize(table){
+    const stored = localStorage.getItem('page_size_'+table);
+    if(stored){
+        const val = parseInt(stored);
+        if(!isNaN(val)) paginationInfo.page_size = val;
+    }
+}
 
 // This is used to render the correct table and form fields
 function getCrudUrl(table) {
@@ -26,19 +36,29 @@ function getCrudUrl(table) {
 }
 
 // This function is called when the user clicks on a table link
-function showTable(table) {
+function showTable(table, page=1) {
     currentTable = table;
-    fetch(getCrudUrl(table), {method: 'GET'})
+    loadStoredPageSize(table);
+    const params = new URLSearchParams({page: page, page_size: paginationInfo.page_size});
+    fetch(getCrudUrl(table) + '?' + params.toString(), {method: 'GET'})
         .then(response => response.json())
         .then(data => {
-            currentData = data.data;
-            // Solo para Table1, guarda las opciones
+            currentData = data.data || [];
+            if (data.pagination) {
+                if(data.pagination.enabled === false){
+                    paginationInfo = {enabled:false,page:1,page_size:paginationInfo.page_size,total_pages:1,has_next:false,has_previous:false,total_items:data.pagination.total_items||0};
+                } else {
+                    paginationInfo = {enabled:true,...data.pagination};
+                }
+            } else {
+                paginationInfo = {enabled:false,page:1,page_size:paginationInfo.page_size,total_pages:1,has_next:false,has_previous:false,total_items:0};
+            }
             if (table === 'table1') {
                 table2Options = data.table2_options || [];
                 table3Options = data.table3_options || [];
             }
             renderTable();
-    });
+        });
 }
 
 // This function renders the table based on the current data
@@ -63,6 +83,7 @@ function renderTable() {
         html += `</tr>`;
     });
     html += `</tbody></table>`;
+    html += renderPagination();
     document.getElementById('tableDiv').innerHTML = html;
 }
 
@@ -485,4 +506,36 @@ function getCookie(name) {
         }
     }
     return cookieValue;
+}
+
+function renderPagination() {
+    if (!paginationInfo || paginationInfo.enabled === false) {
+        return '';
+    }
+    const {page, total_pages, has_next, has_previous} = paginationInfo;
+    let html = '<div class="pagination-controls" style="margin-top:10px;">';
+    html += `<span>Page ${page} of ${total_pages}</span> `;
+    html += `<button ${has_previous? '' : 'disabled'} onclick="changePage(${page-1})">Prev</button>`;
+    html += `<button ${has_next? '' : 'disabled'} onclick="changePage(${page+1})">Next</button>`;
+    html += ` | Page size: <select onchange="changePageSize(this.value)">`;
+    [5,10,20,50,100].forEach(size => {
+        html += `<option value="${size}" ${size==paginationInfo.page_size?'selected':''}>${size}</option>`;
+    });
+    html += '</select>';
+    html += '</div>';
+    return html;
+}
+
+function changePage(newPage) {
+    if (newPage < 1 || newPage > paginationInfo.total_pages) return;
+    showTable(currentTable, newPage);
+}
+
+function changePageSize(size) {
+    const val = parseInt(size) || 10;
+    paginationInfo.page_size = val;
+    if(currentTable){
+        localStorage.setItem('page_size_'+currentTable, val);
+    }
+    showTable(currentTable, 1);
 }
