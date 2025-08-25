@@ -78,6 +78,8 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 # Agregue esto para los mensajes de sesión
                 'django_auto_logout.context_processors.auto_logout_client',
+                # Context processor for dark mode
+                'json_app.context_processors.dark_mode_context',
             ],
         },
     },

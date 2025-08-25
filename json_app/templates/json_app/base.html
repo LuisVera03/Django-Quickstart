@@ -5,6 +5,7 @@
     <title>JSON App</title>
     <link href="" rel="icon">
     <meta name="viewport" content="initial-scale=1, width=device-width, shrink-to-fit=no">
+    <link rel="stylesheet" href="{% static 'css/dark-mode.css' %}">
     <style>
         #password-requirements {
             list-style: none;
@@ -20,14 +21,17 @@
         }
     </style>
 </head>
-<body>
+<body{% if dark_mode %} data-theme="dark"{% endif %}>
     {% if user.is_authenticated %}
-        <div>
+        <div class="navbar">
             User: {{ user.username }} |
             <a href="{% url 'home_json' %}">Home</a> | 
             <a href="{% url 'profile_json' %}">Profile</a> |
             <a href="/pages/about/">About</a> |
             <a href="/pages/policies/">Policies</a> |
+            <button id="darkModeToggle" class="dark-mode-toggle" onclick="toggleDarkMode()">
+                {% if dark_mode %}Light{% else %}Dark{% endif %}
+            </button> |
             <form action="{% url 'logout_json' %}" method="post" style="display:inline;">
                 {% csrf_token %}
                 <button type="submit" style="background:none; border:none; color:blue; cursor:pointer;">Logout</button>
@@ -45,5 +49,7 @@
     {% endif %}
 
     {% block body %}{% endblock %}
+    
+    <script src="{% static 'scripts/dark-mode.js' %}"></script>
 </body>
 </html>
