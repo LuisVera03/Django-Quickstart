@@ -40,17 +40,18 @@ from openpyxl.utils import get_column_letter
 # Used to test the error 403
 from django.core.exceptions import PermissionDenied
 
-
-@login_required
-def test_400(request):
-    return HttpResponse("Bad Request - Invalid parameters", status=400)
-
 @login_required
 def test_403(request):
     """
     Shall remove this in production
     """
     raise PermissionDenied("This is a test 403 error")
+
+# Used to test the error 400, 404, 500
+@login_required
+def test_400(request):
+    return HttpResponse("Bad Request - Invalid parameters", status=400)
+
 
 @login_required
 def test_404(request):
@@ -60,25 +61,138 @@ def test_404(request):
 def test_500(request):
     raise Exception("This is a test 500 internal server error")
 
-###### 
-
-# Create your views here.
+# index view
 @require_GET
 def index(request):
     return render(request, 'index.html')
 
+# basic redirect to login
 @require_GET
 def rest_basic(request):
     return redirect('login_rest_basic')
 
+# home view after login
 @require_GET
 def home_rest_basic(request):
     return render(request, 'home_rest_basic.html')
 
+# User registration view
+def user_register(request):
+    if request.method == 'POST':
+        # Extract and validate form data
+        username = request.POST.get('username', '').strip()
+        email = request.POST.get('email', '').strip()
+        password1 = request.POST.get('password1', '')
+        password2 = request.POST.get('password2', '')
+
+        # Basic validation
+        if password1 != password2:
+            messages.error(request, "Passwords do not match.")
+            return render(request, 'RB/register.html')
+        
+        # Password strength validation
+        if len(password1) < 8 or len(password1) > 14:
+            messages.error(request, "Password must be between 8 and 14 characters.")
+            return render(request, 'RB/register.html')
+        
+        # Check for letters, numbers, and special characters
+        special_characters = string.punctuation
+        if not re.search(r'[A-Za-z]', password1) or not re.search(r'\d', password1) or not any(char in special_characters for char in password1):
+            messages.error(request, "Password must include letters, numbers, and special characters.")
+            return render(request, 'RB/register.html')
+
+        # Check if username or email already exists
+        if User.objects.filter(username=username).exists():
+            messages.error(request, "Username already exists.")
+            return render(request, 'RB/register.html')
+
+        if User.objects.filter(email=email).exists():
+            messages.error(request, "Email is already in use.")
+            return render(request, 'RB/register.html')
+        
+        # Create the user and assign to the Customers group
+        user = User.objects.create_user(username=username, password=password1, email=email)
+        viewer_group = Group.objects.get(name='Customers')
+        user.groups.add(viewer_group)
+        
+        messages.success(request, "User registered successfully.")
+        
+        return redirect('login_rest_basic') 
+        
+    return render(request, 'RB/register.html')
+
+# User login view
+def user_login(request):
+    if request.method == 'POST':
+        username = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '')
+        
+        # Basic validation
+        if not username or not password:
+            messages.error(request, "Please provide both username and password.")
+            return render(request, 'RB/login.html')
+        
+        # Authenticate user
+        user = authenticate(request, username=username, password=password)
+        
+        # If authentication is successful, log the user in
+        if user is not None:
+            login(request, user)
+            return redirect(profile)
+        else:
+            # Invalid credentials
+            messages.error(request, "Invalid username or password.")
+            return render(request, 'RB/login.html')
+    
+    # If GET request, just render the login page
+    logout_msg = request.session.pop('logout_message', None)
+    if logout_msg:
+        messages.warning(request, logout_msg)
+    return render(request, 'RB/login.html')
+
+# User profile view
+@login_required
+def profile(request):
+    user = request.user
+    
+    # Determine user role
+    if user.groups.filter(name='Admins').exists():
+        role = 'Administrator'
+    elif user.groups.filter(name='Customers').exists():
+        role = 'Customer'
+    else:
+        role = 'No role assigned'
+    
+    # Get user permissions
+    user_permissions = []
+    for group in user.groups.all():
+        for permission in group.permissions.all():
+            user_permissions.append(permission.name)
+    
+    # Remove duplicates
+    context = {
+        'user': user,
+        'username': user.username,
+        'email': user.email,
+        'role': role,
+        'permissions': user_permissions,
+    }
+    return render(request, 'profile.html', context)
+
+# User logout view
+@login_required
+def user_logout(request):
+    if request.method == 'POST':
+        logout(request)
+        messages.success(request, f"Session closed successfully.")
+        return redirect('login_rest_basic')
+
+# If GET request, show confirmation page
 @require_GET
 def crud(request):
     return render(request, 'crud.html')
 
+# View to display data from all three tables
 @require_GET
 @permission_required('rest_basic.view_data', raise_exception=True)
 def get_data(request):
@@ -87,6 +201,7 @@ def get_data(request):
     table1 = Table1.objects.all()
     return render(request, 'get_data.html',{"table3":table3,"table2":table2,"table1":table1})
 
+# View to add data to the tables
 @permission_required('rest_basic.add_data', raise_exception=True)
 def add_data(request):
     if request.method == 'POST':
@@ -107,12 +222,14 @@ def add_data(request):
                 messages.success(request, "Table3 created successfully.")
                 return redirect('add_data')
             except Exception as e:
+                # Handle invalid duration format or other errors
                 messages.error(request, f"Error creating Table3: {e}")
                 return redirect('add_data')
 
         # --- Table2 ---
         elif form_type == 'table2':
             choice = request.POST.get('positive_small_int')
+            # Validate choice
             try:
                 Table2.objects.create(positive_small_int=int(choice))
                 messages.success(request, "Table2 created successfully.")
@@ -149,6 +266,7 @@ def add_data(request):
                     if parsed_datetime and timezone.is_naive(parsed_datetime):
                         parsed_datetime = timezone.make_aware(parsed_datetime)
                 
+                # Create Table1 instance
                 table1 = Table1.objects.create(
                     foreign_key_id=foreign_key_id or None,
                     one_to_one_id=one_to_one_id or None,
@@ -174,14 +292,15 @@ def add_data(request):
                 messages.error(request, f"Error creating Table1: {e}")
                 return redirect('add_data')
     else:
-        #values_list() es un método de Django ORM que te permite extraer una o más columnas específicas
-        #flat=True para obtener una lista simple en lugar de una lista de tuplas
+        # values list for foreign key and many to many fields      
         table2 = Table2.objects.values_list('id', flat=True)
         table3 = Table3.objects.values_list('id', flat=True)
         return render(request, 'add_data.html',{"table3":table3,"table2":table2})
 
+# View to update data in the tables
 @permission_required('rest_basic.change_data', raise_exception=True)
 def update_data(request):
+    # Fetch all records from the three tables
     table1 = Table1.objects.all()
     table2 = Table2.objects.all()
     table3 = Table3.objects.all()
@@ -192,12 +311,13 @@ def update_data(request):
     editing_table = None
     selected_many = []
 
-    # Manejo de POST: guardar cambios
+    # Post request to save changes
     if request.method == 'POST' and request.POST.get('edit_id') and request.POST.get('edit_table'):
         pk = request.POST.get('edit_id')
         edit_table = request.POST.get('edit_table')
 
         try:
+            # Update the corresponding table based on edit_table value
             if edit_table == 'table1':
                 editing = get_object_or_404(Table1, pk=pk)
                 editing_table = 'table1'
@@ -236,7 +356,8 @@ def update_data(request):
                         editing.datetime_field = None
                 else:
                     editing.datetime_field = None
-                # Archivos
+
+                # Handle file fields
                 if request.FILES.get('image_field'):
                     editing.image_field = request.FILES.get('image_field')
                 if request.FILES.get('file_field'):
@@ -268,6 +389,7 @@ def update_data(request):
             return redirect('update_data')
         except Exception as e:
             messages.error(request, f"Error updating: {e}")
+            # If there's an error, re-render the page with the current editing context
             return render(request, 'update_data.html', {
                 "table1": table1,
                 "table2": table2,
@@ -280,7 +402,7 @@ def update_data(request):
                 "error": str(e),
             })
 
-    # Manejo de GET: mostrar formulario de edición
+    # Get request to load the record to edit
     elif request.GET.get('edit_id') and request.GET.get('edit_table'):
         pk = request.GET.get('edit_id')
         editing_table = request.GET.get('edit_table')
@@ -303,6 +425,7 @@ def update_data(request):
         "table3_ids": table3_ids,
     })
 
+# View to delete data from Table1 (soft delete by marking as inactive)
 @permission_required('rest_basic.change_data', raise_exception=True)
 def delete_data_1(request):
     active_items = Table1.objects.filter(boolean_field=True)
@@ -330,6 +453,7 @@ def delete_data_1(request):
         "deleting": deleting,
     })
 
+# View to permanently delete data from Table1
 @permission_required('rest_basic.delete_data', raise_exception=True)
 def delete_data_2(request):
     records = Table1.objects.all()
@@ -338,7 +462,7 @@ def delete_data_2(request):
     if request.method == 'POST' and request.POST.get('delete_id'):
         pk = request.POST.get('delete_id')
         entry = get_object_or_404(Table1, pk=pk)
-       # Delete associated files if they exist
+        # Delete associated files if they exist
         if entry.image_field:
             entry.image_field.delete(save=False)
         if entry.file_field:
@@ -356,10 +480,12 @@ def delete_data_2(request):
         "deleting": deleting,
     })
 
+# Form-based CRUD views
 @require_GET
 def crud_form(request):
     return render(request, 'crud_form.html')
 
+# View to display data from all three tables using forms
 @require_GET
 @permission_required('rest_basic.view_data', raise_exception=True)
 def get_data_form(request):
@@ -368,6 +494,7 @@ def get_data_form(request):
     table1 = Table1.objects.all()
     return render(request, 'get_data_form.html',{"table3":table3,"table2":table2,"table1":table1})
 
+# View to handle form submissions for adding new records
 @permission_required('rest_basic.add_data', raise_exception=True)
 def form(request,table):
     form_map = {
@@ -375,10 +502,12 @@ def form(request,table):
         "table2": (Table2Form, "Table2"),
         "table3": (Table3Form, "Table3"),
     }
+    # Get the appropriate form class based on the table parameter
     form_class, model_name = form_map.get(table, (None, None))
     if not form_class:
         return HttpResponse("Table is not valid", status=400)
-
+    
+    # Handle form submission
     if request.method == 'POST':
         form = form_class(request.POST, request.FILES)
         if form.is_valid():
@@ -391,16 +520,19 @@ def form(request,table):
 
     return render(request, 'form.html', {'form': form, 'model_name': model_name})
 
+# View to display the form selection page for adding new records
 @require_GET
 @permission_required('rest_basic.add_data', raise_exception=True)
 def add_data_form(request):
     return render(request, 'add_data_form.html')
 
+# View to handle form submissions for updating existing records
 @permission_required('rest_basic.change_data', raise_exception=True)
 def update_form(request,table,id):
     form_class = None
     model_name = ""
     
+    # Determine the form class and model name based on the table parameter
     if table == "table1":
         form_class = Table1Form
         model_name = "Table1"
@@ -416,6 +548,7 @@ def update_form(request,table,id):
     else:
         return HttpResponse("Table is not valid", status=400)
 
+    # Handle form submission
     if request.method == 'POST':
         form = form_class(request.POST, request.FILES, instance=obj)
         if form.is_valid():
@@ -429,6 +562,7 @@ def update_form(request,table,id):
 
     return render(request, 'form.html', {'form': form, 'model_name': model_name})
 
+# View to display the form selection page for updating records
 @require_GET
 @permission_required('rest_basic.view_data', raise_exception=True)
 def update_data_form(request):
@@ -436,109 +570,6 @@ def update_data_form(request):
     table2 = Table2.objects.all()
     table1 = Table1.objects.all()
     return render(request, 'update_data_form.html',{"table3":table3,"table2":table2,"table1":table1})
-
-
-def user_register(request):
-    if request.method == 'POST':
-        username = request.POST.get('username', '').strip()
-        email = request.POST.get('email', '').strip()
-        password1 = request.POST.get('password1', '')
-        password2 = request.POST.get('password2', '')
-
-        if password1 != password2:
-            messages.error(request, "Passwords do not match.")
-            return render(request, 'RB/register.html')
-
-        if len(password1) < 8 or len(password1) > 14:
-            messages.error(request, "Password must be between 8 and 14 characters.")
-            return render(request, 'RB/register.html')
-
-
-        #????????????
-        #????????????
-
-        special_characters = string.punctuation
-        if not re.search(r'[A-Za-z]', password1) or not re.search(r'\d', password1) or not any(char in special_characters for char in password1):
-            messages.error(request, "Password must include letters, numbers, and special characters.")
-            return render(request, 'RB/register.html')
-
-        if User.objects.filter(username=username).exists():
-            messages.error(request, "Username already exists.")
-            return render(request, 'RB/register.html')
-
-        if User.objects.filter(email=email).exists():
-            messages.error(request, "Email is already in use.")
-            return render(request, 'RB/register.html')
-        
-        # Create the user and assign to the Customers group
-        user = User.objects.create_user(username=username, password=password1, email=email)
-        viewer_group = Group.objects.get(name='Customers')
-        user.groups.add(viewer_group)
-        
-        messages.success(request, "User registered successfully.")
-        
-        return redirect('login_rest_basic') 
-        
-    return render(request, 'RB/register.html')
-
-def user_login(request):
-    if request.method == 'POST':
-        username = request.POST.get('username', '').strip()
-        password = request.POST.get('password', '')
-        
-        if not username or not password:
-            messages.error(request, "Please provide both username and password.")
-            return render(request, 'RB/login.html')
-        
-        user = authenticate(request, username=username, password=password)
-        
-            
-        if user is not None:
-            login(request, user)
-            return redirect(profile)
-        else:
-            # Invalid credentials
-            messages.error(request, "Invalid username or password.")
-            return render(request, 'RB/login.html')
-    
-    logout_msg = request.session.pop('logout_message', None)
-    if logout_msg:
-        messages.warning(request, logout_msg)
-    return render(request, 'RB/login.html')
-
-@login_required
-def profile(request):
-    user = request.user
-    
-    # Determine user role
-    if user.groups.filter(name='Admins').exists():
-        role = 'Administrator'
-    elif user.groups.filter(name='Customers').exists():
-        role = 'Customer'
-    else:
-        role = 'No role assigned'
-    
-    # Get user permissions
-    user_permissions = []
-    for group in user.groups.all():
-        for permission in group.permissions.all():
-            user_permissions.append(permission.name)
-    
-    context = {
-        'user': user,
-        'username': user.username,
-        'email': user.email,
-        'role': role,
-        'permissions': user_permissions,
-    }
-    return render(request, 'profile.html', context)
-
-@login_required
-def user_logout(request):
-    if request.method == 'POST':
-        logout(request)
-        messages.success(request, f"Session closed successfully.")
-        return redirect('login_rest_basic')
 
 # User management view (only for admins)
 @login_required
@@ -587,6 +618,7 @@ def user_management(request):
         'users_with_roles': users_with_roles
     })
 
+# View to display user activity logs (only for admins)
 @login_required
 def user_logs(request):
     logs = UserLog.objects.filter().order_by('-timestamp')
@@ -594,15 +626,32 @@ def user_logs(request):
         'logs': logs
     })
 
+# Views for making queries examples
 def making_queries(request):
     return render(request, 'making_queries.html')
 
+# View to demonstrate retrieving all records from multiple tables
+def all_example(request):
+    all_table1 = Table1.objects.all()
+    all_table2 = Table2.objects.all()
+    all_table3 = Table3.objects.all()
+    
+    # Create a combined context for all tables
+    context = {
+        'type': 'All',
+        'table1_data': all_table1,
+        'table2_data': all_table2,
+        'table3_data': all_table3,
+        'table1_count': all_table1.count(),
+        'table2_count': all_table2.count(),
+        'table3_count': all_table3.count(),
+    }
+    
+    return render(request, 'all_queries.html', context)
+
+# View to demonstrate filter lookups
 def filter_example(request):
-    """
-    Example of filtering data based on user input.
-    This is a placeholder function to demonstrate how you might filter data.
-    """
-    # Example of filter lookups:
+    #Example of filter lookups:
     # __in = en
     # __contains = contiene
     # __icontains = contiene (case insensitive)
@@ -629,148 +678,8 @@ def filter_example(request):
         'query2': filtered_data_1
     })
 
-def exclude_example(request):
-    """
-    Example of excluding data based on user input.
-    This is a placeholder function to demonstrate how you might exclude data.
-    """
-    excluded_data = Table1.objects.exclude(boolean_field=True)  # Example exclude
-    return render(request, 'queries.html', {
-        'type': 'Exclude',
-        'query1_name': 'Entries excluding boolean field = True',
-        'query2_name': '',
-        'query1': excluded_data,
-        'query2': None
-    })
-
-def slice_example(request):
-    """
-    Example of slicing data based on user input.
-    This is a placeholder function to demonstrate how you might slice data.
-    """
-    sliced_data = Table1.objects.all()[:3]  # Example slice
-    return render(request, 'queries.html', {
-        'type': 'Slice',
-        'query1_name': 'First 3 entries from Table1',
-        'query2_name': '',
-        'query1': sliced_data,
-        'query2': None
-    })
-
-def prefetch_related_example(request):
-    """
-    Example of prefetching related data.
-    This is a placeholder function to demonstrate how you might prefetch data.
-    """
-    # Retrieves all Table1 objects and, in a single additional query,
-    # fetches all many-to-many relationships with Table3 for each object.
-    # This way, accessing obj.many_to_many.all() does not generate extra queries (optimizes access).
-    prefetch_data = Table1.objects.prefetch_related('many_to_many')
-    
-    return render(request, 'queries.html', {
-        'type': 'Prefetch Related',
-        'query1_name': 'Table1 with prefetched many-to-many relationships with Table3',
-        'query2_name': '',
-        'query1': prefetch_data,
-        'query2': None
-    })
-
-def Q_example(request):
-    q_data_or = Table1.objects.filter(Q(integer_field__gt=5) | Q(boolean_field=True))
-    q_data_and = Table1.objects.filter(Q(integer_field__gt=5) & Q(boolean_field=True))
-
-    return render(request, 'queries.html', {
-        'type': 'Q',
-        'query1_name': 'Table1 where integer_field > 5 OR boolean_field is True',
-        'query2_name': 'Table1 where integer_field > 5 AND boolean_field is True',
-        'query1': q_data_or,
-        'query2': q_data_and
-    })
-
-def query_values_example(request):
-    """
-    Example of aggregate functions and counting data.
-    This demonstrates various aggregate functions like Count, Max, Min, and Avg.
-    """
-    # Count and basic aggregates
-    count_data = Table1.objects.count()
-    max_value = Table1.objects.aggregate(Max('integer_field'))
-    min_integer = Table1.objects.aggregate(Min('integer_field'))
-    min_float = Table1.objects.aggregate(Min('float_field'))
-    min_date = Table1.objects.aggregate(Min('date_field'))
-    avg_integer = Table1.objects.aggregate(Avg('integer_field'))
-    avg_float = Table1.objects.aggregate(Avg('float_field'))
-    
-    # Count many-to-many relationships
-    count_many_to_many = Table1.objects.annotate(num_table3=Count('many_to_many'))
-    count_many_to_many = [
-        f"Table1 entry with id {obj.id} has {obj.num_table3} many-to-many relationship(s) with Table3."
-        for obj in count_many_to_many
-    ]
-    
-    value_names = [
-        'Total Count',
-        'Max Integer Field',
-        'Min Integer Field',
-        'Min Float Field',
-        'Min Date Field',
-        'Average Integer Field',
-        'Average Float Field',
-        'ManyToMany Relations Count'
-    ]
-    value_description = [
-        'Total number of records in Table1',
-        'Maximum value of the integer_field in Table1',
-        'Minimum value of the integer_field in Table1',
-        'Minimum value of the float_field in Table1',
-        'Earliest date in date_field in Table1',
-        'Average value of the integer_field in Table1',
-        'Average value of the float_field in Table1',
-        'Count of related Table3 entries for each Table1 record'
-    ]
-    values = [
-        count_data,
-        max_value['integer_field__max'],
-        min_integer['integer_field__min'],
-        min_float['float_field__min'],
-        min_date['date_field__min'],
-        round(avg_integer['integer_field__avg'], 2) if avg_integer['integer_field__avg'] else None,
-        round(avg_float['float_field__avg'], 2) if avg_float['float_field__avg'] else None,
-        count_many_to_many
-    ]
-    value_pairs = list(zip(value_names, value_description, values))
-    return render(request, 'values_query.html', {
-        'type': 'Aggregate Functions & Counts',
-        'value_pairs': value_pairs,
-    })
-
-def all_example(request):
-    """
-    Example of retrieving all data.
-    This demonstrates the .all() method which returns all objects in the database.
-    """
-    all_table1 = Table1.objects.all()
-    all_table2 = Table2.objects.all()
-    all_table3 = Table3.objects.all()
-    
-    # Create a combined context for all tables
-    context = {
-        'type': 'All',
-        'table1_data': all_table1,
-        'table2_data': all_table2,
-        'table3_data': all_table3,
-        'table1_count': all_table1.count(),
-        'table2_count': all_table2.count(),
-        'table3_count': all_table3.count(),
-    }
-    
-    return render(request, 'all_queries.html', context)
-
+# View to demonstrate getting specific records
 def get_example(request):
-    """
-    Example of getting a single object.
-    This demonstrates the .get() method which returns a single object matching the given parameters.
-    """
     try:
         # Get first entry or None if it doesn't exist
         first_table1 = Table1.objects.filter(id=1).first()
@@ -796,11 +705,19 @@ def get_example(request):
             'query2': []
         })
 
+# View to demonstrate exclude lookups
+def exclude_example(request):
+    excluded_data = Table1.objects.exclude(boolean_field=True)  # Example exclude
+    return render(request, 'queries.html', {
+        'type': 'Exclude',
+        'query1_name': 'Entries excluding boolean field = True',
+        'query2_name': '',
+        'query1': excluded_data,
+        'query2': None
+    })
+
+# View to demonstrate ordering records
 def order_by_example(request):
-    """
-    Example of ordering data.
-    This demonstrates the .order_by() method which sorts the QuerySet by given fields.
-    """
     # Order by integer_field ascending
     ordered_asc = Table1.objects.order_by('integer_field')
     # Order by integer_field descending
@@ -814,22 +731,24 @@ def order_by_example(request):
         'query2': ordered_desc
     })
 
+# View to demonstrate slicing data
+def slice_example(request):
+    sliced_data = Table1.objects.all()[:3]  # Example slice
+    return render(request, 'queries.html', {
+        'type': 'Slice',
+        'query1_name': 'First 3 entries from Table1',
+        'query2_name': '',
+        'query1': sliced_data,
+        'query2': None
+    })
+
 def exists_example(request):
-    """
-    Example of checking existence.
-    This demonstrates the .exists() method which returns True/False if any records match.
-    """
     # Check if any Table1 entries exist with boolean_field=True
     has_active = Table1.objects.filter(boolean_field=True).exists()
     # Check if any Table1 entries exist with integer_field > 10
     has_high_values = Table1.objects.filter(integer_field__gt=10).exists()
     
-    # Create simple data for template display
-    existence_results = [
-        f"Records with boolean_field=True exist: {has_active}",
-        f"Records with integer_field > 10 exist: {has_high_values}"
-    ]
-    
+    # Prepare data for template
     value_names = ['Boolean Field Check', 'Integer Field Check']
     value_description = [
         'Checks if any records have boolean_field=True',
@@ -843,11 +762,8 @@ def exists_example(request):
         'value_pairs': value_pairs,
     })
 
+# View to demonstrate select_related for ForeignKey and OneToOne relationships
 def select_related_example(request):
-    """
-    Example of using select_related for ForeignKey and OneToOne relationships.
-    This optimizes database queries by fetching related objects in a single query.
-    """
     # Fetch Table1 objects with their related ForeignKey and OneToOne objects
     select_related_data = Table1.objects.select_related('foreign_key', 'one_to_one')
     
@@ -859,11 +775,23 @@ def select_related_example(request):
         'query2': None
     })
 
+# View to demonstrate prefetching related data
+def prefetch_related_example(request):
+    # Retrieves all Table1 objects and, in a single additional query,
+    # fetches all many-to-many relationships with Table3 for each object.
+    # This way, accessing obj.many_to_many.all() does not generate extra queries (optimizes access).
+    prefetch_data = Table1.objects.prefetch_related('many_to_many')
+    
+    return render(request, 'queries.html', {
+        'type': 'Prefetch Related',
+        'query1_name': 'Table1 with prefetched many-to-many relationships with Table3',
+        'query2_name': '',
+        'query1': prefetch_data,
+        'query2': None
+    })
+
+# View to demonstrate F() expressions
 def f_example(request):
-    """
-    Example of using F() expressions for field references.
-    This demonstrates F() objects which represent the value of a model field.
-    """
     # Find entries where integer_field equals float_field (converted to int)
     # Note: This is a conceptual example - actual comparison depends on your data
     f_comparison = Table1.objects.filter(integer_field__isnull=False, float_field__isnull=False)
@@ -881,9 +809,84 @@ def f_example(request):
         'query2': f_annotation
     })
 
+# View to demonstrate existence check
+def Q_example(request):
+    # Example of Q objects for complex queries
+    q_data_or = Table1.objects._(Q(integer_field__gt=5) | Q(boolean_field=True))
+    q_data_and = Table1.objects.filter(Q(integer_field__gt=5) & Q(boolean_field=True))
+
+    return render(request, 'queries.html', {
+        'type': 'Q',
+        'query1_name': 'Table1 where integer_field > 5 OR boolean_field is True',
+        'query2_name': 'Table1 where integer_field > 5 AND boolean_field is True',
+        'query1': q_data_or,
+        'query2': q_data_and
+    })
+
+# Agregate functions and counts
+def query_values_example(request):
+    # Count and basic aggregates
+    count_data = Table1.objects.count()
+    # max, min, avg for integer_field, float_field, date_field
+    max_value = Table1.objects.aggregate(Max('integer_field'))
+    min_integer = Table1.objects.aggregate(Min('integer_field'))
+    min_float = Table1.objects.aggregate(Min('float_field'))
+    min_date = Table1.objects.aggregate(Min('date_field'))
+    avg_integer = Table1.objects.aggregate(Avg('integer_field'))
+    avg_float = Table1.objects.aggregate(Avg('float_field'))
+    
+    # Count many-to-many relationships
+    count_many_to_many = Table1.objects.annotate(num_table3=Count('many_to_many'))
+    count_many_to_many = [
+        f"Table1 entry with id {obj.id} has {obj.num_table3} many-to-many relationship(s) with Table3."
+        for obj in count_many_to_many
+    ]
+    
+    # Prepare data for template
+    value_names = [
+        'Total Count',
+        'Max Integer Field',
+        'Min Integer Field',
+        'Min Float Field',
+        'Min Date Field',
+        'Average Integer Field',
+        'Average Float Field',
+        'ManyToMany Relations Count'
+    ]
+    # Descriptions for clarity
+    value_description = [
+        'Total number of records in Table1',
+        'Maximum value of the integer_field in Table1',
+        'Minimum value of the integer_field in Table1',
+        'Minimum value of the float_field in Table1',
+        'Earliest date in date_field in Table1',
+        'Average value of the integer_field in Table1',
+        'Average value of the float_field in Table1',
+        'Count of related Table3 entries for each Table1 record'
+    ]
+    # Values corresponding to the above names and descriptions
+    values = [
+        count_data,
+        max_value['integer_field__max'],
+        min_integer['integer_field__min'],
+        min_float['float_field__min'],
+        min_date['date_field__min'],
+        round(avg_integer['integer_field__avg'], 2) if avg_integer['integer_field__avg'] else None,
+        round(avg_float['float_field__avg'], 2) if avg_float['float_field__avg'] else None,
+        count_many_to_many
+    ]
+    # Combine names, descriptions, and values for template
+    value_pairs = list(zip(value_names, value_description, values))
+    return render(request, 'values_query.html', {
+        'type': 'Aggregate Functions & Counts',
+        'value_pairs': value_pairs,
+    })
+
+# Views for HTML examples
 def html_modify(request):
     return render(request, 'html_modify.html')
 
+# Example view to demonstrate various HTML template features
 def html_example(request):
     return render(request, "html_example.html", {
         "title": "Welcome",
@@ -900,25 +903,29 @@ def html_example(request):
         "range": range(1, 6),
     })
 
+# Views for exporting data examples
 def export_to_file(request): 
     return render(request, 'export_to_file.html')
 
+# Export Table1 data to PDF
 def export_pdf(request):
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="table1.pdf"'
 
+    # Create the PDF object, using the response object as its "file."
     p = canvas.Canvas(response, pagesize=A4)
     width, height = A4
     y = height - 50
     x = 50
     p.setFont("Helvetica", 10)
-
-    p.drawString(x, y, "Listado de registros Table1")
+    # Title
+    p.drawString(x, y, "Table1 Data Export")
     y -= 30
 
     registros = Table1.objects.all()
-
+    # Table headers
     for reg in registros:
+        # Create a line of text for each record
         texto = (
             f"ID: {reg.id} | "
             f"Int: {reg.integer_field} | "
@@ -929,7 +936,7 @@ def export_pdf(request):
         )
         p.drawString(x, y, texto)
         y -= 15
-
+        # If the y position is too low, create a new page
         if y < 60:
             p.showPage()
             y = height - 50
@@ -939,17 +946,19 @@ def export_pdf(request):
     p.save()
     return response
 
+# Export Table1 data to Excel
 def export_excel(request):
     response = HttpResponse(
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     )
     response['Content-Disposition'] = 'attachment; filename="table1.xlsx"'
 
+    # Create an in-memory workbook
     wb = Workbook()
     ws = wb.active
     ws.title = "Table1"
 
-    # Encabezados
+    # Set up headers
     ws.append([
         "ID", "Integer", "Float", "Char", "Text",
         "Boolean", "Date", "Time", "Datetime"
@@ -957,6 +966,7 @@ def export_excel(request):
 
     registros = Table1.objects.all()
 
+    # Populate data rows
     for reg in registros:
         # Remove timezone info for Excel compatibility
         datetime_val = reg.datetime_field
@@ -965,12 +975,14 @@ def export_excel(request):
         else:
             datetime_val = reg.datetime_field
 
+        # time field
         time_val = reg.time_field
         if time_val and is_aware(time_val):
             time_val = time_val.replace(tzinfo=None)
         else:
             time_val = reg.time_field
 
+        # Append the row
         ws.append([
             reg.id,
             reg.integer_field,
@@ -983,14 +995,17 @@ def export_excel(request):
             datetime_val,
         ])
 
+    # Adjust column widths
     width = [5, 10, 10, 15, 25, 20, 15, 12, 22]
 
-    for i, ancho in enumerate(width, start=1):
+    # Set the column widths
+    for i, width2 in enumerate(width, start=1):
         col_letter = get_column_letter(i)
-        ws.column_dimensions[col_letter].width = ancho
+        ws.column_dimensions[col_letter].width = width2
     wb.save(response)
     return response
 
+# View to handle email sending
 @login_required
 def email_send(request):
     if request.method == 'POST':
@@ -1027,6 +1042,7 @@ Message: {message}
     
     return render(request, 'email_send.html')
 
+# View to demonstrate custom template tags
 def template_tags(request):
     data = Table1.objects.first()
     return render(request, 'template_tags.html', {'data': data})

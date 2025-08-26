@@ -16,6 +16,7 @@ class Table1Form(forms.ModelForm):
         model = models.Table1
         fields = '__all__'
         widgets = {
+            # Customize widgets for better UI/UX
             'many_to_many': forms.CheckboxSelectMultiple,
             'date_field': forms.DateInput(attrs={'type': 'date'}),
             'time_field': forms.TimeInput(attrs={'type': 'time'}),

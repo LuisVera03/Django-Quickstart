@@ -5,14 +5,17 @@ from django.contrib.auth.models import User
 from .models import UserLog
 from django.utils.timezone import now
 
+# Helper function to get client IP address
 def get_client_ip(request):
     x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
     if x_forwarded_for:
         return x_forwarded_for.split(",")[0]
     return request.META.get("REMOTE_ADDR")
 
+# Signal handlers
 @receiver(user_logged_in)
 def log_user_login(sender, request, user, **kwargs):
+    # Log the login event
     UserLog.objects.create(
         user=user,
         username=user.username,
@@ -22,6 +25,7 @@ def log_user_login(sender, request, user, **kwargs):
 
 @receiver(user_logged_out)
 def log_user_logout(sender, request, user, **kwargs):
+    # Log the logout event
     UserLog.objects.create(
         user=user,
         username=user.username,
@@ -31,6 +35,7 @@ def log_user_logout(sender, request, user, **kwargs):
 
 @receiver(user_login_failed)
 def log_user_login_failed(sender, credentials, request, **kwargs):
+    # Log the failed login attempt
     UserLog.objects.create(
         user=None,
         username=credentials.get('username', 'unknown'),
@@ -40,6 +45,7 @@ def log_user_login_failed(sender, credentials, request, **kwargs):
 
 @receiver(pre_save, sender=User)
 def log_password_change(sender, instance, **kwargs):
+    # Check if the password has changed
     if instance.pk:
         try:
             old_user = User.objects.get(pk=instance.pk)

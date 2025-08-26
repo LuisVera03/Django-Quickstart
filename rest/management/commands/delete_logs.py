@@ -4,7 +4,7 @@ from rest.models import UserLog
 from django.utils.timezone import now
 from datetime import timedelta
 
-
+# Management command to delete user logs older than 90 days
 class Command(BaseCommand):
     help = 'Delete user logs older than 90 days.'
 

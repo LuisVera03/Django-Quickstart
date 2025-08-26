@@ -4,6 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from rest.models import Table1, Table2, Table3
 
+# Management command to set up groups and permissions
 class Command(BaseCommand):
     help = 'Setup groups and permissions for the application'
 
