@@ -1,11 +1,27 @@
 {% load static %}
+{% load dark_mode_tags %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"{% if dark_mode %} data-theme="dark"{% endif %}>
 <head>
     <title>JSON App</title>
     <link href="" rel="icon">
     <meta name="viewport" content="initial-scale=1, width=device-width, shrink-to-fit=no">
     <link rel="stylesheet" href="{% static 'css/dark-mode.css' %}">
+    <script>
+        // Early initialization without contradicting the server.
+        (function(){
+            try {
+                var root = document.documentElement;
+                var stored = localStorage.getItem('dark_mode_pref');
+                if (root.hasAttribute('data-theme')) {
+                    // The server says dark -> sync localStorage
+                    localStorage.setItem('dark_mode_pref','true');
+                } else if (stored === 'true') {
+                    root.setAttribute('data-theme','dark');
+                } // if stored is 'false' we do nothing (light mode by default)
+            } catch(e) {}
+        })();
+    </script>
     <style>
         #password-requirements {
             list-style: none;
@@ -21,7 +37,7 @@
         }
     </style>
 </head>
-<body{% if dark_mode %} data-theme="dark"{% endif %}>
+<body>
     {% if user.is_authenticated %}
         <div class="navbar">
             User: {{ user.username }} |
@@ -29,9 +45,7 @@
             <a href="{% url 'profile_json' %}">Profile</a> |
             <a href="/pages/about/">About</a> |
             <a href="/pages/policies/">Policies</a> |
-            <button id="darkModeToggle" class="dark-mode-toggle" onclick="toggleDarkMode()">
-                {% if dark_mode %}Light{% else %}Dark{% endif %}
-            </button> |
+            {% dark_mode_button %} |
             <form action="{% url 'logout_json' %}" method="post" style="display:inline;">
                 {% csrf_token %}
                 <button type="submit" style="background:none; border:none; color:blue; cursor:pointer;">Logout</button>

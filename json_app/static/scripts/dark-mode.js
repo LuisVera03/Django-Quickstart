@@ -1,22 +1,23 @@
+const DARK_MODE_TOGGLE_URL = '/toggle-dark-mode/';
+const DARK_MODE_STATUS_URL = '/dark-mode-status/';
+
 // Function to toggle dark mode
 function toggleDarkMode() {
-    fetch('/json_app/toggle_dark_mode/', {
+    fetch(DARK_MODE_TOGGLE_URL, {
         method: 'POST',
         headers: {
             'X-Requested-With': 'XMLHttpRequest',
             'X-CSRFToken': getCookie('csrftoken')
         }
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            applyDarkMode(data.dark_mode);
-            updateToggleButton(data.dark_mode);
-        }
-    })
-    .catch(error => {
-        console.error('Error toggling dark mode:', error);
-    });
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'success') {
+                applyDarkMode(data.dark_mode);
+                updateToggleButton(data.dark_mode);
+            }
+        })
+        .catch(err => console.error('Error toggling dark mode:', err));
 }
 
 // Function to apply dark mode
@@ -26,14 +27,21 @@ function applyDarkMode(isDark) {
     } else {
         document.documentElement.removeAttribute('data-theme');
     }
+    try {
+        localStorage.setItem('dark_mode_pref', isDark ? 'true' : 'false');
+    } catch(e) {}
 }
 
 // Function to update toggle button text
 function updateToggleButton(isDark) {
     const button = document.getElementById('darkModeToggle');
     if (button) {
-        button.textContent = isDark ? 'Light' : 'Dark';
+        const newLabel = isDark ? 'Light' : 'Dark';
+        if (button.textContent !== newLabel) {
+            button.textContent = newLabel;
+        }
         button.title = isDark ? 'Switch to light mode' : 'Switch to dark mode';
+        button.setAttribute('aria-pressed', isDark ? 'true' : 'false');
     }
 }
 
@@ -55,14 +63,33 @@ function getCookie(name) {
 
 // Initialize dark mode on page load
 document.addEventListener('DOMContentLoaded', function() {
-    // Get current dark mode status
-    fetch('/json_app/dark_mode_status/')
-        .then(response => response.json())
+    // If the dark mode is actived do not reapply
+    const root = document.documentElement;
+    const hadThemeAttribute = root.hasAttribute('data-theme');
+    fetch(DARK_MODE_STATUS_URL)
+        .then(r => r.json())
         .then(data => {
-            applyDarkMode(data.dark_mode);
-            updateToggleButton(data.dark_mode);
+            let serverDark = !!data.dark_mode;
+            // If inline applied dark and server matches, just update button
+            if (hadThemeAttribute && serverDark === true) {
+                updateToggleButton(true);
+                return;
+            }
+            // If inline did not apply dark and server says dark -> apply
+            if (!hadThemeAttribute && serverDark) {
+                applyDarkMode(true);
+                updateToggleButton(true);
+                return;
+            }
+            // If both say light, sync storage and button
+            if (!serverDark) {
+                try { localStorage.setItem('dark_mode_pref','false'); } catch(e) {}
+                updateToggleButton(false);
+            }
         })
-        .catch(error => {
-            console.error('Error getting dark mode status:', error);
+        .catch(err => {
+            // Just log; we do not overwrite what was already decided inline
+            console.warn('Dark mode status fetch failed:', err);
+            updateToggleButton(root.hasAttribute('data-theme'));
         });
 });
