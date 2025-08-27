@@ -1,3 +1,17 @@
+"""Layer and Generic app views.
+
+Provides:
+1. Auth flows using FormView pattern (Login, Register, Logout)
+2. Dashboard view aggregating counts (service abstraction)
+3. Hierarchy of generic class-based CRUD views for Table1/Table2/Table3
+4. Separation of functions: Views -> Services -> Repositories -> ORM
+
+Key design choices:
+- Base mixins centralize common context (URL names, table name) to remove duplication.
+- Services wrap repository calls to allow future business logic injection (validation, caching).
+- Repositories isolate ORM calls, enabling easier unit testing/mocking.
+"""
+
 from django.shortcuts import render, redirect
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, FormView
@@ -25,7 +39,10 @@ from .services import (
 #
 
 class BaseTableMixin:
-    """Base mixin for common table functionality"""
+    """Common context + URL name helpers for CRUD views.
+
+    Exposes consistent keys to templates so generic templates can be reused.
+    """
     paginate_by = 10
     
     def get_context_data(self, **kwargs):
@@ -35,11 +52,14 @@ class BaseTableMixin:
         return context
     
     def get_table_name(self):
-        """Override in subclasses to provide table name"""
+        """Return model class name (override if custom label needed)."""
         return self.model.__name__
     
     def get_url_names(self):
-        """Override in subclasses to provide URL names"""
+        """Compute conventional URL names from model name.
+
+        Subclasses may override (Table1 keeps legacy short names).
+        """
         table_name = self.model.__name__.lower()
         return {
             'list_url': f'{table_name}_list',
@@ -50,7 +70,7 @@ class BaseTableMixin:
         }
 
 class BaseTableListView(LoginRequiredMixin, BaseTableMixin, ListView):
-    """Base ListView for tables"""
+    """Base list view with enforced ordering to guarantee pagination stability."""
     template_name = 'Generic_templates/list.html'
     context_object_name = 'object_list'
     
@@ -62,7 +82,7 @@ class BaseTableListView(LoginRequiredMixin, BaseTableMixin, ListView):
         raise NotImplementedError("Subclasses must implement get_service_list")
 
 class BaseTableDetailView(LoginRequiredMixin, BaseTableMixin, DetailView):
-    """Base DetailView for tables"""
+    """Base detail view retrieving object via service layer."""
     template_name = 'Generic_templates/detail.html'
     context_object_name = 'object'
     
@@ -77,7 +97,7 @@ class BaseTableDetailView(LoginRequiredMixin, BaseTableMixin, DetailView):
         raise NotImplementedError("Subclasses must implement get_service_detail")
 
 class BaseTableCreateView(LoginRequiredMixin, BaseTableMixin, CreateView):
-    """Base CreateView for tables"""
+    """Base create view delegating persistence to service function."""
     template_name = 'Generic_templates/form.html'
     
     def form_valid(self, form):
@@ -94,7 +114,7 @@ class BaseTableCreateView(LoginRequiredMixin, BaseTableMixin, CreateView):
         raise NotImplementedError("Subclasses must implement get_service_create")
 
 class BaseTableUpdateView(LoginRequiredMixin, BaseTableMixin, UpdateView):
-    """Base UpdateView for tables"""
+    """Base update view with optimistic error handling."""
     template_name = 'Generic_templates/form.html'
     
     def get_object(self, queryset=None):
@@ -121,7 +141,7 @@ class BaseTableUpdateView(LoginRequiredMixin, BaseTableMixin, UpdateView):
         raise NotImplementedError("Subclasses must implement get_service_update")
 
 class BaseTableDeleteView(LoginRequiredMixin, BaseTableMixin, DeleteView):
-    """Base DeleteView for tables"""
+    """Base delete view with success/failure messaging."""
     template_name = 'Generic_templates/confirm_delete.html'
     context_object_name = 'object'
     
@@ -153,7 +173,7 @@ class BaseTableDeleteView(LoginRequiredMixin, BaseTableMixin, DeleteView):
 #
 
 class LoginView(FormView):
-    """Handles user login using FormView"""
+    """User login (FormView) with redirect if already authenticated."""
     template_name = 'LAG/login.html'
     form_class = LoginForm
     success_url = reverse_lazy('home_layer_and_generic')
@@ -172,7 +192,7 @@ class LoginView(FormView):
             return self.form_invalid(form)
 
 class RegisterView(FormView):
-    """Handles user registration using FormView"""
+    """User registration; delegates create to service layer for testability."""
     template_name = 'LAG/register.html'
     form_class = RegisterForm
     success_url = reverse_lazy('login_layer_and_generic')
@@ -187,14 +207,14 @@ class RegisterView(FormView):
             return self.form_invalid(form)
 
 class LogoutView(View):
-    """Handles user logout"""
+    """Stateless logout endpoint (POST only)."""
     def post(self, request):
         perform_logout(request)
         return redirect('login_layer_and_generic')
 
 @login_required
 def home(request):
-    """Dashboard view"""
+    """Dashboard summarizing total records across tables."""
     context = get_dashboard_data()
     return render(request, 'LAG/home.html', context)
 
