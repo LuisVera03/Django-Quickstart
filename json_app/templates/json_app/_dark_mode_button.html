@@ -1,0 +1,9 @@
+<button id="darkModeToggle"
+        class="dark-mode-toggle"
+        type="button"
+        onclick="toggleDarkMode()"
+        aria-pressed="{% if dark_mode %}true{% else %}false{% endif %}"
+        aria-label="Toggle dark mode"
+        title="{% if dark_mode %}Switch to light mode{% else %}Switch to dark mode{% endif %}">
+    {% if dark_mode %}Light{% else %}Dark{% endif %}
+</button>

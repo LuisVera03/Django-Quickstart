@@ -1,3 +1,19 @@
+"""Views for json_app: authentication, profile, and JSON-based CRUD endpoints.
+
+This module exposes:
+1. User auth flows (register, login, logout, profile)
+2. Hybrid HTML/JSON profile response
+3. REST-like CRUD endpoints for Table1/Table2/Table3 (returning JSON only)
+4. Search endpoints for bulk retrieval (optimized with prefetch/select)
+5. File & image handling supporting multipart and base64 payloads
+
+Design notes:
+- Endpoints are intentionally CSRF-exempt for JSON clients (could be tightened with tokens)
+- Pagination logic caps page_size to protect the DB and prevent abuse (1..100)
+- Relationship fields are normalized in responses to stable id+label objects
+- File update replaces old file safely and avoids orphan files
+"""
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 
@@ -22,12 +38,21 @@ from django.db import transaction
 from django.db.models import Prefetch
 from django.forms.models import model_to_dict
 
-#home view
+# Home view (simple template render)
 def home(request):
     return render(request, 'json_app/home.html')
 
 # User registration and login views
 def user_register(request):
+    """Register a new user.
+
+    Validation:
+    - Password confirmation
+    - Length (8..18 chars)
+    - Composition: at least one letter, one digit, one punctuation char
+    - Unique username & email
+    On success: user is created and added to 'Customers' group.
+    """
     if request.method == 'POST':
         username = request.POST.get('username', '').strip()
         email = request.POST.get('email', '').strip()
@@ -73,6 +98,7 @@ def user_register(request):
     return render(request, 'json_app/signup.html')
 
 def user_login(request):
+    """Authenticate user credentials and start session."""
     if request.method == 'POST':
         # Get username and password from the request
         username = request.POST.get('username', '').strip()
@@ -102,6 +128,7 @@ def user_login(request):
 # Profile view to display user information and permissions
 @login_required
 def profile(request):
+    """Return profile info."""
     # Get the logged-in user
     user = request.user
 
@@ -145,6 +172,7 @@ def profile(request):
 # Logout view to handle user logout
 @login_required
 def user_logout(request):
+    """Invalidate user session via POST (idempotent)."""
     if request.method == 'POST':
         logout(request)
         messages.success(request, f"Session closed successfully.")
@@ -153,19 +181,20 @@ def user_logout(request):
 # CRUD views for Table1
 @csrf_exempt
 def table1_crud(request):
+    """Multi-method endpoint dispatching CRUD operations for Table1."""
     if request.method == 'GET':
         return table1_crud_get(request)
-    elif request.method == 'POST':
+    if request.method == 'POST':
         return table1_crud_post(request)
-    elif request.method == 'PUT':
+    if request.method == 'PUT':
         return table1_crud_put(request)
-    elif request.method == 'DELETE':
+    if request.method == 'DELETE':
         return table1_crud_delete(request)
-    else:
-        return JsonResponse({'error': 'Method not allowed'}, status=405)
+    return JsonResponse({'error': 'Method not allowed'}, status=405)
 
 # Handles GET requests for Table1 objects with pagination
 def table1_crud_get(request):
+    """Return paginated Table1 objects with related data & option lists."""
     # Parse pagination parameters - defaults to page 1 with 5 items per page
     page = request.GET.get('page', 1)
     raw_page_size = request.GET.get('page_size', 5)
@@ -225,7 +254,7 @@ def table1_crud_get(request):
 
 
 def _serialize_table1_objects(queryset):
-    """Helper function to serialize Table1 objects with proper field handling"""
+    """Serialize Table1 queryset into list of dicts."""
     items = []
     for obj in queryset:
         # Handle file fields specially to get proper URLs
@@ -253,10 +282,12 @@ def _serialize_table1_objects(queryset):
 
 # Handles POST requests for creating Table1 objects
 def table1_crud_post(request):
+    """Create a Table1 record (multipart or JSON)."""
     return handle_table1_crud(request, None)
 
 # Handles PUT requests for updating Table1 objects
 def table1_crud_put(request):
+    """Update a Table1 record (requires id in JSON body)."""
     # Check if the request body contains an ID
     try:
         data = json.loads(request.body)
@@ -269,6 +300,20 @@ def table1_crud_put(request):
 
 # Handles both POST and PUT requests for Table1 objects
 def handle_table1_crud(request, obj_id):
+    """Shared create/update logic.
+
+    Supports two payload modes:
+    1. Multipart form-data with 'data' JSON chunk + files
+    2. Raw JSON body containing everything possibly including base64 file objects
+
+    Base64 file object format:
+        { "image_field": {"name": "foo.png", "content": "data:image/png;base64,..."} }
+
+    Relationship payload expectations:
+        foreign_key: {"id": int} or null
+        one_to_one:  {"id": int} or null
+        many_to_many: [{"id": int}, ...]
+    """
     try:
         # Check if the request contains files or JSON data
         if request.FILES:
@@ -363,6 +408,7 @@ def handle_table1_crud(request, obj_id):
     
 # Handles DELETE requests for deleting Table1 objects
 def table1_crud_delete(request):
+    """Delete a Table1 record including associated files (if any)"""
     # Check if the request body contains an ID
     try:
         data = json.loads(request.body)
@@ -385,10 +431,6 @@ def table1_crud_delete(request):
 def _handle_simple_table_get(model_class, request):
     """
     Generic pagination handler for simple CRUD operations.
-    
-    Args:
-        model_class: Django model class (Table2 or Table3)
-        request: HTTP request object
     
     Returns:
         JsonResponse with paginated data and pagination metadata
@@ -447,9 +489,7 @@ def _handle_simple_table_get(model_class, request):
 # CRUD views for Table2 and Table3
 @csrf_exempt
 def table2_crud(request):
-    """
-    CRUD endpoint for Table2 model with pagination support.
-    """
+    """JSON CRUD + pagination for Table2."""
     if request.method == 'GET':
         return _handle_simple_table_get(Table2, request)
     elif request.method == 'POST':
@@ -473,9 +513,7 @@ def table2_crud(request):
 
 @csrf_exempt
 def table3_crud(request):
-    """
-    CRUD endpoint for Table3 model with pagination support.
-    """
+    """JSON CRUD + pagination for Table3 (same pattern as Table2)."""
     if request.method == 'GET':
         return _handle_simple_table_get(Table3, request)
     elif request.method == 'POST':
@@ -500,12 +538,17 @@ def table3_crud(request):
 # Search view to render the search page
 @login_required
 def search_view(request):
+    """Render the search interface HTML (AJAX front-end consumes JSON endpoints)."""
     return render(request, 'json_app/search.html')
 
 # Search view to return all Table1 data in JSON format
 @csrf_exempt
 @login_required
 def search_all_data(request):
+    """Return full unpaginated Table1 dataset (for client-side filtering/search).
+
+    WARNING: For very large tables this may be expensive
+    """
 
     if request.method == 'GET':
         # Prefetch related objects to reduce database queries
