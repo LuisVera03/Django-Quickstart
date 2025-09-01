@@ -30,9 +30,9 @@ urlpatterns = [
     path('layer_and_generic/', include('layer_and_generic.urls')),
     path('json_app/', include('json_app.urls')),
     path('admin/', admin.site.urls),
-    # Global endpoints to manage dark mode
-    path('toggle-dark-mode/', toggle_dark_mode, name='global_toggle_dark_mode'),
-    path('dark-mode-status/', get_dark_mode_status, name='global_dark_mode_status'),
+    # Global endpoints to manage dark mode (using underscores to match static JS)
+    path('toggle_dark_mode/', toggle_dark_mode, name='global_toggle_dark_mode'),
+    path('dark_mode_status/', get_dark_mode_status, name='global_dark_mode_status'),
 
     path('layer_and_generic/login/', layer_and_generic_views.LoginView.as_view(), name='login_layer_and_generic'),
     path('json/login/', json_app_views.user_login, name='login_json'),
