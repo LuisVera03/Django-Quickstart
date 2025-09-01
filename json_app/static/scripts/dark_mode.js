@@ -1,5 +1,5 @@
-const DARK_MODE_TOGGLE_URL = '/toggle-dark-mode/';
-const DARK_MODE_STATUS_URL = '/dark-mode-status/';
+const DARK_MODE_TOGGLE_URL = '/toggle_dark_mode/';
+const DARK_MODE_STATUS_URL = '/dark_mode_status/';
 
 // Function to toggle dark mode
 function toggleDarkMode() {
