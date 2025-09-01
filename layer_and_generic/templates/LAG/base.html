@@ -1,16 +1,33 @@
 {% load static %}
+{% load dark_mode_tags %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"{% if dark_mode %} data-theme="dark"{% endif %}>
     <head>
         <title>Django QuickStart</title>
         <link href="" rel="icon">
         <meta name="viewport" content="initial-scale=1, width=device-width,shrink-to-fit=no">
+        <!-- Dark mode CSS -->
+        <link rel="stylesheet" href="{% static 'css/dark-mode.css' %}">
+        <script>
+            (function(){
+                try {
+                    var root = document.documentElement;
+                    var stored = localStorage.getItem('dark_mode_pref');
+                    if (root.hasAttribute('data-theme')) {
+                        localStorage.setItem('dark_mode_pref','true');
+                    } else if (stored === 'true') {
+                        root.setAttribute('data-theme','dark');
+                    }
+                } catch(e) {}
+            })();
+        </script>
     </head>
     <body>
         {% if user.is_authenticated %}
         <div>
             User: {{ user.username }} | 
             <a href="{% url 'home_layer_and_generic' %}">Home</a> |
+            {% dark_mode_button %} |
             <form action="{% url 'logout_layer_and_generic' %}" method="post" style="display:inline;">
                 {% csrf_token %}
                 <button type="submit" style="background:none; border:none; color:blue; cursor:pointer;">Logout</button>
@@ -28,5 +45,6 @@
         {% endif %}
         {% block body %}
         {% endblock %}
+        <script src="{% static 'scripts/dark-mode.js' %}"></script>
     </body>
 </html>

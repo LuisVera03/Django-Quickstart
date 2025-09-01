@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views_dark_mode import toggle_dark_mode, get_dark_mode_status
+from .views_dark_mode import toggle_dark_mode, get_dark_mode_status  # usado solo si se reactivan endpoints locales
 
 
 urlpatterns = [
@@ -19,8 +19,4 @@ urlpatterns = [
     # Table1 search
     path('search_json/', views.search_view, name='search_json'),
     path('search_all_json/', views.search_all_data, name='search_all_json'),
-    
-    # Dark mode endpoints
-    path('toggle_dark_mode/', toggle_dark_mode, name='toggle_dark_mode'),
-    path('dark_mode_status/', get_dark_mode_status, name='dark_mode_status'),
 ]
