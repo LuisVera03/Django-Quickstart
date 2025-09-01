@@ -26,7 +26,8 @@ SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv()) # in the .env the hosts must be separated by commas with no spaces or brackets
+# in the .env the hosts must be separated by commas with no spaces or brackets
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv()) 
 
 # Application definition
 
@@ -40,7 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django.contrib.flatpages',
-    #para los mensjaes
+    # Third party apps
     'django_auto_logout',
     #Apps
     'rest',
@@ -58,9 +59,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
 
-    # Extra middleware que agregue yo
+    # Auto logout middleware
     'django_auto_logout.middleware.auto_logout',
-    'rest.middleware.ExecutionTimeMiddleware',  # Middleware para medir el tiempo de ejecución
+    # Custom middleware
+    'rest.middleware.ExecutionTimeMiddleware', # Middleware to log execution time of requests
 ]
 
 ROOT_URLCONF = 'django_quickstart.urls'
@@ -76,7 +78,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                # Agregue esto para los mensajes de sesión
+                # Context processor for auto logout
                 'django_auto_logout.context_processors.auto_logout_client',
                 # Context processor for dark mode
                 'json_app.context_processors.dark_mode_context',
@@ -96,10 +98,6 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     },
-    'rest': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.rest',
-    }
 }
 
 
@@ -152,10 +150,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 LOGIN_URL = '/'
 from datetime import timedelta
 AUTO_LOGOUT = {
-    'IDLE_TIME': timedelta(hours=1),  # minutos de inactividad antes de desloguear 1h
-    'SESSION_TIME': timedelta(hours=1),  # minutos totales de sesión, sin importar actividad 6h
-    'MESSAGE': 'Your session has expired due to inactivity. Please log in again.',
-    'REDIRECT_TO_LOGIN_IMMEDIATELY': True,  # redirige directamente al login sin mostrar alerta
+    'IDLE_TIME': timedelta(hours=1),  # minutes of inactivity before logout 1h
+    'SESSION_TIME': timedelta(hours=1),  # maximum session time 1h
+    'MESSAGE': 'Your session has expired due to inactivity. Please log in again.', # message to display on logout
+    'REDIRECT_TO_LOGIN_IMMEDIATELY': True,  # redirect to login page immediately on timeout
 }
 
 
