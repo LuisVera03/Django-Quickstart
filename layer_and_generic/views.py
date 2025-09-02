@@ -141,9 +141,8 @@ class BaseTableUpdateView(LoginRequiredMixin, BaseTableMixin, UpdateView):
         raise NotImplementedError("Subclasses must implement get_service_update")
 
 class BaseTableDeleteView(LoginRequiredMixin, BaseTableMixin, DeleteView):
-    """Base delete view with success/failure messaging."""
-    template_name = 'Generic_templates/confirm_delete.html'
-    context_object_name = 'object'
+    """Base delete view with direct deletion and success/failure messaging."""
+    success_url = None
     
     def get_object(self, queryset=None):
         obj = self.get_service_detail(self.kwargs['pk'])
@@ -151,13 +150,19 @@ class BaseTableDeleteView(LoginRequiredMixin, BaseTableMixin, DeleteView):
             raise Http404(f"{self.get_table_name()} record not found")
         return obj
     
-    def delete(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
+        """Handle POST request for direct deletion"""
         self.object = self.get_object()
         success = self.get_service_delete(self.object)
         if success:
             messages.success(request, f'{self.get_table_name()} record deleted successfully!')
         else:
             messages.error(request, 'Error deleting record')
+        return redirect(self.get_success_url())
+    
+    def get(self, request, *args, **kwargs):
+        """Redirect GET requests back to list view"""
+        messages.warning(request, 'Invalid delete request. Use the delete button from the list.')
         return redirect(self.get_success_url())
     
     def get_service_detail(self, pk):
