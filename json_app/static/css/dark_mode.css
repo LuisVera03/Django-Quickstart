@@ -1,40 +1,49 @@
 /* Minimal CSS variables for dark mode */
 :root {
-    --bg-color: #ffffff;
-    --text-color: #333333;
-    --nav-bg: #f8f9fa;
-    --link-color: #0066cc;
-    --table-header-bg: #f8f9fa;
-    --table-border: #dee2e6;
+    --back-color: #F8F8F8;
+    --text-color: #181D27;
+    --dark-color: #222937;
+    --green-dark: #0C4B33;
 }
 
 [data-theme="dark"] {
-    --bg-color: #1a1a1a;
-    --text-color: #e0e0e0;
-    --nav-bg: #2d2d2d;
-    --link-color: #66b3ff;
-    --table-header-bg: #404040;
-    --table-border: #555555;
+    --back-color: #181D27;
+    --text-color: #F8F8F8;
 }
 
 body {
-    background-color: var(--bg-color);
-    color: var(--text-color);
+    background-color: var(--back-color);
     transition: background-color 0.3s ease, color 0.3s ease;
 }
-
+/* Json */
 .navbar, .nav-bar {
-    background-color: var(--nav-bg);
+    color: #F8F8F8;
+    background-color: var(--green-dark);
+    font-size: 2em;
+}
+.navbar a{
+    color: #F8F8F8;
+}
+.app_title {
+    background-color: var(--text-color);
+    color: var(--back-color);
+}
+.dropdown-title button {
+    background-color: var(--text-color);
+    color: var(--back-color);
 }
 
-a {
-    color: var(--link-color);
+hr{
+    background-color: var(--text-color);
 }
+
+/* Layer and generic */
 
 .dark-mode-toggle {
     background: none;
+    font-family: 'Jersey 10', sans-serif;
     border: none;
-    color: var(--text-color);
+    color:#F8F8F8;
+    font-size: 1em;
     cursor: pointer;
-    text-decoration: underline;
 }
