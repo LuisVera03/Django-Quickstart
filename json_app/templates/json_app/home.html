@@ -5,57 +5,89 @@
 {% block title %}Home - JSON App{% endblock %}
 
 {% block body %}
-<h1>JSON App</h1>
+<div class="app_title">
+    JSON App
+</div>
 
 {% if user.is_authenticated %}
     {% csrf_token %}
     <script src="{% static 'scripts/home.js' %}"></script>
+    <div class="main">
+        <div class="parent">
+            <div class="div1">
+                <span class="label">Table:</span>
+                <!-- Dropdown -->
+                <div class="dropdown dropdown-title" id="tableDropdown">
+                    <button onclick="toggleDropdown()">Table 1</button>
+                    <div class="dropdown-content-title">
+                        <a href="#" onclick="showTable('table1')">Table 1</a>
+                        <a href="#" onclick="showTable('table2')">Table 2</a>
+                        <a href="#" onclick="showTable('table3')">Table 3</a>
+                    </div>
+                </div>
+            </div>
+            <div class="div2" style="text-align: center;">
+                <hr class="vertical-line">
+            </div>
+            <div class="div3" style="text-align: right">
+                <a class="search_title" href="{% url 'search_json' %}">Search on Table 1</a>
+            </div>
+        </div>
+        <hr class="horizontal-line">
+        <div class="info">
+            <div class="parent_info">
+                <div class="div1_info">1</div>
+                <hr class="vertical-line" style="margin: 5px 10px 0px 10px;height: 67vh;">
+                <div class="div3_info">3</div>
+            </div>
+        </div>
     
-    <p>User is Authenticated</p>
-    <ul>
-        <li><a href="#" onclick="showTable('table1')">Table 1</a></li>
-        <li><a href="#" onclick="showTable('table2')">Table 2</a></li>
-        <li><a href="#" onclick="showTable('table3')">Table 3</a></li>
-    </ul>
+        <!-- Table display area -->
+        <div id="tableDiv"></div>
 
-    <div id="tableDiv"></div>
+        <!-- Modal for create/edit -->
+        <div id="crudModal" style="display:none; position:fixed; top:10%; left:10%; background:#fff; border:1px solid #ccc; padding:20px; z-index:1000; min-width:350px;">
+            <h2 id="crudTitle"></h2>
+            <form id="crudForm" onsubmit="submitCrud(event)">
+                <input type="hidden" id="crudTable">
+                <input type="hidden" id="crudId">
+                <div id="formFields"></div>
+                <button type="submit" id="crudSubmitBtn">Save</button>
+            </form>
+            <button type="button" onclick="closeCrud()">Close</button>
+        </div>
 
-    <!-- Modal for create/edit -->
-    <div id="crudModal" style="display:none; position:fixed; top:10%; left:10%; background:#fff; border:1px solid #ccc; padding:20px; z-index:1000; min-width:350px;">
-        <h2 id="crudTitle"></h2>
-        <form id="crudForm" onsubmit="submitCrud(event)">
-            <input type="hidden" id="crudTable">
-            <input type="hidden" id="crudId">
-            <div id="formFields"></div>
-            <button type="submit" id="crudSubmitBtn">Save</button>
-        </form>
-        <button type="button" onclick="closeCrud()">Close</button>
+        <style>
+            table.crud-table {
+                border-collapse: collapse;
+                width: 100%;
+                margin-top: 10px;
+            }
+            table.crud-table th, table.crud-table td {
+                border: 1px solid #ccc;
+                padding: 8px;
+                text-align: left;
+            }
+            table.crud-table th {
+                background-color: #f2f2f2;
+            }
+            table.crud-table img {
+                max-width: 50px;
+                max-height: 50px;
+            }
+        </style>
     </div>
-
-    <style>
-        table.crud-table {
-            border-collapse: collapse;
-            width: 100%;
-            margin-top: 10px;
+    <script>
+        function toggleDropdown() {
+            document.getElementById("tableDropdown").classList.toggle("show");
         }
-        table.crud-table th, table.crud-table td {
-            border: 1px solid #ccc;
-            padding: 8px;
-            text-align: left;
-        }
-        table.crud-table th {
-            background-color: #f2f2f2;
-        }
-        table.crud-table img {
-            max-width: 50px;
-            max-height: 50px;
-        }
-    </style>
 
-
-    <h2>Search on Table 1</h2>
-    <a href="{% url 'search_json' %}">Search View</a>
-
+        window.onclick = function(event) {
+            if (!event.target.matches('#tableDropdown button')) {
+            document.getElementById("tableDropdown").classList.remove("show");
+            }
+        }
+    </script>
 {% else %}
     <h2>Log in to continue</h2>
     <p><a href="{% url 'login_json' %}">Login</a></p>
