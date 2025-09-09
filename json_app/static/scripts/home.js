@@ -37,6 +37,8 @@ function getCrudUrl(table) {
 
 // This function is called when the user clicks on a table link
 function showTable(table, page=1) {
+    console.log(table)
+    document.getElementById('current_table').innerText = table.replace('table', 'Table ');
     currentTable = table;
     loadStoredPageSize(table);
     const params = new URLSearchParams({page: page, page_size: paginationInfo.page_size});
@@ -63,13 +65,21 @@ function showTable(table, page=1) {
 
 // This function renders the table based on the current data
 function renderTable() {
+    let info = document.querySelector(".info");
+    if (info) {
+        info.remove();
+    }
     if (!currentData.length) {
-        document.getElementById('tableDiv').innerHTML = '<p>No entries found.</p>';
+        let html_no = `<span class="tablediv_title">${currentTable.replace('table', 'Table ')}</span>`;
+        html_no += `<br>`;
+        html_no += `<span class="tablediv_title">No entries found :( (It creates the modal based on the table)</span>`;
+        document.getElementById('tableDiv').innerHTML = html_no;
         return;
     }
     let fields = Object.keys(currentData[0]);
-    let html = `<h2>${currentTable.replace('table', 'Table ')}</h2>`;
-    html += `<button onclick="openCrudModal('create')">Add New Entry</button>`;
+    let html = `<span class="tablediv_title">${currentTable.replace('table', 'Table ')}</span>`;
+    html += `<br>`;
+    html += `<button class="tablediv_button" onclick="openCrudModal('create')">Add New Entry +</button>`;
     html += `<table class="crud-table"><thead><tr>`;
     fields.forEach(f => html += `<th>${formatHeader(f)}</th>`);
     html += `<th>Actions</th></tr></thead><tbody>`;

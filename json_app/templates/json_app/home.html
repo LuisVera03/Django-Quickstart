@@ -11,14 +11,13 @@
 
 {% if user.is_authenticated %}
     {% csrf_token %}
-    <script src="{% static 'scripts/home.js' %}"></script>
     <div class="main">
         <div class="parent">
             <div class="div1">
                 <span class="label">Table:</span>
                 <!-- Dropdown -->
                 <div class="dropdown dropdown-title" id="tableDropdown">
-                    <button onclick="toggleDropdown()">Table 1</button>
+                    <button onclick="toggleDropdown()"><span id="current_table">Table 1</span></button>
                     <div class="dropdown-content-title">
                         <a href="#" onclick="showTable('table1')">Table 1</a>
                         <a href="#" onclick="showTable('table2')">Table 2</a>
@@ -57,25 +56,7 @@
             <button type="button" onclick="closeCrud()">Close</button>
         </div>
 
-        <style>
-            table.crud-table {
-                border-collapse: collapse;
-                width: 100%;
-                margin-top: 10px;
-            }
-            table.crud-table th, table.crud-table td {
-                border: 1px solid #ccc;
-                padding: 8px;
-                text-align: left;
-            }
-            table.crud-table th {
-                background-color: #f2f2f2;
-            }
-            table.crud-table img {
-                max-width: 50px;
-                max-height: 50px;
-            }
-        </style>
+
     </div>
     <script>
         function toggleDropdown() {
