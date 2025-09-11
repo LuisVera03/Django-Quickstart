@@ -1,14 +1,29 @@
 {% extends 'json_app/base.html' %}
 {% block body %}
-<h2>Search on Table 1</h2>
-<input type="text" id="searchInput" placeholder="Search..." autocomplete="off" class="form-control" style="max-width:300px;">
-<div id="loadingMessage">
-    <p>Loading all data...</p>
+<div class="main">
+    <div class="parent">
+        <div class="div1">
+            <span class="label">Search on Table 1</span>
+        </div>
+        <div class="div2" style="text-align: center;">
+        <hr class="vertical_line">
+        </div>
+        <div class="div3" style="text-align: right">
+            <a class="search_title" href="{% url 'home_json' %}">Back</a>
+        </div>
+    </div>
+    <hr class="horizontal-line" style="margin-bottom: 10px;">
+    <div class="form-row">
+        <span class="tablediv_title">Search:</span>
+        <input style="width: 100%;" class="input_field" type="text" id="searchInput" autocomplete="off" class="form-control">
+    </div>
+    <div id="loadingMessage">
+        <p>Loading all data...</p>
+    </div>
+    <div id="results">
+        <!-- display the results -->
+    </div>
 </div>
-<div id="results">
-    <!-- display the results -->
-</div>
-
 <script>
 // Optimized search functionality
 // This script will handle the search input, fetch all data, and display results efficiently
@@ -136,7 +151,7 @@ class OptimizedSearch {
         if (data.length === 0) {
             this.resultsDiv.innerHTML = '<p>No results found.</p>';
         } else {
-            let html = `<table border="1" style="border-collapse: collapse; width: 100%; margin-top: 10px;">`;
+            let html = `<table class="crud-table" border="1" style="border-collapse: collapse;>`;
             html += `<thead>
                         <tr style="background-color: #f5f5f5;">
                             <th style="padding: 8px;">ID</th>
@@ -197,24 +212,6 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 <style>
-    #results table {
-        font-size: 0.9em;
-    }
-    
-    #results th {
-        background-color: #f8f9fa;
-        font-weight: bold;
-        text-align: left;
-    }
-    
-    #results tr:nth-child(even) {
-        background-color: #f8f9fa;
-    }
-    
-    #results tr:hover {
-        background-color: #e9ecef;
-    }
-    
     mark {
         padding: 2px 4px;
         border-radius: 3px;

@@ -37,6 +37,7 @@ import base64
 from django.db import transaction
 from django.db.models import Prefetch
 from django.forms.models import model_to_dict
+from datetime import timedelta
 
 # Home view (simple template render)
 def home(request):
@@ -519,12 +520,58 @@ def table3_crud(request):
     elif request.method == 'POST':
         # Create a new Table3 object
         data = json.loads(request.body)
+        
+        # Convert duration string to timedelta if present
+        if 'duration_field' in data:
+            duration_str = data['duration_field']
+            print(duration_str)
+            # Parse duration string in format "DD HH:MM:SS" or "HH:MM:SS"
+            try:
+                if ' ' in duration_str:
+                    days_str, time_str = duration_str.split(' ')
+                    days = int(days_str)
+                else:
+                    time_str = duration_str
+                    days = 0
+                    
+                hours, minutes, seconds = map(int, time_str.split(':'))
+                data['duration_field'] = timedelta(
+                    days=days,
+                    hours=hours,
+                    minutes=minutes,
+                    seconds=seconds
+                )
+            except (ValueError, AttributeError) as e:
+                return JsonResponse({'error': 'Invalid duration format. Use "DD HH:MM:SS" or "HH:MM:SS"'}, status=400)
+                
         obj = Table3.objects.create(**data)
         return JsonResponse({'data': model_to_dict(obj)}, status=201)
     elif request.method == 'PUT':
         # Update an existing Table3 object
         data = json.loads(request.body)
         obj = Table3.objects.get(id=data['id'])
+        
+        # Convert duration string to timedelta if present
+        if 'duration_field' in data:
+            duration_str = data['duration_field']
+            try:
+                if ' ' in duration_str:
+                    days_str, time_str = duration_str.split(' ')
+                    days = int(days_str)
+                else:
+                    time_str = duration_str
+                    days = 0
+                    
+                hours, minutes, seconds = map(int, time_str.split(':'))
+                data['duration_field'] = timedelta(
+                    days=days,
+                    hours=hours,
+                    minutes=minutes,
+                    seconds=seconds
+                )
+            except (ValueError, AttributeError) as e:
+                return JsonResponse({'error': 'Invalid duration format. Use "DD HH:MM:SS" or "HH:MM:SS"'}, status=400)
+                
         for key, value in data.items():
             setattr(obj, key, value)
         obj.save()

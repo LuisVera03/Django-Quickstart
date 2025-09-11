@@ -87,8 +87,8 @@ function renderTable() {
         html += `<tr>`;
         fields.forEach(f => html += `<td>${formatCell(f, row[f])}</td>`);
         html += `<td>
-            <button onclick="openCrudModal('edit', ${row.id})">Edit</button>
-            <button onclick="deleteEntry(${row.id})">Delete</button>
+            <button class="edit_button" onclick="openCrudModal('edit', ${row.id})"><i class="bi bi-pencil-square"></i> Edit</button>
+            <button class="delete_button" onclick="deleteEntry(${row.id})"><i class="bi bi-trash-fill"></i> Delete</button>
         </td>`;
         html += `</tr>`;
     });
@@ -175,11 +175,12 @@ function formatCell(field, value) {
 
 // This function opens the modal for creating or editing entries
 function openCrudModal(mode, id=null) {
+    document.getElementById('grey_background').style.display = 'block';
     document.getElementById('crudTable').value = currentTable;
     document.getElementById('crudId').value = id || '';
     document.getElementById('crudModal').style.display = 'block';
     document.getElementById('crudTitle').innerText = mode === 'create' ? 'Create Entry' : 'Edit Entry';
-    document.getElementById('crudSubmitBtn').innerText = mode === 'create' ? 'Create' : 'Update';
+    document.getElementById('crudSubmitBtn').innerHTML = mode === 'create' ? '<i class="bi bi-save"></i> Create' : '<i class="bi bi-pencil"></i> Update';
     let data = {};
     // If editing, fetch the current data for the entry
     if (mode === 'edit' && id) {
@@ -246,6 +247,7 @@ function renderFormFields(data = {}) {
             formFields.push(renderTextInput(field, data[field]));
         }
     });
+    console.log(formFields);
     document.getElementById('formFields').innerHTML = formFields.join('');
 }
 
@@ -253,8 +255,9 @@ function renderFormFields(data = {}) {
 // It handles different input types like select, multi-select, file input, checkbox, date, time, datetime, duration, and text input
 function renderSelect(field, options, selectedId) {
     return `
-        <label>${formatHeader(field)}:
-            <select name="${field}">
+        <div class="form-row">
+        <label class="label_field">${formatHeader(field)}:</label>
+            <select class="input_field" name="${field}">
                 <option value="">-- Select ${formatHeader(field)} --</option>
                 ${options.map(opt => `
                     <option value="${opt.id}" ${selectedId === opt.id ? 'selected' : ''}>
@@ -262,57 +265,62 @@ function renderSelect(field, options, selectedId) {
                     </option>
                 `).join('')}
             </select>
-        </label><br>`;
+        </div>`;
 }
 
 function renderMultiSelect(field, options, selectedIds) {
     return `
-        <label>${formatHeader(field)}:
-            <select name="${field}" multiple>
+        <div class="form-row">
+            <label class="label_field">${formatHeader(field)}:</label>
+            <select class="input_field" name="${field}" multiple size="3" style="height:auto;">
                 ${options.map(opt => `
                     <option value="${opt.id}" ${selectedIds.includes(opt.id) ? 'selected' : ''}>
                         ${opt.id} - Table3 (${opt.email_field})
                     </option>
                 `).join('')}
             </select>
-        </label><br>`;
+        </div>`;
 }
 
 function renderFileInput(field, currentValue) {
     return `
-        <label>${formatHeader(field)}:
-            <input type="file" name="${field}">
-            ${currentValue ? `<br>Current: ${currentValue}` : ''}
-        </label><br>`;
+        <div class="form-row">
+            <label class="label_field">${formatHeader(field)}:</label>
+            ${currentValue ? `Current: ${currentValue}` : ''}
+            <input class="input_field" type="file" name="${field}">
+        </div>`;
 }
 
 function renderCheckbox(field, checked) {
     return `
-        <label>${formatHeader(field)}:
-            <input type="checkbox" name="${field}" ${checked ? 'checked' : ''}>
-        </label><br>`;
+        <div class="form-row">
+            <label class="label_field">${formatHeader(field)}:</label>
+            <input style="height:20px" class="input_field" type="checkbox" name="${field}" ${checked ? 'checked' : ''}>
+        </div>`;
 }
 
 function renderDateInput(field, value) {
     return `
-        <label>${formatHeader(field)}:
-            <input type="date" name="${field}" value="${value ? value.split('T')[0] : ''}">
-        </label><br>`;
+        <div class="form-row">
+            <label class="label_field">${formatHeader(field)}:</label>
+            <input class="input_field" type="date" name="${field}" value="${value ? value.split('T')[0] : ''}">
+        </div>`;
 }
 
 function renderTimeInput(field, value) {
     return `
-        <label>${formatHeader(field)}:
-            <input type="time" name="${field}" value="${value || ''}">
-        </label><br>`;
+        <div class="form-row">
+            <label class="label_field" >${formatHeader(field)}:</label>
+            <input class="input_field" type="time" name="${field}" value="${value || ''}">
+        </div>`;
 }
 
 function renderDateTimeInput(field, value) {
     return `
-        <label>${formatHeader(field)}:
-            <input type="datetime-local" name="${field}" 
-                value="${value ? value.replace('Z', '') : ''}">
-        </label><br>`;
+        <div class="form-row">
+            <label class="label_field">${formatHeader(field)}:</label>
+            <input class="input_field" type="datetime-local" name="${field}" value="${value ? value.replace('Z', '') : ''}">
+        </div>`;
 }
 
 function renderDurationInput(field, value) {
@@ -329,15 +337,17 @@ function renderDurationInput(field, value) {
     }
 
     return `
-        <label>${formatHeader(field)}:<br>
-            Días: <input type="number" name="${field}_days" value="${days}" min="0" style="width: 60px;">
-            Horas: <input type="number" name="${field}_hours" value="${hours}" min="0" max="23" style="width: 60px;">
-            Minutos: <input type="number" name="${field}_minutes" value="${minutes}" min="0" max="59" style="width: 60px;">
-        </label><br>`;
+        <div class="form-row">
+            <label class="label_field">${formatHeader(field)}:<br>
+                Days: <input class="input_field" type="number" name="${field}_days" value="${days}" min="0" style="width: 60px;">
+                Hours: <input class="input_field" type="number" name="${field}_hours" value="${hours}" min="0" max="23" style="width: 60px;">
+                Minutes: <input class="input_field" type="number" name="${field}_minutes" value="${minutes}" min="0" max="59" style="width: 60px;">
+            </label>
+        </div>`;
 }
 
 function renderTextInput(field, value) {
-    return `<label>${formatHeader(field)}: <input name="${field}" value="${value || ''}"></label><br>`;
+    return `<div class="form-row"><label class="label_field">${formatHeader(field)}:</label> <input class="input_field" name="${field}" value="${value || ''}"></div>`;
 }
     
 // Submits the form data to the server
@@ -459,13 +469,23 @@ function submitJsonData(jsonData, url, method) {
 // Handles the response from the server
 function handleResponse(response) {
     if (!response.ok) {
-        // If the response is not OK, try to parse the error message
         return response.text().then(text => {
             try {
+                // Try to parse as JSON
                 const json = JSON.parse(text);
-                throw new Error(json.error || 'Server error');
+                if (json.error) {
+                    throw new Error(json.error);
+                }
             } catch (e) {
-                throw new Error(text || `HTTP error! status: ${response.status}`);
+                // Check for specific error types
+                if (text.includes("UNIQUE constraint") || text.includes("duplicate key")) {
+                    throw new Error("This email is already registered. Please use a different email address.");
+                }
+                // Check if response is HTML error page
+                if (text.startsWith("<!DOCTYPE") || text.startsWith("<html")) {
+                    throw new Error("Server error occurred. Please try again.");
+                }
+                throw new Error(text || `Error: ${response.status}`);
             }
         });
     }
@@ -476,10 +496,42 @@ function handleResponse(response) {
 function handleError(error) {
     console.error('Error:', error);
     let errorMessage = error.message || 'An unknown error occurred';
-    if (errorMessage.includes("codec can't decode")) {
-        errorMessage = 'Error processing file upload. Please try again.';
+    
+    // Improve error messages to be more user-friendly
+    if (errorMessage.includes("<!DOCTYPE") || errorMessage.includes("Unexpected token")) {
+        errorMessage = "Server error occurred. Please try again.";
+    } else if (errorMessage.includes("UNIQUE constraint") || errorMessage.includes("duplicate key")) {
+        errorMessage = "This email is already registered. Please use a different email address.";
+    } else if (errorMessage.includes("codec can't decode")) {
+        errorMessage = "Error processing file upload. Please try again.";
     }
-    alert(`Error: ${errorMessage}`);
+
+    // Create a div for displaying the error message
+    const errorDiv = document.createElement('div');
+    errorDiv.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background-color: #f8d7da;
+        color: #721c24;
+        padding: 15px;
+        border-radius: 4px;
+        border: 1px solid #f5c6cb;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        z-index: 1000;
+        max-width: 300px;
+    `;
+    errorDiv.innerHTML = `<strong>Error:</strong> ${errorMessage}`;
+    
+    // Add the error div to the document
+    document.body.appendChild(errorDiv);
+    
+    // Remove it after 5 seconds with a fade effect
+    setTimeout(() => {
+        errorDiv.style.opacity = '0';
+        errorDiv.style.transition = 'opacity 0.5s';
+        setTimeout(() => errorDiv.remove(), 500);
+    }, 5000);
 }
 
 // Deletes an entry after user confirmation
@@ -498,6 +550,7 @@ function deleteEntry(id) {
 
 // Closes the CRUD modal and resets the form
 function closeCrud() {
+    document.getElementById('grey_background').style.display = 'none';
     document.getElementById('crudModal').style.display = 'none';
     document.getElementById('crudForm').reset();
 }
@@ -523,11 +576,11 @@ function renderPagination() {
         return '';
     }
     const {page, total_pages, has_next, has_previous} = paginationInfo;
-    let html = '<div class="pagination-controls" style="margin-top:10px;">';
-    html += `<span>Page ${page} of ${total_pages}</span> `;
-    html += `<button ${has_previous? '' : 'disabled'} onclick="changePage(${page-1})">Prev</button>`;
-    html += `<button ${has_next? '' : 'disabled'} onclick="changePage(${page+1})">Next</button>`;
-    html += ` | Page size: <select onchange="changePageSize(this.value)">`;
+    let html = '<div class="pagination-controls" style="margin-top:10px;display:flex;align-items:center;gap:1px;">';
+    html += `<span class="tablediv_title" style="margin-right:15px">Page ${page} of ${total_pages}</span> `;
+    html += `<button ${has_previous? '' : 'disabled'} onclick="changePage(${page-1})" class="dark_button" style="margin-right:5px">< Prev</button>`;
+    html += `<button ${has_next? '' : 'disabled'} onclick="changePage(${page+1})" class="dark_button" >Next ></button>`;
+    html += `<hr class="vertical_line" style="margin:10px"><span class="tablediv_title" style="margin-right:5px">Page size:</span> <select onchange="changePageSize(this.value)" class="dark_button" style="padding:10px">`;
     [5,10,20,50,100].forEach(size => {
         html += `<option value="${size}" ${size==paginationInfo.page_size?'selected':''}>${size}</option>`;
     });
