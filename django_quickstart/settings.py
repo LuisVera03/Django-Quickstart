@@ -151,7 +151,7 @@ LOGIN_URL = '/'
 from datetime import timedelta
 AUTO_LOGOUT = {
     'IDLE_TIME': timedelta(hours=1),  # minutes of inactivity before logout 1h
-    'SESSION_TIME': timedelta(hours=1),  # maximum session time 1h
+    'SESSION_TIME': timedelta(hours=12),  # maximum session time 1h
     'MESSAGE': 'Your session has expired due to inactivity. Please log in again.', # message to display on logout
     'REDIRECT_TO_LOGIN_IMMEDIATELY': True,  # redirect to login page immediately on timeout
 }

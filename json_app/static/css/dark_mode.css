@@ -33,6 +33,11 @@ body {
     color: var(--back-color);
 }
 
+.dark_button {
+    background-color: var(--text-color);
+    color: var(--back-color);
+}
+
 hr{
     background-color: var(--text-color);
 }
