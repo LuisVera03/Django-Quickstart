@@ -4,7 +4,7 @@
 <h2>Log In</h2>
 
 
-<form method="post" class="my-login-form">
+<form method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <p><button type="submit" >Log in</button></p>

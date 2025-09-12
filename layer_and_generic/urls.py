@@ -8,13 +8,15 @@ from .views import (
     Table2ListView, Table2DetailView, Table2CreateView, Table2UpdateView, Table2DeleteView,
     # Table3 views
     Table3ListView, Table3DetailView, Table3CreateView, Table3UpdateView, Table3DeleteView,
+    # API views
+    Table1APIView, Table2APIView, Table3APIView, GenericTable1APIView,
 )
 
 urlpatterns = [
     # Authentication URLs
     path('home_layer_and_generic', home, name='home_layer_and_generic'),
     path('register_layer_and_generic/', RegisterView.as_view(), name='register_layer_and_generic'),
-    path('login_layer_and_genericn/', LoginView.as_view(), name='login_layer_and_generic'),
+    path('login_layer_and_generic/', LoginView.as_view(), name='login_layer_and_generic'),
     path('logout_layer_and_generic/', LogoutView.as_view(), name='logout_layer_and_generic'),
     
     # Table1 CRUD (Legacy URLs for backward compatibility)
@@ -44,4 +46,12 @@ urlpatterns = [
     path('table3/create/', Table3CreateView.as_view(), name='table3_create'),
     path('table3/<int:pk>/update/', Table3UpdateView.as_view(), name='table3_update'),
     path('table3/<int:pk>/delete/', Table3DeleteView.as_view(), name='table3_delete'),
+    
+    # API endpoints for CRUD operations
+    path('api/table1/', Table1APIView.as_view(), name='table1_api'),
+    path('api/table2/', Table2APIView.as_view(), name='table2_api'),
+    path('api/table3/', Table3APIView.as_view(), name='table3_api'),
+    
+    # Generic API endpoints
+    path('api/generic/table1/', GenericTable1APIView.as_view(), name='generic_table1_api'),
 ]
