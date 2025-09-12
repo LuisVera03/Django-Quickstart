@@ -194,6 +194,7 @@ class LoginView(FormView):
     def form_valid(self, form):
         success = try_login(self.request, **form.cleaned_data)
         if success:
+            self.request.session['active_app'] = 'lag'
             return super().form_valid(form)
         else:
             messages.error(self.request, "Incorrect username or password")
@@ -223,6 +224,8 @@ class LogoutView(View):
 @login_required
 def home(request):
     """Dashboard summarizing total records across tables."""
+    # Mark active app in session for cross-page consistency (e.g., flatpages)
+    request.session['active_app'] = 'lag'
     context = get_dashboard_data()
     return render(request, 'LAG/home.html', context)
 

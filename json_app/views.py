@@ -41,6 +41,8 @@ from datetime import timedelta
 
 # Home view (simple template render)
 def home(request):
+    # Mark active app to influence shared pages (e.g., flatpages)
+    request.session['active_app'] = 'json'
     return render(request, 'json_app/home.html')
 
 # User registration and login views
@@ -115,6 +117,7 @@ def user_login(request):
         # If authentication is successful, log the user in    
         if user is not None:
             login(request, user)
+            request.session['active_app'] = 'json'
             return redirect('home_json')
         else:
             messages.error(request, "Invalid username or password.")
