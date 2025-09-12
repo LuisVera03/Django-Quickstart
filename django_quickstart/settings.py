@@ -82,6 +82,7 @@ TEMPLATES = [
                 'django_auto_logout.context_processors.auto_logout_client',
                 # Context processor for dark mode
                 'json_app.context_processors.dark_mode_context',
+                'json_app.context_processors.active_app_context',
             ],
         },
     },
@@ -135,7 +136,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = 'static/'
+# URL for static files
+STATIC_URL = '/static/'
+
+# Additional static files directories (static folder at project level)
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field

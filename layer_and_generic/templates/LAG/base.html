@@ -16,6 +16,8 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <!-- dark mode style --> 
     <link rel="stylesheet" href="{% static 'css/dark_mode.css' %}">
+    <!-- Global shared styles -->
+    <link rel="stylesheet" href="{% static 'site.css' %}">
     <script>
         // Early initialization without contradicting the server.
         (function(){
@@ -66,7 +68,7 @@
                         </form>
                     </div>
                 </div>
-                <i class="bi bi-cloud-moon-fill" style="margin-left: 5%;"></i><span>{% dark_mode_button %}</span> 
+                {% dark_mode_button %}
             </div>
         </nav>
     {% endif %}
