@@ -51,4 +51,11 @@ hr{
     color:#F8F8F8;
     font-size: 1em;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
 }
+
+/* Match icon size with user icon */
+.dark-mode-toggle svg { width: 1em; height: 1em; display: block; }
+.navbar-right .dark-mode-toggle { margin-left: 0.75rem; }
