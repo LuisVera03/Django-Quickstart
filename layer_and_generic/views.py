@@ -18,9 +18,12 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.decorators import method_decorator
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from django.urls import reverse_lazy
 from django.contrib import messages
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+import json
 
 from .forms import LoginForm, RegisterForm, Table1Form, Table2Form, Table3Form
 from rest.models import Table1, Table2, Table3
@@ -404,3 +407,371 @@ class Table3DeleteView(BaseTableDeleteView):
     
     def get_service_delete(self, instance):
         return delete_table3_service(instance)
+
+
+#
+## API Views for CRUD operations (used by JavaScript frontend)
+#
+
+@method_decorator(csrf_exempt, name='dispatch')
+class Table1APIView(LoginRequiredMixin, View):
+    """API View for Table1 CRUD operations"""
+    
+    def get(self, request):
+        """Get all Table1 records with related options"""
+        try:
+            table1_data = []
+            table1_list = get_table1_list()
+            
+            for item in table1_list:
+                # Serialize Table1 data
+                data = {
+                    'id': item.id,
+                    'integer_field': item.integer_field,
+                    'float_field': item.float_field,
+                    'char_field': item.char_field,
+                    'text_field': item.text_field,
+                    'boolean_field': item.boolean_field,
+                    'date_field': item.date_field.isoformat() if item.date_field else None,
+                    'time_field': item.time_field.isoformat() if item.time_field else None,
+                    'datetime_field': item.datetime_field.isoformat() if item.datetime_field else None,
+                    'image_field': item.image_field.url if item.image_field else None,
+                    'file_field': item.file_field.url if item.file_field else None,
+                }
+                
+                # Handle relationships
+                if item.foreign_key:
+                    data['foreign_key'] = {
+                        'id': item.foreign_key.id,
+                        'positive_small_int': item.foreign_key.positive_small_int
+                    }
+                else:
+                    data['foreign_key'] = None
+                    
+                if item.one_to_one:
+                    data['one_to_one'] = {
+                        'id': item.one_to_one.id,
+                        'positive_small_int': item.one_to_one.positive_small_int
+                    }
+                else:
+                    data['one_to_one'] = None
+                    
+                # Many to many
+                data['many_to_many'] = []
+                for m2m in item.many_to_many.all():
+                    data['many_to_many'].append({
+                        'id': m2m.id,
+                        'email_field': m2m.email_field
+                    })
+                
+                table1_data.append(data)
+            
+            # Get options for foreign keys
+            table2_options = []
+            for table2 in get_table2_list():
+                table2_options.append({
+                    'id': table2.id,
+                    'positive_small_int': table2.positive_small_int
+                })
+                
+            table3_options = []
+            for table3 in get_table3_list():
+                table3_options.append({
+                    'id': table3.id,
+                    'email_field': table3.email_field
+                })
+            
+            return JsonResponse({
+                'data': table1_data,
+                'table2_options': table2_options,
+                'table3_options': table3_options
+            })
+            
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    def post(self, request):
+        """Create new Table1 record"""
+        try:
+            data = json.loads(request.body)
+            
+            # Process foreign_key and one_to_one fields (handle both formats)
+            if 'foreign_key' in data and isinstance(data['foreign_key'], dict):
+                data['foreign_key'] = data['foreign_key'].get('id')
+            
+            if 'one_to_one' in data and isinstance(data['one_to_one'], dict):
+                data['one_to_one'] = data['one_to_one'].get('id')
+            
+            # Handle many-to-many separately
+            many_to_many_data = data.pop('many_to_many', [])
+            many_to_many_ids = []
+            many_to_many_ids = []
+            
+            # Extract IDs from the many-to-many data (handle both formats)
+            for item in many_to_many_data:
+                if isinstance(item, dict) and 'id' in item:
+                    many_to_many_ids.append(item['id'])
+                else:
+                    many_to_many_ids.append(item)
+            
+            # Create the record
+            instance = create_table1_service(data)
+            
+            # Handle many-to-many relationships
+            if many_to_many_ids:
+                for m2m_id in many_to_many_ids:
+                    table3_instance = get_table3_detail(m2m_id)
+                    if table3_instance:
+                        instance.many_to_many.add(table3_instance)
+            
+            return JsonResponse({'success': True, 'id': instance.id})
+            
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    
+    def put(self, request):
+        """Update Table1 record"""
+        try:
+            data = json.loads(request.body)
+            instance_id = data.pop('id')
+            
+            instance = get_table1_detail(instance_id)
+            if not instance:
+                return JsonResponse({'error': 'Record not found'}, status=404)
+            
+            # Process foreign_key and one_to_one fields (handle both formats)
+            if 'foreign_key' in data and isinstance(data['foreign_key'], dict):
+                data['foreign_key'] = data['foreign_key'].get('id')
+            
+            if 'one_to_one' in data and isinstance(data['one_to_one'], dict):
+                data['one_to_one'] = data['one_to_one'].get('id')
+            
+            # Handle many-to-many separately
+            many_to_many_data = data.pop('many_to_many', [])
+            many_to_many_ids = []
+            many_to_many_ids = []
+            
+            # Extract IDs from the many-to-many data (handle both formats)
+            for item in many_to_many_data:
+                if isinstance(item, dict) and 'id' in item:
+                    many_to_many_ids.append(item['id'])
+                else:
+                    many_to_many_ids.append(item)
+            
+            # Update the record
+            updated_instance = update_table1_service(instance, data)
+            
+            # Handle many-to-many relationships
+            updated_instance.many_to_many.clear()
+            if many_to_many_ids:
+                for m2m_id in many_to_many_ids:
+                    table3_instance = get_table3_detail(m2m_id)
+                    if table3_instance:
+                        updated_instance.many_to_many.add(table3_instance)
+            
+            return JsonResponse({'success': True})
+            
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    
+    def delete(self, request):
+        """Delete Table1 record"""
+        try:
+            data = json.loads(request.body)
+            instance_id = data.get('id')
+            
+            instance = get_table1_detail(instance_id)
+            if not instance:
+                return JsonResponse({'error': 'Record not found'}, status=404)
+            
+            success = delete_table1_service(instance)
+            if success:
+                return JsonResponse({'success': True})
+            else:
+                return JsonResponse({'error': 'Failed to delete record'}, status=400)
+                
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class Table2APIView(LoginRequiredMixin, View):
+    """API View for Table2 CRUD operations"""
+    
+    def get(self, request):
+        """Get all Table2 records"""
+        try:
+            table2_data = []
+            table2_list = get_table2_list()
+            
+            for item in table2_list:
+                data = {
+                    'id': item.id,
+                    'positive_small_int': item.positive_small_int,
+                }
+                table2_data.append(data)
+            
+            return JsonResponse({'data': table2_data})
+            
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    def post(self, request):
+        """Create new Table2 record"""
+        try:
+            data = json.loads(request.body)
+            instance = create_table2_service(data)
+            return JsonResponse({'success': True, 'id': instance.id})
+            
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    
+    def put(self, request):
+        """Update Table2 record"""
+        try:
+            data = json.loads(request.body)
+            instance_id = data.pop('id')
+            
+            instance = get_table2_detail(instance_id)
+            if not instance:
+                return JsonResponse({'error': 'Record not found'}, status=404)
+            
+            updated_instance = update_table2_service(instance, data)
+            return JsonResponse({'success': True})
+            
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    
+    def delete(self, request):
+        """Delete Table2 record"""
+        try:
+            data = json.loads(request.body)
+            instance_id = data.get('id')
+            
+            instance = get_table2_detail(instance_id)
+            if not instance:
+                return JsonResponse({'error': 'Record not found'}, status=404)
+            
+            success = delete_table2_service(instance)
+            if success:
+                return JsonResponse({'success': True})
+            else:
+                return JsonResponse({'error': 'Failed to delete record'}, status=400)
+                
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class Table3APIView(LoginRequiredMixin, View):
+    """API View for Table3 CRUD operations"""
+    
+    def get(self, request):
+        """Get all Table3 records"""
+        try:
+            table3_data = []
+            table3_list = get_table3_list()
+            
+            for item in table3_list:
+                data = {
+                    'id': item.id,
+                    'duration_field': str(item.duration_field) if item.duration_field else None,
+                    'email_field': item.email_field,
+                }
+                table3_data.append(data)
+            
+            return JsonResponse({'data': table3_data})
+            
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    def post(self, request):
+        """Create new Table3 record"""
+        try:
+            data = json.loads(request.body)
+            instance = create_table3_service(data)
+            return JsonResponse({'success': True, 'id': instance.id})
+            
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    
+    def put(self, request):
+        """Update Table3 record"""
+        try:
+            data = json.loads(request.body)
+            instance_id = data.pop('id')
+            
+            instance = get_table3_detail(instance_id)
+            if not instance:
+                return JsonResponse({'error': 'Record not found'}, status=404)
+            
+            updated_instance = update_table3_service(instance, data)
+            return JsonResponse({'success': True})
+            
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    
+    def delete(self, request):
+        """Delete Table3 record"""
+        try:
+            data = json.loads(request.body)
+            instance_id = data.get('id')
+            
+            instance = get_table3_detail(instance_id)
+            if not instance:
+                return JsonResponse({'error': 'Record not found'}, status=404)
+            
+            success = delete_table3_service(instance)
+            if success:
+                return JsonResponse({'success': True})
+            else:
+                return JsonResponse({'error': 'Failed to delete record'}, status=400)
+                
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+
+
+#
+## Generic API Views (same data, different endpoint for distinction)
+#
+
+@method_decorator(csrf_exempt, name='dispatch')
+class GenericTable1APIView(LoginRequiredMixin, View):
+    """Generic API View for Table1 - uses the same logic but different URL"""
+    
+    def get(self, request):
+        """Get all Table1 records using generic approach"""
+        try:
+            # Use the same Table1APIView logic
+            api_view = Table1APIView()
+            api_view.request = request
+            return api_view.get(request)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    def post(self, request):
+        """Create new Table1 record using generic approach"""
+        try:
+            api_view = Table1APIView()
+            api_view.request = request
+            return api_view.post(request)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    
+    def put(self, request):
+        """Update Table1 record using generic approach"""
+        try:
+            api_view = Table1APIView()
+            api_view.request = request
+            return api_view.put(request)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    
+    def delete(self, request):
+        """Delete Table1 record using generic approach"""
+        try:
+            api_view = Table1APIView()
+            api_view.request = request
+            return api_view.delete(request)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)

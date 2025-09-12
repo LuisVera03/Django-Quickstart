@@ -1,0 +1,387 @@
+:root {
+    --dark-color: #181D27;
+    --white-color: #F8F8F8;
+    --green-body: #44B78B;
+    --padding: 10px;
+    --font-: 'Jersey 10', sans-serif;
+    --font-small: "Kode Mono", monospace;
+}
+
+body {
+    font-family: var(--font-small);
+    margin: 0px;
+    font-weight: bolder;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5% 1.5%;
+}
+
+.navbar-left {
+    font-weight: bolder;
+}
+
+.navbar-center a {
+    text-decoration: none;
+}
+
+.navbar-center a:hover {
+    text-decoration: underline;
+}
+
+.navbar-right {
+    display: flex;
+    align-items: center;
+}
+
+.user-dropdown {
+    position: relative;
+    display: inline-block;
+    color: var(--white-color);
+    padding: 10px;
+    cursor: pointer;
+}
+
+.user-dropdown i {
+    margin-right: 5px;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: var(--white-color);
+    min-width: 150px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    z-index: 1;
+}
+
+.dropdown-content a,
+.dropdown-content button {
+    color: var(--dark-color);
+    padding: 10px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font: inherit;
+}
+
+.dropdown-content button {
+    width: 100%;
+}
+
+/* Ensure forms inside dropdowns are styled correctly */
+.dropdown-content form {
+    margin: 0;
+}
+
+.dropdown-content a:hover,
+.dropdown-content button:hover {
+    background-color: #cecdcd;
+    border-radius: 5px;
+}
+
+.user-dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* App title */
+.app_title {
+    font-size: 2.5em;
+    background-color: var(--dark-color);
+    color: var(--white-color);
+    padding: 10px;
+    text-align: center;
+}
+
+/* Main content area */
+.main {
+    padding: 10px;
+}
+
+.parent {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(1, 1fr);
+    gap: 8px;
+    align-items: center;
+}
+
+/* Title dropdown and search */
+.div1 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.label {
+    font-size: 2em;
+    color: var(--green-body);
+}
+
+/* Dropdown */
+.dropdown-title {
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-title button {
+    font-family: var(--font-small);
+    font-size: 1.25em;
+    width: 150px;
+    height: 50px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dropdown-title button span {
+    pointer-events: none;
+    user-select: none;
+}
+
+.dropdown-content-title {
+    font-size: 1.8em;
+    display: none;
+    position: absolute;
+    background-color: var(--white-color);
+    min-width: 120px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    z-index: 1;
+}
+
+.dropdown-content-title a {
+    display: block;
+    padding: 8px 12px;
+    text-decoration: none;
+    color: var(--dark-color);
+}
+
+.dropdown-content-title a:hover {
+    background-color: #cecdcd;
+}
+
+.dropdown.show .dropdown-content-title {
+    display: block;
+}
+
+/* vertical line */
+.div2 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.vertical_line {
+    border: none;
+    height: 45px;
+    width: 6.5px;
+}
+
+/* Search */
+.search_title {
+    border: none;
+    text-decoration: none;
+    font-family: var(--font-small) !important;
+    font-size: 2em !important;
+    font-weight: bolder !important;
+    color: var(--green-body) !important;
+    outline: none;
+    display: inline-block;
+}
+
+.search_title:hover {
+    text-decoration: underline !important;
+}
+
+.horizontal-line {
+    border: none;
+    height: 6px;
+    width: 100%;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+/* info */
+.info {
+    height: 67.5vh;
+}
+
+.parent_info {
+    display: flex;
+    height: 100%;
+}
+
+.div1_info,
+.div3_info {
+    background-color: var(--dark-color);
+    color: var(--white-color);
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5em;
+    position: relative;
+    padding: 20px;
+    margin: 7.5px;
+    border-radius: 10px;
+}
+
+/* tablediv */
+.tablediv_title {
+    border: none;
+    text-decoration: none;
+    font-size: 2em;
+    color: var(--green-body);
+    outline: none;
+}
+
+.tablediv_button {
+    font-family: var(--font-small);
+    font-size: 1em;
+    font-weight: 600;
+    background-color: var(--green-body);
+    color: var(--white-color);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    padding: 5px 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+table.crud-table {
+    border-collapse: collapse;
+    color: var(--white-color);
+    font-family: var(--font-small);
+    width: 100%;
+    margin-top: 10px;
+}
+
+table.crud-table th,
+table.crud-table td {
+    border: 1px solid #000000;
+    font-weight: 100;
+    font-size: 1em;
+    padding: 8px;
+    text-align: left;
+}
+
+table.crud-table th {
+    background-color: #0C4B33;
+    font-weight: 900;
+}
+
+table.crud-table td {
+    background-color: #188058;
+}
+
+table.crud-table img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+table.crud-table a {
+    color: var(--white-color);
+}
+
+table.crud-table a:hover {
+    color: #cecdcd;
+}
+
+/* Buttons and input */
+.edit_button,
+.delete_button,
+.save_button,
+.cancel_button {
+    color: rgb(0, 0, 0);
+    font-family: var(--font-small);
+    font-size: large;
+    border-radius: 4px;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    border: none;
+    font-weight: 900;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.edit_button {
+    background: rgb(0, 183, 255);
+    margin-bottom: 10px;
+}
+
+.delete_button {
+    background: rgb(255, 72, 0);
+}
+.save_button {
+    background: rgb(117, 252, 176);
+    margin-right: 10px;
+    width: 25%;
+}
+.cancel_button {
+    background: rgb(128, 128, 128);
+    width: 25%;
+}
+.form-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  width: 100%; 
+}
+
+.label_field {
+  white-space: nowrap;  
+  flex: 0 0 auto;
+  font-size: 1.25rem;
+}
+
+.input_field {
+  flex: 1;               
+  box-sizing: border-box;
+  font-family: var(--font-small);
+  font-size: 1rem;
+  padding: 5px;
+  border: 2px solid var(--dark-color);
+  border-radius: 5px;
+  outline: none;
+}
+
+/* Modal */
+.modal_crud {
+    position: fixed;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    background: var(--white-color);
+    border: 5px solid var(--dark-color);
+    border-radius: 10px;
+    padding: 12.5px;
+    z-index: 1000;
+    min-width: 350px;
+}
+
+#grey_background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
