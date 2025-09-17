@@ -1,0 +1,70 @@
+{% extends "LAG/base.html" %}
+
+{% load static %}
+
+{% block title %}Home - Layer & Generic{% endblock %}
+
+{% block body %}
+<div class="app_title">
+    Layer and Generic
+</div>
+
+{% if user.is_authenticated %}
+    {% csrf_token %}
+    <div class="main">
+        <div class="parent">
+            <div class="div1">
+                <span class="label">CRUD with Layers:</span>
+                <!-- Dropdown -->
+                <div class="dropdown dropdown-title" id="tableDropdown">
+                    <button onclick="toggleDropdown()"><span id="current_table">Table 1</span></button>
+                    <div class="dropdown-content-title">
+                        <a href="#" onclick="showTable('table1')">Table 1</a>
+                        <a href="#" onclick="showTable('table2')">Table 2</a>
+                        <a href="#" onclick="showTable('table3')">Table 3</a>
+                    </div>
+                </div>
+            </div>
+            <div class="div2" style="text-align: center;">
+                <hr class="vertical_line">
+            </div>
+            <div class="div3" style="text-align: right">
+                <span class="search_title" onclick="showGenericTable()" style="cursor: pointer;">CRUD with Generic Views</span>
+            </div>
+        </div>
+        <hr class="horizontal-line">
+        <div class="info">
+            <div class="parent_info">
+                <div class="div1_info">Service Layer Architecture provides a clean separation between business logic and view logic. This pattern encapsulates complex business operations, database interactions, and data processing into dedicated service classes. It promotes code reusability, maintainability, and testability by keeping controllers thin and moving business logic into specialized service layers that can be easily tested and reused across different parts of the application.</div>
+                <hr class="vertical-line" style="margin: 5px 10px 0px 10px;height: 67vh;width: 7.5px;">
+                <div class="div3_info">Generic Views are Django's class-based views that provide common web development patterns out of the box. They eliminate boilerplate code for standard operations like listing objects, displaying detail views, and handling forms. These views are highly customizable and follow the DRY principle, allowing developers to quickly implement CRUD operations while maintaining flexibility for custom requirements and reducing development time significantly.</div>
+            </div>
+        </div>
+    
+        <!-- Table display area -->
+        <div id="tableDiv"></div>
+
+        <!-- Modal for create/edit -->
+        <div id="grey_background" style="display:none;" onclick="closeCrud()"></div>
+        <div id="crudModal" class="modal_crud" style="display:none;">
+            <h2 id="crudTitle" style="margin: 0px 0px 10px 0px;font-weight: 900;text-decoration: underline;text-decoration-style: double;"></h2>
+            <form id="crudForm" onsubmit="submitCrud(event)">
+                <input type="hidden" id="crudTable">
+                <input type="hidden" id="crudId">
+                <div id="formFields"></div>
+                <button class="save_button" style="float: right;" type="submit" id="crudSubmitBtn"></button>
+            </form>
+            <button class="cancel_button" type="button" onclick="closeCrud()"><i class="bi bi-x-lg"></i> Close</button>
+        </div>
+
+    </div>
+    
+    <!-- Import JavaScript from external file - at the end so DOM is loaded -->
+    <script src="{% static 'scripts/home.js' %}"></script>
+{% else %}
+    <h2>Log in to continue</h2>
+    <p><a href="{% url 'login_layer_and_generic' %}">Login</a></p>
+    <p><a href="{% url 'register_layer_and_generic' %}">Sign Up</a></p>
+{% endif %}
+
+{% endblock %}

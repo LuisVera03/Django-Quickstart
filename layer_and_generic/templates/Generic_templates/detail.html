@@ -1,0 +1,41 @@
+{% extends "LAG/base.html" %}
+
+{% block body %}
+<h1>{{ table_name }} Detail</h1>
+<p>ID: {{ object.id }}</p>
+
+{% if table_name == 'Table1' %}
+  <p>Char Field: {{ object.char_field|default:"-" }}</p>
+  <p>Text Field: {{ object.text_field|default:"-" }}</p>
+  <p>Boolean Field: {% if object.boolean_field %}Yes{% else %}No{% endif %}</p>
+  <p>Integer Field: {{ object.integer_field|default:"-" }}</p>
+  <p>Float Field: {{ object.float_field|default:"-" }}</p>
+  <p>Date Field: {{ object.date_field|default:"-" }}</p>
+  <p>Time Field: {{ object.time_field|default:"-" }}</p>
+  <p>DateTime Field: {{ object.datetime_field|default:"-" }}</p>
+  <p>Foreign Key: {{ object.foreign_key|default:"-" }}</p>
+  <p>One to One: {{ object.one_to_one|default:"-" }}</p>
+  <p>Many to Many: 
+    {% if object.many_to_many.all %}
+      {% for m2m in object.many_to_many.all %}
+        {{ m2m }}{% if not forloop.last %}, {% endif %}
+      {% endfor %}
+    {% else %}
+      -
+    {% endif %}
+  </p>
+  <p>File Field: {% if object.file_field %}<a href="{{ object.file_field.url }}">Download</a>{% else %}No file{% endif %}</p>
+  <p>Image Field: {% if object.image_field %}<img src="{{ object.image_field.url }}" alt="Image" style="max-width: 200px;">{% else %}No image{% endif %}</p>
+
+{% elif table_name == 'Table2' %}
+  <p>Positive Small Int: {{ object.positive_small_int }}</p>
+  <p>Choice Display: {{ object.get_positive_small_int_display }}</p>
+
+{% elif table_name == 'Table3' %}
+  <p>Duration Field: {{ object.duration_field|default:"-" }}</p>
+  <p>Email Field: {{ object.email_field|default:"-" }}</p>
+{% endif %}
+
+<a href="{% url list_url %}">Back</a> |
+<a href="{% url 'home_layer_and_generic' %}">Home</a>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends "json_app/base.html" %}
+
+{% load static %}
+
+{% block title %}Home - JSON App{% endblock %}
+
+{% block body %}
+<div class="app_title">
+    JSON App
+</div>
+
+{% if user.is_authenticated %}
+    {% csrf_token %}
+    <div class="main">
+        <div class="parent">
+            <div class="div1">
+                <span class="label">Table:</span>
+                <!-- Dropdown -->
+                <div class="dropdown dropdown-title" id="tableDropdown">
+                    <button onclick="toggleDropdown()"><span onclick="toggleDropdown()" id="current_table">Table 1</span></button>
+                    <div class="dropdown-content-title">
+                        <a href="#" onclick="showTable('table1')">Table 1</a>
+                        <a href="#" onclick="showTable('table2')">Table 2</a>
+                        <a href="#" onclick="showTable('table3')">Table 3</a>
+                    </div>
+                </div>
+            </div>
+            <div class="div2" style="text-align: center;">
+                <hr class="vertical_line">
+            </div>
+            <div class="div3" style="text-align: right">
+                <a class="search_title" href="{% url 'search_json' %}">Search on Table 1</a>
+            </div>
+        </div>
+        <hr class="horizontal-line">
+        <div class="info">
+            <div class="parent_info">
+                <div class="div1_info">Comprehensive CRUD (Create, Read, Update, Delete) operations organized across three separate tables. Each table has its own dedicated interface that provides full access to data management. Users can effortlessly add new records, view detailed entries, update existing information, or remove records as needed. Data in each table is paginated for easier navigation and efficient management of large datasets.</div>
+                <hr class="vertical-line" style="margin: 5px 10px 0px 10px;height: 67vh;width: 7.5px;">
+                <div class="div3_info">A dynamic search feature dedicated to Table 1. Users can quickly search through the data using a responsive and efficient search bar. The search functionality is optimized to highlight matching text and filter results immediately based on user input, ensuring a seamless and intuitive experience.</div>
+            </div>
+        </div>
+    
+        <!-- Table display area -->
+        <div id="tableDiv"></div>
+
+        <!-- Modal for create/edit -->
+        <div id="grey_background" class="overlay" style="display:none;" onclick="closeCrud()"></div>
+        <div id="crudModal" class="modal_crud" style="display:none;">
+            <h2 id="crudTitle" style="margin: 0px 0px 10px 0px;font-weight: 900;text-decoration: underline;text-decoration-style: double;"></h2>
+            <form id="crudForm" onsubmit="submitCrud(event)">
+                <input type="hidden" id="crudTable">
+                <input type="hidden" id="crudId">
+                <div id="formFields"></div>
+                <button class="save_button"  style="float: right;" type="submit" id="crudSubmitBtn"></button>
+            </form>
+            <button class="cancel_button" type="button" onclick="closeCrud()"><i class="bi bi-x-lg"></i> Close</button>
+        </div>
+
+
+    </div>
+    <script>
+        function toggleDropdown() {
+            document.getElementById("tableDropdown").classList.toggle("show");
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.matches('#tableDropdown button')) {
+            document.getElementById("tableDropdown").classList.remove("show");
+            }
+        }
+    </script>
+{% else %}
+    <h2>Log in to continue</h2>
+    <p><a href="{% url 'login_json' %}">Login</a></p>
+    <p><a href="{% url 'register_json' %}">Sign Up</a></p>
+{% endif %}
+
+{% endblock %}

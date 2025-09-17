@@ -1,0 +1,53 @@
+{% load static %}
+{% load dark_mode_tags %}
+<!DOCTYPE html>
+<html lang="en"{% if dark_mode %} data-theme="dark"{% endif %}>
+    <head>
+        <title>Django QuickStart</title>
+        <link href="" rel="icon">
+        <meta name="viewport" content="initial-scale=1, width=device-width,shrink-to-fit=no">
+        <!-- Dark mode CSS -->
+        <link rel="stylesheet" href="{% static 'css/dark_mode.css' %}">
+        <script>
+            (function(){
+                try {
+                    var root = document.documentElement;
+                    var stored = localStorage.getItem('dark_mode_pref');
+                    if (root.hasAttribute('data-theme')) {
+                        localStorage.setItem('dark_mode_pref','true');
+                    } else if (stored === 'true') {
+                        root.setAttribute('data-theme','dark');
+                    }
+                } catch(e) {}
+            })();
+        </script>
+    </head>
+    <body>
+        {% if user.is_authenticated %}
+        <div>
+            User: {{ user.username }} | 
+            Role: {% if user.groups.all.0.name == 'Admins' %}Administrator{% elif user.groups.all.0.name == 'Customers' %}Customer{% else %}No role assigned{% endif %} | 
+            <a href="{% url 'home_rest_basic' %}">Home</a> |
+            <a href="{% url 'profile_rest_basic' %}">Profile</a> |
+            {% dark_mode_button %} |
+            <form action="{% url 'logout_rest_basic' %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" style="background:none; border:none; color:blue; cursor:pointer;">Logout</button>
+            </form> |
+        </div>
+        <hr>
+        {% endif %}
+        
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|safe }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        {% block body %}
+        {% endblock %}
+        <!-- Dark mode script -->
+        <script src="{% static 'scripts/dark_mode.js' %}"></script>
+    </body>
+</html>

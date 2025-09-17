@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+
+{% block body %}
+<h2>Edit Table3</h2>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Duration</th>
+            <th>Email</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for entry in table3 %}
+        <tr>
+            <td>{{ entry.id }}</td>
+            <td>{{ entry.duration_field }}</td>
+            <td>{{ entry.email_field }}</td>
+            <td>
+                <a href="?edit_table=table3&edit_id={{ entry.id }}">Edit</a>
+            </td>
+        </tr>
+        {% if editing and editing_table == 'table3' and editing.id == entry.id %}
+        <tr>
+            <td colspan="4">
+                <!-- Edit form for Table3 -->
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="edit_table" value="table3">
+                    <input type="hidden" name="edit_id" value="{{ editing.id }}">
+                    <label>Duration: <input type="text" name="duration_field" value="{{ editing.duration_field }}"></label>
+                    <label>Email: <input type="email" name="email_field" value="{{ editing.email_field }}"></label>
+                    <button type="submit">Update</button>
+                </form>
+            </td>
+        </tr>
+        {% endif %}
+        {% empty %}
+        <tr>
+            <td colspan="4">Table3 is empty</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h2>Edit Table2</h2>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Number choice</th>
+            <th>Option</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for entry in table2 %}
+        <tr>
+            <td>{{ entry.id }}</td>
+            <td>{{ entry.positive_small_int }}</td>
+            <td>{{ entry.get_positive_small_int_display }}</td>
+            <td>
+                <a href="?edit_table=table2&edit_id={{ entry.id }}">Edit</a>
+            </td>
+        </tr>
+        {% if editing and editing_table == 'table2' and editing.id == entry.id %}
+        <tr>
+            <td colspan="4">
+                <!-- Edit form for Table2 -->
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="edit_table" value="table2">
+                    <input type="hidden" name="edit_id" value="{{ editing.id }}">
+                    <label>Number choice:
+                        <select name="positive_small_int">
+                            <option value="1" {% if editing.positive_small_int|stringformat:"s" == "1" %}selected{% endif %}>option1</option>
+                            <option value="2" {% if editing.positive_small_int|stringformat:"s" == "2" %}selected{% endif %}>option2</option>
+                        </select>
+                    </label>
+                    <button type="submit">Update</button>
+                </form>
+            </td>
+        </tr>
+        {% endif %}
+        {% empty %}
+        <tr>
+            <td colspan="4">Table2 is empty</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h2>Edit Table1</h2>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>ForeignKey</th>
+            <th>OneToOne</th>
+            <th>ManyToMany</th>
+            <th>Integer</th>
+            <th>Float</th>
+            <th>Char</th>
+            <th>Text</th>
+            <th>Boolean</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>DateTime</th>
+            <th>Image</th>
+            <th>File</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for entry in table1 %}
+        <tr>
+            <td>{{ entry.id }}</td>
+            <td>{{ entry.foreign_key }}</td>
+            <td>{{ entry.one_to_one }}</td>
+            <td>
+                {% for m in entry.many_to_many.all %}
+                    {{ m.email_field }}{% if not forloop.last %}, {% endif %}
+                {% empty %}
+                    -
+                {% endfor %}
+            </td>
+            <td>{{ entry.integer_field }}</td>
+            <td>{{ entry.float_field }}</td>
+            <td>{{ entry.char_field }}</td>
+            <td>{{ entry.text_field|default:"-" }}</td>
+            <td>{{ entry.boolean_field }}</td>
+            <td>{{ entry.date_field }}</td>
+            <td>{{ entry.time_field }}</td>
+            <td>{{ entry.datetime_field }}</td>
+            <td>
+                {% if entry.image_field %}
+                    <img src="{{ entry.image_field.url }}" alt="img" width="50">
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+            <td>
+                {% if entry.file_field %}
+                    <a href="{{ entry.file_field.url }}">Download</a>
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+            <td>
+                <a href="?edit_table=table1&edit_id={{ entry.id }}">Edit</a>
+            </td>
+        </tr>
+        {% if editing and editing_table == 'table1' and editing.id == entry.id %}
+        <tr>
+            <td colspan="15">
+                <!-- Edit form for Table1 -->
+                <form action="" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" name="edit_id" value="{{ editing.id }}">
+                    <input type="hidden" name="edit_table" value="table1">
+                    <label>ForeignKey:
+                        <select name="foreign_key">
+                            <option value="">-- Select Table2 ID --</option>
+                            {% for id in table2_ids %}
+                            <option value="{{ id }}" {% if id|stringformat:"s" == editing.foreign_key_id|stringformat:"s" %}selected{% endif %}>{{ id }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                    <label>OneToOne:
+                        <select name="one_to_one">
+                            <option value="">-- Select Table2 ID --</option>
+                            {% for id in table2_ids %}
+                            <option value="{{ id }}" {% if id|stringformat:"s" == editing.one_to_one_id|stringformat:"s" %}selected{% endif %}>{{ id }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                    <label>Integer: <input type="text" name="integer_field" value="{{ editing.integer_field }}"></label>
+                    <label>Float: <input type="text" name="float_field" value="{{ editing.float_field }}"></label>
+                    <label>Char: <input type="text" name="char_field" value="{{ editing.char_field }}"></label>
+                    <label>Text: <input type="text" name="text_field" value="{{ editing.text_field }}"></label>
+                    <label>Boolean: <input type="checkbox" name="boolean_field" {% if editing.boolean_field %}checked{% endif %}></label>
+                    <label>Date: <input type="date" name="date_field" value="{% if editing.date_field %}{{ editing.date_field|date:'Y-m-d' }}{% endif %}"></label>
+                    <label>Time: <input type="time" name="time_field" value="{% if editing.time_field %}{{ editing.time_field|time:'H:i' }}{% endif %}"></label>
+                    <label>DateTime: <input type="datetime-local" name="datetime_field" value="{% if editing.datetime_field %}{{ editing.datetime_field|date:'Y-m-d\\TH:i' }}{% endif %}"></label>
+                    <br>
+                    <strong>Upload image (optional):</strong> <input type="file" name="image_field">
+                    {% if editing.image_field %}
+                        <span>Current: <img src="{{ editing.image_field.url }}" alt="img" width="50"></span>
+                    {% endif %}
+                    <br>
+                    <strong>Upload file (optional):</strong> <input type="file" name="file_field">
+                    {% if editing.file_field %}
+                        <span>Current: <a href="{{ editing.file_field.url }}">Download</a></span>
+                    {% endif %}
+                    <br>
+                    <label>ManyToMany:</label>
+                    <select name="many_to_many" multiple>
+                        {% for t3 in table3 %}
+                            <option value="{{ t3.id }}" {% if t3.id in selected_many %}selected{% endif %}>{{ t3.email_field }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit">Update</button>
+                </form>
+            </td>
+        </tr>
+        {% endif %}
+        {% empty %}
+        <tr>
+            <td colspan="15">Table1 is empty</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block body %}
+<h2>Send Email</h2>
+
+<form method="post">
+    {% csrf_token %}
+    <label for="subject">Subject:</label><br>
+    <input type="text" id="subject" name="subject" required><br><br>
+
+    <label for="name">Full Name:</label><br>
+    <input type="text" id="name" name="name" required><br><br>
+    
+    <label for="email">Email Address:</label><br>
+    <input type="email" id="email" name="email" required><br><br>
+    
+    <label for="message">Message:</label><br>
+    <textarea id="message" name="message" rows="6" cols="50" required></textarea><br><br>
+    
+    <button type="submit">Send Message</button>
+</form>
+
+<br>
+
+<p><a href="{% url 'home_rest_basic' %}">Home</a></p>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block body %}
+<h1>User Management</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Current Role</th>
+            <th>Change Role</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in users_with_roles %}
+        <tr>
+            <td>{{ item.user.username }}</td>
+            <td>{{ item.user.email|default:"-" }}</td>
+            <td>{{ item.role }}</td>
+            <td>
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="user_id" value="{{ item.user.id }}">
+                    <select name="role">
+                        <option value="customer" {% if item.role == 'Customer' %}selected{% endif %}>Customer</option>
+                        <option value="admin" {% if item.role == 'Administrator' %}selected{% endif %}>Administrator</option>
+                    </select>
+                    <button type="submit">Update</button>
+                </form>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4">No users found</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<p><a href="{% url 'profile_rest_basic' %}">Back to Profile</a></p>
+
+{% endblock %}

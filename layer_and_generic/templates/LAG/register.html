@@ -1,0 +1,12 @@
+{% extends "LAG/base.html" %}
+
+{% block body %}
+<h2>Sign Up</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Create an account</button>
+</form>
+<p>Already have an account? <a href="{% url 'login_layer_and_generic' %}">Log in here</a></p>
+{% endblock %}

@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib import Path
+import os
+from decouple import config, Csv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,13 +22,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-cra2!g&7!s8*a&=t1ugcm=8ezm14ppi#tpdef6-ya)!_w3=te&'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
-
+DEBUG = config('DEBUG', default=False, cast=bool)
+# in the .env the hosts must be separated by commas with no spaces or brackets
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv()) 
 
 # Application definition
 
@@ -38,8 +39,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
-    'rest_basic',
+    'django.contrib.sites',
+    'django.contrib.flatpages',
+    # Third party apps
+    'django_auto_logout',
+    #Apps
+    'rest',
+    'layer_and_generic',
+    'json_app',
 ]
 
 MIDDLEWARE = [
@@ -50,6 +57,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
+
+    # Auto logout middleware
+    'django_auto_logout.middleware.auto_logout',
+    # Custom middleware
+    'rest.middleware.ExecutionTimeMiddleware', # Middleware to log execution time of requests
 ]
 
 ROOT_URLCONF = 'django_quickstart.urls'
@@ -57,7 +70,7 @@ ROOT_URLCONF = 'django_quickstart.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -65,6 +78,11 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                # Context processor for auto logout
+                'django_auto_logout.context_processors.auto_logout_client',
+                # Context processor for dark mode
+                'json_app.context_processors.dark_mode_context',
+                'json_app.context_processors.active_app_context',
             ],
         },
     },
@@ -81,10 +99,6 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     },
-    'rest_basic': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.rest_basic',
-    }
 }
 
 
@@ -122,9 +136,43 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = 'static/'
+# URL for static files
+STATIC_URL = '/static/'
+
+# Additional static files directories (static folder at project level)
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
+#Media files settings
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+#Session timeout settings
+LOGIN_URL = '/'
+from datetime import timedelta
+AUTO_LOGOUT = {
+    'IDLE_TIME': timedelta(hours=1),  # minutes of inactivity before logout 1h
+    'SESSION_TIME': timedelta(hours=12),  # maximum session time 1h
+    'MESSAGE': 'Your session has expired due to inactivity. Please log in again.', # message to display on logout
+    'REDIRECT_TO_LOGIN_IMMEDIATELY': True,  # redirect to login page immediately on timeout
+}
+
+
+# Email settings
+EMAIL_BACKEND = config('EMAIL_BACKEND')
+EMAIL_HOST = config('EMAIL_HOST', default='localhost')
+EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')
+CONTACT_EMAIL = config('CONTACT_EMAIL')
+
+# Site ID for flatpages
+SITE_ID = 1

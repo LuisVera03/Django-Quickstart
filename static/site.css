@@ -1,0 +1,25 @@
+/* Global site styles shared across apps */
+
+/* Flatpages: dark card container */
+.flatpage-card {
+    background-color: var(--dark-color, #181D27);
+    color: var(--white-color, #F8F8F8);
+    border-radius: 10px;
+    padding: 20px;
+    margin: 12px auto;
+    max-width: 1100px;
+    box-sizing: border-box;
+    overflow-wrap: anywhere; /* prevent horizontal scroll on long words/URLs */
+    box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+}
+
+.flatpage-card h1,
+.flatpage-card h2,
+.flatpage-card h3 {
+    margin-top: 0;
+}
+
+.flatpage-card p {
+    margin: 0 0 1em;
+    line-height: 1.6;
+}

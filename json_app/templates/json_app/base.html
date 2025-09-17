@@ -1,0 +1,91 @@
+{% load static %}
+{% load dark_mode_tags %}
+<!DOCTYPE html>
+<html lang="en"{% if dark_mode %} data-theme="dark"{% endif %}>
+<head>
+    <title>JSON App</title>
+    <link href="" rel="icon">
+    <meta name="viewport" content="initial-scale=1, width=device-width, shrink-to-fit=no">
+    <!-- Boostrap icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jersey+10&family=Kode+Mono:wght@400..700&display=swap" rel="stylesheet">
+    <!-- Home script -->
+    <script src="{% static 'scripts/home.js' %}"></script>
+    <!-- Main style -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <!-- dark mode style --> 
+    <link rel="stylesheet" href="{% static 'css/dark_mode.css' %}">
+    <!-- Global shared styles -->
+    <link rel="stylesheet" href="{% static 'site.css' %}">
+    <script>
+        // Early initialization without contradicting the server.
+        (function(){
+            try {
+                var root = document.documentElement;
+                var stored = localStorage.getItem('dark_mode_pref');
+                if (root.hasAttribute('data-theme')) {
+                    // The server says dark -> sync localStorage
+                    localStorage.setItem('dark_mode_pref','true');
+                } else if (stored === 'true') {
+                    root.setAttribute('data-theme','dark');
+                } // if stored is 'false' we do nothing (light mode by default)
+            } catch(e) {}
+        })();
+    </script>
+    <style>
+        #password-requirements {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 0.5em;
+        }
+        #password-requirements li {
+            color: red;
+        }
+        #password-requirements li.valid {
+            color: green;
+            text-decoration: line-through;
+        }
+    </style>
+</head>
+<body>
+    {% if user.is_authenticated %}
+        <nav class="navbar">
+            <div class="navbar-left">Django Quickstart</div>
+            <div class="navbar-center">
+                <a href="{% url 'home_json' %}">Home</a> |
+                <a href="/pages/about/">About</a> |
+                <a href="/pages/policies/">Policies</a>
+            </div>
+            <div class="navbar-right">
+                <i class="bi bi-person-fill"></i>
+                <div class="user-dropdown">
+                    <span>{{ user.username }}</span>
+                    <div class="dropdown-content">
+                        <a href="{% url 'profile_json' %}" style="color:#181D27">Profile</a>
+                        <form action="{% url 'logout_json' %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit">Logout</button>
+                        </form>
+                    </div>
+                </div>
+                {% dark_mode_button %}
+            </div>
+        </nav>
+    {% endif %}
+    
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|safe }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% block body %}{% endblock %}
+    
+    <script src="{% static 'scripts/dark_mode.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+/* Minimal CSS variables for dark mode */
+:root {
+    --back-color: #F8F8F8;
+    --text-color: #181D27;
+    --dark-color: #222937;
+    --green-dark: #0C4B33;
+}
+
+[data-theme="dark"] {
+    --back-color: #181D27;
+    --text-color: #F8F8F8;
+}
+
+body {
+    background-color: var(--back-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+/* Json */
+.navbar, .nav-bar {
+    color: #F8F8F8;
+    background-color: var(--green-dark);
+    font-size: 2em;
+}
+.navbar a{
+    color: #F8F8F8;
+}
+.app_title {
+    background-color: var(--text-color);
+    color: var(--back-color);
+}
+.dropdown-title button {
+    background-color: var(--text-color);
+    color: var(--back-color);
+}
+
+.dark_button {
+    background-color: var(--text-color);
+    color: var(--back-color);
+}
+
+hr{
+    background-color: var(--text-color);
+}
+
+/* Layer and generic */
+
+.dark-mode-toggle {
+    background: none;
+    font-family: 'Jersey 10', sans-serif;
+    border: none;
+    color:#F8F8F8;
+    font-size: 1em;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+}
+
+/* Match icon size with user icon */
+.dark-mode-toggle svg { width: 1em; height: 1em; display: block; }
+.navbar-right .dark-mode-toggle { margin-left: 0.75rem; }

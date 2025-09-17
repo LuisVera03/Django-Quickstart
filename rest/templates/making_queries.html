@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block body %}
+<h1>Examples of Making Queries</h1>
+
+<h2>Basic Query Methods</h2>
+<p><a href="{% url 'all_example' %}">All - Get all records</a></p>
+<p><a href="{% url 'get_example' %}">Get - Retrieve specific records</a></p>
+<p><a href="{% url 'filter_example' %}">Filter - Filter records by criteria</a></p>
+<p><a href="{% url 'exclude_example' %}">Exclude - Exclude records by criteria</a></p>
+<p><a href="{% url 'order_by_example' %}">Order By - Sort records</a></p>
+<p><a href="{% url 'slice_example' %}">Slice - Limit records</a></p>
+<p><a href="{% url 'exists_example' %}">Exists - Check if records exist</a></p>
+
+<h2>Advanced Query Methods</h2>
+<p><a href="{% url 'select_related_example' %}">Select Related - Optimize ForeignKey queries</a></p>
+<p><a href="{% url 'prefetch_related_example' %}">Prefetch Related - Optimize ManyToMany queries</a></p>
+<p><a href="{% url 'Q_example' %}">Q Objects - Complex query conditions</a></p>
+<p><a href="{% url 'f_example' %}">F() Expressions - Field references</a></p>
+
+<h2>Aggregate Functions</h2>
+<p><a href="{% url 'query_values_example' %}">Aggregate Functions - Count, Max, Min, Average & ManyToMany Relations</a></p>
+
+<br>
+<p><a href="{% url 'home_rest_basic' %}">Home</a></p>
+{% endblock %}
