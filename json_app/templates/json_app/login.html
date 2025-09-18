@@ -1,21 +1,30 @@
 {% extends "json_app/base.html" %}
 
+{% load static %}
+
 {% block body %}
-<h2>Log In</h2>
+<script src="{% static 'scripts/log.js' %}"></script>
+<div class="div_login">
+    <div class="login-container">
+        <h1>JSON</h1>
+        <h2>LOG IN</h2>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <label for="username">User</label>
+            <input type="text" name="username" id="username" required>
+            
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" required>
+            <button type="submit">Sign in</button>
+        </form>
+        <br>
+        <p>Don't have an account? <a href="{% url 'register_json' %}"><b>Sign up here</b></a></p>
+        <p>Use test credentials - <a onclick="Test_Credential()">Click here</a></p>
 
-<form method="post">
-    {% csrf_token %}
-    
-    <label for="username">Username:</label><br>
-    <input type="text" name="username" id="username" required><br><br>
-    
-    <label for="password">Password:</label><br>
-    <input type="password" name="password" id="password" required><br><br>
-    
-    <button type="submit">Log In</button>
-</form>
-
-<p><a href="{% url 'register_json' %}">Don't have an account? Sign up here</a></p>
-<p><a href="{% url 'index' %}">Back to main page</a></p>
+        <a href="{% url 'index' %}" class="back-btn">Back to main page</a>
+    </div>
+</div>
 
 {% endblock %}

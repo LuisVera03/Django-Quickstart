@@ -1,34 +1,40 @@
 {% extends "json_app/base.html" %}
 
 {% block body %}
-<h2>Sign Up</h2>
 
-<form method="post">
-    {% csrf_token %}
-    
-    <label for="username">Username:</label><br>
-    <input type="text" name="username" id="username" required><br><br>
+<div class="div_login">
+    <div class="login-container">
+        <h1>JSON</h1>
+        <h2>Sign Up</h2>
+        <form method="post">
+            {% csrf_token %}
+            
+            <label for="username">Username:</label>
+            <input type="text" name="username" id="username" required>
+            
+            <label for="email">Email:</label>
+            <input type="email" name="email" id="email" required>
 
-    <label for="email">Email:</label><br>
-    <input type="email" name="email" id="email" required><br><br>
+            <label for="password1">Password:</label>
+            <input type="password" name="password1" id="password1" required>
 
-    <label for="password1">Password:</label><br>
-    <input type="password" name="password1" id="password1" required><br>
+            <ul id="password-requirements">
+                <li id="length" class="invalid">Between 8 and 18 characters</li>
+                <li id="letter" class="invalid">At least one letter (a-z, A-Z)</li>
+                <li id="number" class="invalid">At least one number (0-9)</li>
+                <li id="special" class="invalid">At least one special character (!, @, #, etc)</li>
+            </ul>
 
-    <ul id="password-requirements">
-        <li id="length" class="invalid">Between 8 and 18 characters</li>
-        <li id="letter" class="invalid">At least one letter (a-z, A-Z)</li>
-        <li id="number" class="invalid">At least one number (0-9)</li>
-        <li id="special" class="invalid">At least one special character (!, @, #, etc)</li>
-    </ul><br>
+            <label for="password2">Confirm Password:</label>
+            <input type="password" name="password2" id="password2" required>
 
-    <label for="password2">Confirm Password:</label><br>
-    <input type="password" name="password2" id="password2" required><br><br>
+            <button type="submit">Create an account</button>
+        </form>
+        <br>
+        <p>Already have an account? <a href="{% url 'login_json' %}">Log in here</a></p>
+    </div>
+</div>
 
-    <button type="submit">Create an account</button>
-</form>
-
-<p>Already have an account? <a href="{% url 'login_json' %}">Log in here</a></p>
 
 <script>
 // Password validation script

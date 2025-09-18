@@ -1,0 +1,48 @@
+// Change these values if you want different demo credentials
+const DEMO_USER = 'demo@example.com';
+const DEMO_PASS = 'demo1234';
+
+// Function triggered by your link: <a onclick="Test_Credential()">Click here</a>
+function Test_Credential(event) {
+    // Prevent default behavior if the <a> has href
+    if (event && event.preventDefault) event.preventDefault();
+
+    const userInput = document.getElementById('username');
+    const passInput = document.getElementById('password');
+
+    if (!userInput || !passInput) {
+        console.warn('Could not find #username or #password fields');
+        return;
+    }
+
+    // Autofill fields
+    userInput.value = DEMO_USER;
+    passInput.value = DEMO_PASS;
+
+    // Focus and select username (useful if user wants to edit)
+    userInput.focus();
+    userInput.select();
+
+    // Temporary highlight effect for both inputs
+    [userInput, passInput].forEach(el => {
+        el.classList.add('highlight');
+        // Remove class after animation
+        setTimeout(() => el.classList.remove('highlight'), 1200);
+    });
+
+    // Short feedback on the link (finds <a> with onclick attribute)
+    try {
+        const link = document.querySelector("a[onclick^='Test_Credential']");
+        if (link) {
+            const original = link.innerHTML;
+            link.innerHTML = 'Filled ✓';
+            // Restore original text after delay
+            setTimeout(() => { link.innerHTML = original; }, 1500);
+        }
+    } catch (e) {
+        // Non-critical if it fails
+        console.error(e);
+    }
+
+    return false; // Just in case inline onclick is used
+}
