@@ -1,12 +1,21 @@
 {% extends "LAG/base.html" %}
 
 {% block body %}
-<h2>Sign Up</h2>
+<div class="div_login">
+    <div class="login-container">
+        <h1>Layer and generic</h1>
+        <h2>Sign Up</h2>
 
-<form method="post" class="my-login-form">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Create an account</button>
-</form>
-<p>Already have an account? <a href="{% url 'login_layer_and_generic' %}">Log in here</a></p>
+        <form method="post" class="my-login-form">
+            {% csrf_token %}
+            {% for field in form %}
+                {{ field.label_tag }}
+                {{ field }}
+            {% endfor %}
+
+            <button type="submit">Create an account</button>
+        </form>
+        <p>Already have an account? <a href="{% url 'login_layer_and_generic' %}">Log in here</a></p>
+    </div>
+</div>
 {% endblock %}

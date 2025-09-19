@@ -12,16 +12,16 @@
         <form method="post">
             {% csrf_token %}
             
-            <label for="username">User</label>
-            <input type="text" name="username" id="username" required>
+            <label for="username">Username:</label>
+            <input type="text" name="username" id="id_username" required>
             
-            <label for="password">Password</label>
-            <input type="password" name="password" id="password" required>
+            <label for="password">Password:</label>
+            <input type="password" name="password" id="id_password" required>
             <button type="submit">Sign in</button>
         </form>
         <br>
         <p>Don't have an account? <a href="{% url 'register_json' %}"><b>Sign up here</b></a></p>
-        <p>Use test credentials - <a onclick="Test_Credential()">Click here</a></p>
+        <p>Use test credentials - <a onclick="Test_Credential(event, 0)">Click here</a></p>
 
         <a href="{% url 'index' %}" class="back-btn">Back to main page</a>
     </div>

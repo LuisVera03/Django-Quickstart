@@ -62,7 +62,6 @@
                 <div class="user-dropdown">
                     <span>{{ user.username }}</span>
                     <div class="dropdown-content">
-                        <a href="{% url 'profile_json' %}" style="color:#181D27">Profile</a>
                         <form action="{% url 'logout_json' %}" method="post">
                             {% csrf_token %}
                             <button type="submit">Logout</button>
