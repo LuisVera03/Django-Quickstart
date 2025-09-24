@@ -1,150 +1,172 @@
-"""Service layer for layer_and_generic app.
-
-Provides a thin abstraction over repository functions so that:
-- Business rules / validation can be inserted without touching views
-- Unit tests can target pure functions
-- Future cross-cutting concerns (caching, logging, metrics) can hook here
-
+"""
+Service layer: applies business logic over repositories.
+- Does not directly touch the ORM
+- Handles errors and rules
+- Orchestrates operations across multiple entities
 """
 
 from django.contrib.auth import authenticate, login, logout
-
-# Import functions for data manipulation
+from django.db import models
 from .repositories import (
-    create_user, get_user_by_username, 
-    get_all_table1, get_table1_by_id, create_table1, update_table1, delete_table1,
-    get_all_table2, get_table2_by_id, create_table2, update_table2, delete_table2,
-    get_all_table3, get_table3_by_id, create_table3, update_table3, delete_table3
+    UserRepository,
+    Table1Repository,
+    Table2Repository,
+    Table3Repository,
 )
 
-#
-## Login / Register
-#
 
-# Attempts to authenticate and log in a user. Returns True if successful, otherwise False.
+# ======================
+# User Services
+# ======================
+class UserService:
+    @staticmethod
+    def register_user(username, email, password):
+        """Register a new user."""
+        if UserRepository.get_by_username(username):
+            raise ValueError("User already exists")
+        return UserRepository.create_user(username, email, password)
+
+    @staticmethod
+    def authenticate_user(username, password):
+        """Authenticate an existing user."""
+        return authenticate(username=username, password=password)
+
+
+# ======================
+# Auth helpers (functions used by views)
+# ======================
 def try_login(request, username, password):
-    """Authenticate and log in a user.
-
-    Returns True if authentication succeeds, else False.
-    """
-    user = authenticate(username=username, password=password)
-    if user:
+    """Authenticates and performs login. Returns True if successful."""
+    user = UserService.authenticate_user(username, password)
+    if user is not None:
         login(request, user)
         return True
     return False
 
-# Registers a new user if the username is not already taken. Returns the created user or None if the username already exists.
-def register_user(username, email, password, password_confirm):
-    """Register a new user if username not taken.
 
-    password_confirm kept for interface symmetry (could validate match here).
-    Returns user instance or None.
+def register_user(username, email, password):
+    """Simple wrapper to register and return the created user.
+    If already exists, returns None so the view can show the message.
     """
-    if get_user_by_username(username):
+    try:
+        return UserService.register_user(username, email, password)
+    except ValueError:
         return None
-    return create_user(username, email, password)
 
-#Log out
+
 def perform_logout(request):
-    """Safely log out current session."""
+    """Logs out the current session."""
     logout(request)
+    return True
 
-#
-## Table1 Services
-#
 
-def get_table1_list():
-    """Return queryset for Table1 (prefetched via repository)."""
-    return get_all_table1()
+# ======================
+# Table Services (Generic)
+# ======================
+class BaseService:
+    repository = None  # <- override in each service
 
-def get_table1_detail(id):
-    """Return single Table1 instance or None."""
-    return get_table1_by_id(id)
+    @classmethod
+    def list(cls):
+        return cls.repository.get_all()
 
-def create_table1_service(data):
-    """Normalize blank strings to None and create Table1 instance."""
-    processed_data = data.copy()
-    none_fields = ['foreign_key', 'one_to_one', 'integer_field', 'float_field', 
-                   'date_field', 'time_field', 'datetime_field']
-    
-    for field in none_fields:
-        if field in processed_data and processed_data[field] == '':
-            processed_data[field] = None
-    
-    return create_table1(processed_data)
+    @classmethod
+    def get(cls, id):
+        return cls.repository.get_by_id(id)
 
-def update_table1_service(instance, data):
-    """Update Table1 instance normalizing '' -> None for optional fields."""
-    processed_data = data.copy()
-    none_fields = ['foreign_key', 'one_to_one', 'integer_field', 'float_field', 
-                   'date_field', 'time_field', 'datetime_field']
-    
-    for field in none_fields:
-        if field in processed_data and processed_data[field] == '':
-            processed_data[field] = None
-    
-    return update_table1(instance, processed_data)
+    # More expressive alias for what views use
+    @classmethod
+    def detail(cls, id):
+        return cls.get(id)
 
-def delete_table1_service(instance):
-    """Delete Table1 instance (repository handles file cleanup)."""
-    return delete_table1(instance)
+    @classmethod
+    def create(cls, **data):
+        """Creates an instance from kwargs (compatible with form.cleaned_data)."""
+        return cls.repository.create(dict(data))
 
-#
-## Table2 Services
-#
+    @classmethod
+    def update(cls, pk, **data):
+        """Updates by pk with kwargs (compatible with form.cleaned_data)."""
+        instance = cls.repository.get_by_id(pk)
+        if not instance:
+            raise ValueError("Object not found")
+        return cls.repository.update(instance, dict(data))
 
-def get_table2_list():
-    """Return queryset for Table2."""
-    return get_all_table2()
+    @classmethod
+    def delete(cls, pk):
+        instance = cls.repository.get_by_id(pk)
+        if not instance:
+            raise ValueError("Object not found")
+        return cls.repository.delete(instance)
 
-def get_table2_detail(id):
-    """Return single Table2 instance or None."""
-    return get_table2_by_id(id)
+    @classmethod
+    def get_field_data(cls, instance):
+        """Returns a list of dictionaries with field name and value."""
+        if not instance:
+            return []
 
-def create_table2_service(data):
-    """Create Table2 record."""
-    return create_table2(data)
+        fields = []
+        # Obtain all model fields
+        for field in instance._meta.fields:
+            if field.name == "id":
+                continue
 
-def update_table2_service(instance, data):
-    """Update Table2 record."""
-    return update_table2(instance, data)
+            value = getattr(instance, field.name)
+            # Handle special cases
+            if field.choices:
+                # If the field has choices, get the readable value
+                value = getattr(instance, f"get_{field.name}_display")()
+            elif field.is_relation:
+                # If it's a relation, get the str of the related object
+                value = str(value) if value else None
+            elif isinstance(field, (models.FileField, models.ImageField)):
+                # For file fields, get the URL
+                value = value.url if value else None
 
-def delete_table2_service(instance):
-    """Delete Table2 record."""
-    return delete_table2(instance)
+            fields.append(
+                {
+                    "name": field.verbose_name or field.name.replace("_", " ").title(),
+                    "value": value if value is not None else "-",
+                }
+            )
 
-#
-## Table3 Services
-#
+        # Handle ManyToMany fields
+        for field in instance._meta.many_to_many:
+            related_objects = getattr(instance, field.name).all()
+            value = (
+                ", ".join([str(obj) for obj in related_objects])
+                if related_objects.exists()
+                else "-"
+            )
+            fields.append(
+                {
+                    "name": field.verbose_name or field.name.replace("_", " ").title(),
+                    "value": value,
+                }
+            )
 
-def get_table3_list():
-    """Return queryset for Table3."""
-    return get_all_table3()
+        return fields
 
-def get_table3_detail(id):
-    """Return single Table3 instance or None."""
-    return get_table3_by_id(id)
 
-def create_table3_service(data):
-    """Create Table3 record."""
-    return create_table3(data)
+class Table1Service(BaseService):
+    repository = Table1Repository
 
-def update_table3_service(instance, data):
-    """Update Table3 record."""
-    return update_table3(instance, data)
 
-def delete_table3_service(instance):
-    """Delete Table3 record."""
-    return delete_table3(instance)
+class Table2Service(BaseService):
+    repository = Table2Repository
 
-#
-## Dashboard Data
-#
 
+class Table3Service(BaseService):
+    repository = Table3Repository
+
+
+# ======================
+# Dashboard data
+# ======================
 def get_dashboard_data():
-    """Return aggregate counts for dashboard KPIs."""
+    """Returns simple metrics for LAG Home."""
     return {
-        'total_table1': get_table1_list().count(),
-        'total_table2': get_table2_list().count(),
-        'total_table3': get_table3_list().count(),
+        "table1_count": Table1Repository.get_all().count(),
+        "table2_count": Table2Repository.get_all().count(),
+        "table3_count": Table3Repository.get_all().count(),
     }

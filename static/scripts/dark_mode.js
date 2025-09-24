@@ -35,14 +35,16 @@ function applyDarkMode(isDark) {
 // Function to update toggle button text
 function updateToggleButton(isDark) {
     const button = document.getElementById('darkModeToggle');
-    if (button) {
-        const newLabel = isDark ? 'Light' : 'Dark';
-        if (button.textContent !== newLabel) {
-            button.textContent = newLabel;
-        }
-        button.title = isDark ? 'Switch to light mode' : 'Switch to dark mode';
-        button.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+    if (!button) return;
+    const lightIcon = '<i class="bi bi-brightness-high-fill"></i>';
+    const darkIcon = '<i class="bi bi-moon-fill"></i>';
+    // When isDark is true, we show light icon
+    const desired = isDark ? lightIcon : darkIcon;
+    if (button.innerHTML.trim() !== desired) {
+        button.innerHTML = desired;
     }
+    button.title = isDark ? 'Switch to light mode' : 'Switch to dark mode';
+    button.setAttribute('aria-pressed', isDark ? 'true' : 'false');
 }
 
 // Function to get CSRF cookie

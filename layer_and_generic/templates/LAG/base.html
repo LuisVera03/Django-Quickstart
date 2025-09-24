@@ -6,8 +6,10 @@
         <title>Layer and generic</title>
         <link href="" rel="icon">
         <meta name="viewport" content="initial-scale=1, width=device-width,shrink-to-fit=no">
-        <!-- Dark mode CSS -->
-        <link rel="stylesheet" href="{% static 'css/dark_mode.css' %}">
+        <!-- Bootstrap icons -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+        <!-- Sidebar style -->
+        <link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
         <!-- Main style -->
         <link rel="stylesheet" href="{% static 'css/style.css' %}">
         <!-- dark mode style --> 
@@ -32,19 +34,107 @@
     </head>
     <body>
         {% if user.is_authenticated %}
-        <div>
-            User: {{ user.username }} | 
-            <a href="{% url 'home_layer_and_generic' %}">Home</a> |
-            {% dark_mode_button %} |
-            <form action="{% url 'logout_layer_and_generic' %}" method="post" style="display:inline;">
-                {% csrf_token %}
-                <button type="submit" style="background:none; border:none; color:blue; cursor:pointer;">Logout</button>
-            </form> |
-        </div>
-        <hr>
+            <nav class="navbar">
+                <div class="navbar-left">Django Quickstart</div>
+                <div class="navbar-center">
+                    <a href="{% url 'home_layer_and_generic' %}">Home</a> |
+                    <a href="/pages/about/">About</a> |
+                    <a href="/pages/policies/">Policies</a>
+                </div>
+                <div class="navbar-right">
+                    <i class="bi bi-person-fill"></i>
+                    <div class="user-dropdown">
+                        <span>{{ user.username }}</span>
+                        <div class="dropdown-content">
+                            <form action="{% url 'logout_layer_and_generic' %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit">Logout</button>
+                            </form>
+                        </div>
+                    </div>
+                    <span>{% dark_mode_button %}</span> 
+                </div>
+            </nav>
+            <div class="lag_app_title">
+                <div class="sidebar-toggle">
+                    <i class="bi bi-list"></i>
+                </div>
+                <span>Layer & Generic</span>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="side-bar">
+                <div class="close-btn">
+                    <i class="bi bi-x-lg"></i>
+                </div>
+                <div class="menu">
+                    <!-- Generic section-->
+                    <div class="item">
+                        <a href="#" class="sub-btn">
+                            <i class="bi bi-table"></i>Generic
+                            <i class="bi bi-chevron-right dropdown"></i>
+                        </a>
+                        <div class="sub-menu">
+                            <!-- Generic table -->
+                            <a href="{% url 'list' %}" class="sub-item">
+                                <i class="bi bi-table"></i> View Table
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Layers section-->
+                    <div class="item">
+                        <a href="#" class="sub-btn">
+                            <i class="bi bi-layers"></i>Layers
+                            <i class="bi bi-chevron-right dropdown"></i>
+                        </a>
+                        <div class="sub-menu">
+                            <!-- Table 1 -->
+                            <div class="item">
+                                <a href="#" class="sub-btn">
+                                    <i class="bi bi-grid-1x2-fill"></i>Table 1 ({{ total_table1|default:0 }})
+                                    <i class="bi bi-chevron-right dropdown"></i>
+                                </a>
+                                <div class="sub-menu">
+                                    <a href="{% url 'table1_list' %}" class="sub-item">
+                                        <i class="bi bi-table"></i> View Table
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Table 2 -->
+                            <div class="item">
+                                <a href="#" class="sub-btn">
+                                    <i class="bi bi-grid-3x2-gap-fill"></i>Table 2 ({{ total_table2|default:0 }})
+                                    <i class="bi bi-chevron-right dropdown"></i>
+                                </a>
+                                <div class="sub-menu">
+                                    <a href="{% url 'table2_list' %}" class="sub-item">
+                                        <i class="bi bi-table"></i> View Table
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Table 3 -->
+                            <div class="item">
+                                <a href="#" class="sub-btn">
+                                    <i class="bi bi-grid-3x3-gap-fill"></i>Table 3 ({{ total_table3|default:0 }})
+                                    <i class="bi bi-chevron-right dropdown"></i>
+                                </a>
+                                <div class="sub-menu">
+                                    <a href="{% url 'table3_list' %}" class="sub-item">
+                                        <i class="bi bi-table"></i> View Table
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         {% endif %}
         
-        {% if messages %}
+         {% if messages %}
             <div class="messages-container">
             {% for message in messages %}
                 <div class="message {{ message.tags|default:'info' }}">
@@ -55,8 +145,14 @@
             </div>
         {% endif %}
 
-        {% block body %}
-        {% endblock %}
+        <!-- Container -->
+        <div class="content-wrapper">
+            {% block body %}
+            <!-- Container -->
+            {% endblock %}
+        </div>
+        
         <script src="{% static 'scripts/dark_mode.js' %}"></script>
+        <script src="{% static 'scripts/sidebar.js' %}"></script>
     </body>
 </html>

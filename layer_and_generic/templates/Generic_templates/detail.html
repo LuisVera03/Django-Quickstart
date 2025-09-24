@@ -1,41 +1,200 @@
-{% extends "LAG/base.html" %}
+{% extends 'LAG/base.html' %}
 
 {% block body %}
-<h1>{{ table_name }} Detail</h1>
-<p>ID: {{ object.id }}</p>
+<div class="detail-content">
+    <div class="detail-header">
+        <div class="detail-title-section">
+            <span class="detail-title">{{ table_name }} Details</span>
+            <div class="detail-actions">
+                <a href="{% url update_url object.id %}" class="action-button edit-button">
+                    <i class="bi bi-pencil"></i> Edit
+                </a>
+                <a href="{% url list_url %}" class="action-button back-button">
+                    <i class="bi bi-arrow-left"></i> Back to List
+                </a>
+            </div>
+        </div>
+    </div>
 
-{% if table_name == 'Table1' %}
-  <p>Char Field: {{ object.char_field|default:"-" }}</p>
-  <p>Text Field: {{ object.text_field|default:"-" }}</p>
-  <p>Boolean Field: {% if object.boolean_field %}Yes{% else %}No{% endif %}</p>
-  <p>Integer Field: {{ object.integer_field|default:"-" }}</p>
-  <p>Float Field: {{ object.float_field|default:"-" }}</p>
-  <p>Date Field: {{ object.date_field|default:"-" }}</p>
-  <p>Time Field: {{ object.time_field|default:"-" }}</p>
-  <p>DateTime Field: {{ object.datetime_field|default:"-" }}</p>
-  <p>Foreign Key: {{ object.foreign_key|default:"-" }}</p>
-  <p>One to One: {{ object.one_to_one|default:"-" }}</p>
-  <p>Many to Many: 
-    {% if object.many_to_many.all %}
-      {% for m2m in object.many_to_many.all %}
-        {{ m2m }}{% if not forloop.last %}, {% endif %}
-      {% endfor %}
-    {% else %}
-      -
-    {% endif %}
-  </p>
-  <p>File Field: {% if object.file_field %}<a href="{{ object.file_field.url }}">Download</a>{% else %}No file{% endif %}</p>
-  <p>Image Field: {% if object.image_field %}<img src="{{ object.image_field.url }}" alt="Image" style="max-width: 200px;">{% else %}No image{% endif %}</p>
+    <div class="detail-info">
+        <div class="field-list">
+            <div class="field-row">
+                <span class="field-label">ID:</span>
+                <span class="field-value">{{ object.id }}</span>
+            </div>
+            {% for field in fields %}
+                <div class="field-row">
+                    <span class="field-label">{{ field.name }}:</span>
+                    <span class="field-value">
+                        {% if 'http' in field.value|stringformat:'s' and 'media' in field.value|stringformat:'s' %}
+                            {% if '.jpg' in field.value|stringformat:'s' or '.png' in field.value|stringformat:'s' or '.gif' in field.value|stringformat:'s' %}
+                                <img src="{{ field.value }}" alt="{{ field.name }}" class="detail-image">
+                            {% else %}
+                                <a href="{{ field.value }}" target="_blank" class="file-link">
+                                    <i class="bi bi-file-earmark"></i> View File
+                                </a>
+                            {% endif %}
+                        {% else %}
+                            {{ field.value|default:"-" }}
+                        {% endif %}
+                    </span>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
 
-{% elif table_name == 'Table2' %}
-  <p>Positive Small Int: {{ object.positive_small_int }}</p>
-  <p>Choice Display: {{ object.get_positive_small_int_display }}</p>
+<style>
+.detail-content {
+    background: var(--white-color);
+    border-radius: 10px;
+    padding: 25px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    margin: 0 auto;
+}
 
-{% elif table_name == 'Table3' %}
-  <p>Duration Field: {{ object.duration_field|default:"-" }}</p>
-  <p>Email Field: {{ object.email_field|default:"-" }}</p>
-{% endif %}
+.detail-header {
+    margin-bottom: 25px;
+}
 
-<a href="{% url list_url %}">Back</a> |
-<a href="{% url 'home_layer_and_generic' %}">Home</a>
+.detail-title-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.detail-title {
+    font-size: 2.2em;
+    color: var(--green-body);
+    font-weight: bold;
+}
+
+.detail-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.action-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.edit-button {
+    background-color: #007bff;
+    color: white;
+}
+
+.edit-button:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+.back-button {
+    background-color: #6c757d;
+    color: white;
+}
+
+.back-button:hover {
+    background-color: #545b62;
+    transform: translateY(-2px);
+}
+
+.detail-info {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.field-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.field-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.field-label {
+    font-weight: 600;
+    color: var(--dark-color);
+    min-width: 150px;
+    font-size: 1.1em;
+}
+
+.field-value {
+    flex: 1;
+    color: #333;
+    word-break: break-word;
+}
+
+.detail-image {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 5px;
+}
+
+.file-link {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.file-link:hover {
+    text-decoration: underline;
+}
+
+[data-theme="dark"] .detail-content {
+    background-color: #3a3a3a;
+}
+
+[data-theme="dark"] .detail-info {
+    background-color: #2d2d2d;
+}
+
+[data-theme="dark"] .field-label {
+    color: var(--white-color);
+}
+
+[data-theme="dark"] .field-value {
+    color: #ccc;
+}
+
+[data-theme="dark"] .field-row {
+    border-bottom-color: #555;
+}
+
+@media (max-width: 768px) {
+    .detail-title-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .detail-actions {
+        justify-content: center;
+    }
+    
+    .field-row {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .field-label {
+        min-width: auto;
+    }
+}
+</style>
 {% endblock %}
