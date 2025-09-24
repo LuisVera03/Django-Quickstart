@@ -47,11 +47,14 @@
         {% endif %}
         
         {% if messages %}
-            <ul class="messages">
-                {% for message in messages %}
-                    <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|safe }}</li>
-                {% endfor %}
-            </ul>
+            <div class="messages-container">
+            {% for message in messages %}
+                <div class="message {{ message.tags|default:'info' }}">
+                    {{ message|safe }}
+                    <span class="close-btn" onclick="this.parentElement.style.display='none';">&times;</span>
+                </div>
+            {% endfor %}
+            </div>
         {% endif %}
         {% block body %}
         {% endblock %}

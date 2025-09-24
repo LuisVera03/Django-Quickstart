@@ -13,6 +13,48 @@ body {
     font-weight: bolder;
 }
 
+.messages-container {
+    position: fixed;
+    top: 20px;
+    margin: 0 2%; /* reemplaza margin-right/left */
+    z-index: 1000;
+    width: 96%; /* ancho opcional */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.message {
+    padding: 7.5px 10px;
+    border-radius: 5px;
+    color: #fff;
+    font-weight: 500;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    animation: fadein 0.5s;
+
+    display: flex;             /* hace flex para centrar contenido */
+    align-items: center;       /* centra verticalmente */
+    justify-content: space-between; /* espacio entre mensaje y botón */
+}
+
+.message.info { background-color: #17a2b8; }
+.message.success { background-color: #28a745; }
+.message.warning { background-color: #ffc107; color: #333; }
+.message.error { background-color: #dc3545; }
+
+.close-btn {
+    cursor: pointer;
+    font-size: 35px;
+    font-weight: bold;
+    line-height: 1;  /* asegura que quede centrado verticalmente */
+    margin-left: 15px; /* separación del texto */
+}
+
+@keyframes fadein {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 .navbar {
     display: flex;
     justify-content: space-between;
