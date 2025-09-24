@@ -16,9 +16,11 @@ body {
 .messages-container {
     position: fixed;
     top: 20px;
-    margin: 0 2%; /* reemplaza margin-right/left */
+    margin: 0 2%;
+    /* reemplaza margin-right/left */
     z-index: 1000;
-    width: 96%; /* ancho opcional */
+    width: 96%;
+    /* ancho opcional */
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -29,30 +31,54 @@ body {
     border-radius: 5px;
     color: #fff;
     font-weight: 500;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     animation: fadein 0.5s;
 
-    display: flex;             /* hace flex para centrar contenido */
-    align-items: center;       /* centra verticalmente */
-    justify-content: space-between; /* espacio entre mensaje y botón */
+    display: flex;
+    /* hace flex para centrar contenido */
+    align-items: center;
+    /* centra verticalmente */
+    justify-content: space-between;
+    /* espacio entre mensaje y botón */
 }
 
-.message.info { background-color: #17a2b8; }
-.message.success { background-color: #28a745; }
-.message.warning { background-color: #ffc107; color: #333; }
-.message.error { background-color: #dc3545; }
+.message.info {
+    background-color: #17a2b8;
+}
+
+.message.success {
+    background-color: #28a745;
+}
+
+.message.warning {
+    background-color: #ffc107;
+    color: #333;
+}
+
+.message.error {
+    background-color: #dc3545;
+}
 
 .close-btn {
     cursor: pointer;
     font-size: 35px;
     font-weight: bold;
-    line-height: 1;  /* asegura que quede centrado verticalmente */
-    margin-left: 15px; /* separación del texto */
+    line-height: 1;
+    /* asegura que quede centrado verticalmente */
+    margin-left: 15px;
+    /* separación del texto */
 }
 
 @keyframes fadein {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .navbar {
@@ -358,15 +384,18 @@ table.crud-table a:hover {
 .delete_button {
     background: rgb(255, 72, 0);
 }
+
 .save_button {
     background: rgb(117, 252, 176);
     margin-right: 10px;
     width: 25%;
 }
+
 .cancel_button {
     background: rgb(128, 128, 128);
     width: 25%;
 }
+
 .dark_button {
     font-family: var(--font-small);
     font-size: 1.25em;
@@ -383,28 +412,28 @@ table.crud-table a:hover {
 }
 
 .form-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-  width: 100%; 
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    width: 100%;
 }
 
 .label_field {
-  white-space: nowrap;  
-  flex: 0 0 auto;
-  font-size: 1.25rem;
+    white-space: nowrap;
+    flex: 0 0 auto;
+    font-size: 1.25rem;
 }
 
 .input_field {
-  flex: 1;               
-  box-sizing: border-box;
-  font-family: var(--font-small);
-  font-size: 1rem;
-  padding: 5px;
-  border: 2px solid var(--dark-color);
-  border-radius: 5px;
-  outline: none;
+    flex: 1;
+    box-sizing: border-box;
+    font-family: var(--font-small);
+    font-size: 1rem;
+    padding: 5px;
+    border: 2px solid var(--dark-color);
+    border-radius: 5px;
+    outline: none;
 }
 
 /* Modal */
@@ -456,39 +485,54 @@ table.crud-table a:hover {
     font-weight: bold;
     letter-spacing: 5px;
     margin-bottom: 10px;
-    color: #39ff14; /* bright neon green */
+    color: #39ff14;
+    /* bright neon green */
 
     /* neon glow with multiple layers */
-    text-shadow: 
+    text-shadow:
         0 0 5px #39ff14,
         0 0 10px #39ff14,
         0 0 20px #39ff14,
         0 0 40px #2ecc71,
         0 0 80px #2ecc71;
-    
+
     /* optional flicker effect */
     animation: neon-flicker 2.5s infinite alternate;
 }
 
 /* Flicker animation for neon effect */
 @keyframes neon-flicker {
-    0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+
+    0%,
+    19%,
+    21%,
+    23%,
+    25%,
+    54%,
+    56%,
+    100% {
         opacity: 1;
     }
-    20%, 24%, 55% {
+
+    20%,
+    24%,
+    55% {
         opacity: 0.6;
     }
 }
+
 .login-container h2 {
     font-size: 25px;
     font-weight: bold;
     margin-bottom: 20px;
 }
+
 .login-container form {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
+
 .login-container label {
     font-weight: bold;
     font-size: 14px;
@@ -509,7 +553,8 @@ table.crud-table a:hover {
 
 
 .login-container button {
-    width: 250px; /* same as inputs */
+    width: 250px;
+    /* same as inputs */
     padding: 10px;
     background-color: #2ecc71;
     color: var(--white-color);
@@ -549,5 +594,36 @@ table.crud-table a:hover {
     background: black;
     color: white;
     border-radius: 5px;
+    text-align: center;
+}
+
+/* App Title on LAG  */
+.lag_app_title {
+    font-size: 2.5em;
+    background-color: var(--dark-color);
+    color: var(--white-color);
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.lag_app_title .sidebar-toggle {
+    position: absolute;
+    left: 20px;
+    font-size: 1em;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.lag_app_title .sidebar-toggle:hover {
+    transform: scale(1.1);
+}
+
+.lag_app_title span {
+    flex: 1;
     text-align: center;
 }

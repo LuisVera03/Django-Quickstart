@@ -1,14 +1,48 @@
 {% extends "LAG/base.html" %}
+{% load static %}
 
 {% block body %}
-<h2>Home Page</h2>
-
-<p><a href="{% url 'list' %}">CRUD of Table 1 as generic views</a></p>
-
-<hr>
-
-<h3>CRUD Operations with Layers</h3>
-<p><a href="{% url 'table1_list' %}">CRUD of Table1 with layers ({{ total_table1|default:0 }} records)</a></p>
-<p><a href="{% url 'table2_list' %}">CRUD of Table2 with layers ({{ total_table2|default:0 }} records)</a></p>
-<p><a href="{% url 'table3_list' %}">CRUD of Table3 with layers ({{ total_table3|default:0 }} records)</a></p>
+<div class="home-content">
+    <div class="welcome-section">
+        <h1>Welcome to Layer & Generic Management System</h1>
+        <p>Use the sidebar to navigate between different sections:</p>
+        <ul>
+            <li><strong>Generic:</strong> Manage generic table data with CRUD operations</li>
+            <li><strong>Layers:</strong> Access three different data layers (Table 1, 2, and 3) with full management capabilities</li>
+        </ul>
+    </div>
+    
+    <!-- Dashboard -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="bi bi-table"></i>
+            </div>
+            <div class="stat-content">
+                <h3>Table 1</h3>
+                <p>{{ table1_count|default:0 }} Records</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="bi bi-grid-3x2-gap-fill"></i>
+            </div>
+            <div class="stat-content">
+                <h3>Table 2</h3>
+                <p>{{ table2_count|default:0 }} Records</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="bi bi-grid-3x3-gap-fill"></i>
+            </div>
+            <div class="stat-content">
+                <h3>Table 3</h3>
+                <p>{{ table3_count|default:0 }} Records</p>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
