@@ -7,10 +7,16 @@ from django.utils.timezone import now
 
 # Helper function to get client IP address
 def get_client_ip(request):
-    x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
+    """Return client IP safely. request can be None in some signals (e.g., user_login_failed)."""
+    if request is None:
+        return "unknown"
+    meta = getattr(request, "META", None)
+    if not isinstance(meta, dict):
+        return "unknown"
+    x_forwarded_for = meta.get("HTTP_X_FORWARDED_FOR")
     if x_forwarded_for:
-        return x_forwarded_for.split(",")[0]
-    return request.META.get("REMOTE_ADDR")
+        return x_forwarded_for.split(",")[0].strip()
+    return meta.get("REMOTE_ADDR", "unknown")
 
 # Signal handlers
 @receiver(user_logged_in)
@@ -20,7 +26,7 @@ def log_user_login(sender, request, user, **kwargs):
         user=user,
         username=user.username,
         event_type='login',
-        ip_address=get_client_ip(request),
+    ip_address=get_client_ip(request),
     )
 
 @receiver(user_logged_out)
@@ -30,7 +36,7 @@ def log_user_logout(sender, request, user, **kwargs):
         user=user,
         username=user.username,
         event_type='logout',
-        ip_address=get_client_ip(request),
+    ip_address=get_client_ip(request),
     )
 
 @receiver(user_login_failed)
