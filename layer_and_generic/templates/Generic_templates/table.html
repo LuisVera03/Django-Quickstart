@@ -32,14 +32,18 @@
                     <td>{{ object.id }}</td>
                     {% for field in object.fields %}
                         <td>
-                            {% if 'http' in field.value|stringformat:'s' and 'media' in field.value|stringformat:'s' %}
-                                {% if '.jpg' in field.value|stringformat:'s' or '.png' in field.value|stringformat:'s' or '.gif' in field.value|stringformat:'s' %}
-                                    <img src="{{ field.value }}" alt="{{ field.name }}" style="max-width: 100px; max-height: 100px;">
-                                {% else %}
-                                    <a href="{{ field.value }}" target="_blank" class="btn btn-link">
-                                        <i class="bi bi-file-earmark"></i> View File
-                                    </a>
-                                {% endif %}
+                            {% if field.value != '-' %}
+                                {% with val=field.value|stringformat:'s' %}
+                                    {% if '.jpg' in val|lower or '.jpeg' in val|lower or '.png' in val|lower or '.gif' in val|lower or '.webp' in val|lower or '.bmp' in val|lower or '.svg' in val|lower %}
+                                        <img src="{{ val }}" alt="{{ field.name }}" style="max-width:64px; max-height:64px;">
+                                    {% elif 'media' in val %}
+                                        <a href="{{ val }}" download class="action-btn edit-btn" title="Download">
+                                            Download
+                                        </a>
+                                    {% else %}
+                                        {{ field.value }}
+                                    {% endif %}
+                                {% endwith %}
                             {% else %}
                                 {{ field.value }}
                             {% endif %}
