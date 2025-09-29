@@ -4,6 +4,7 @@
     --text-color: #181D27;
     --dark-color: #222937;
     --green-dark: #0C4B33;
+    --grey: #3a3a3a;
 }
 
 [data-theme="dark"] {
@@ -19,14 +20,13 @@ body {
 .navbar, .nav-bar {
     color: #F8F8F8;
     background-color: var(--green-dark);
-    font-size: 2em;
 }
 .navbar a{
     color: #F8F8F8;
 }
 .app_title {
-    background-color: var(--text-color);
-    color: var(--back-color);
+    background-color: #181D27;
+    color: #F8F8F8;
 }
 .dropdown-title button {
     background-color: var(--text-color);
