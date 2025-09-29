@@ -80,7 +80,7 @@ function renderTable() {
     let html = `<span class="tablediv_title">${currentTable.replace('table', 'Table ')}</span>`;
     html += `<br>`;
     html += `<button class="tablediv_button" onclick="openCrudModal('create')">Add New Entry +</button>`;
-    html += `<table class="crud-table"><thead><tr>`;
+    html += `<div class="table-container"><table class="crud-table"><thead><tr>`;
     fields.forEach(f => html += `<th>${formatHeader(f)}</th>`);
     html += `<th>Actions</th></tr></thead><tbody>`;
     currentData.forEach(row => {
@@ -92,7 +92,7 @@ function renderTable() {
         </td>`;
         html += `</tr>`;
     });
-    html += `</tbody></table>`;
+    html += `</tbody></table></div>`;
     html += renderPagination();
     document.getElementById('tableDiv').innerHTML = html;
 }

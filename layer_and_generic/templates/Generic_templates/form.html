@@ -23,22 +23,7 @@
             {% endif %}
 
             <!-- Render each form field -->
-            {% for field in form %}
-                <div class="form-group">
-                    <!-- required indicator -->
-                    <label for="{{ field.id_for_label }}">
-                        {{ field.label }}
-                        {% if field.field.required %}<span class="required-asterisk">*</span>{% endif %}
-                    </label>
-                    
-                    {{ field }}
-                    
-                    <!-- Field-specific errors -->
-                    {% for error in field.errors %}
-                        <div class="error-text">{{ error }}</div>
-                    {% endfor %}
-                </div>
-            {% endfor %}
+            {{ form.as_p }}
 
             <!-- buttons -->
             <div class="form-actions">
@@ -62,4 +47,13 @@
         </form>
     </div>
 </div>
+<style>
+
+[data-theme="dark"] .form-container input {
+    background-color: #3a3a3a;
+}
+
+
+
+</style>
 {% endblock %}

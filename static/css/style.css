@@ -83,17 +83,25 @@ body {
 
 .navbar {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between; 
     padding: 0.5% 1.5%;
 }
 
 .navbar-left {
     font-weight: bolder;
+    font-size: 1em;
+}
+
+.navbar-center {
+    font-size: 1.5em;
+    flex: 1;                  
+    text-align: center;        
 }
 
 .navbar-center a {
     text-decoration: none;
+    margin: 0 5px;             
 }
 
 .navbar-center a:hover {
@@ -102,7 +110,9 @@ body {
 
 .navbar-right {
     display: flex;
+    font-size: 1.5em;
     align-items: center;
+    gap: 10px;                 
 }
 
 .user-dropdown {
@@ -320,6 +330,12 @@ body {
     margin-bottom: 10px;
 }
 
+.table-container {
+    overflow-x: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
 table.crud-table {
     border-collapse: collapse;
     color: var(--white-color);
@@ -388,12 +404,10 @@ table.crud-table a:hover {
 .save_button {
     background: rgb(117, 252, 176);
     margin-right: 10px;
-    width: 25%;
 }
 
 .cancel_button {
     background: rgb(128, 128, 128);
-    width: 25%;
 }
 
 .dark_button {
@@ -422,14 +436,14 @@ table.crud-table a:hover {
 .label_field {
     white-space: nowrap;
     flex: 0 0 auto;
-    font-size: 1.25rem;
+    font-size: 0.7rem;
 }
 
 .input_field {
     flex: 1;
     box-sizing: border-box;
     font-family: var(--font-small);
-    font-size: 1rem;
+    font-size: 0.7rem;
     padding: 5px;
     border: 2px solid var(--dark-color);
     border-radius: 5px;
@@ -686,7 +700,6 @@ table.crud-table a:hover {
     padding: 12px;
     border: 2px solid #ddd;
     border-radius: 6px;
-    background: #f9f9f9;
     font-size: 14px;
     font-family: var(--font-small);
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
