@@ -812,7 +812,7 @@ def f_example(request):
 # View to demonstrate existence check
 def Q_example(request):
     # Example of Q objects for complex queries
-    q_data_or = Table1.objects._(Q(integer_field__gt=5) | Q(boolean_field=True))
+    q_data_or = Table1.objects.filter(Q(integer_field__gt=5) | Q(boolean_field=True))
     q_data_and = Table1.objects.filter(Q(integer_field__gt=5) & Q(boolean_field=True))
 
     return render(request, 'queries.html', {
