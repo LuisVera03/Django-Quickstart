@@ -6,16 +6,20 @@
         <title>Django QuickStart</title>
         <link href="" rel="icon">
         <meta name="viewport" content="initial-scale=1, width=device-width,shrink-to-fit=no">
-        <!-- Dark mode CSS -->
-        <link rel="stylesheet" href="{% static 'css/dark_mode.css' %}">
-        <!-- Main style -->
-        <link rel="stylesheet" href="{% static 'css/style.css' %}">
-        <!-- dark mode style --> 
-        <link rel="stylesheet" href="{% static 'css/dark_mode.css' %}">
+        <!-- Boostrap icons -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
         <!-- Google Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Jersey+10&family=Kode+Mono:wght@400..700&display=swap" rel="stylesheet">
+        <!-- Home script -->
+        <script src="{% static 'scripts/home.js' %}"></script>
+        <!-- Main style -->
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        <!-- Sidebar style -->
+        <link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
+        <!-- dark mode style --> 
+        <link rel="stylesheet" href="{% static 'css/dark_mode.css' %}">
         <script>
             (function(){
                 try {
@@ -32,22 +36,32 @@
     </head>
     <body>
         {% if user.is_authenticated %}
-        <div>
-            User: {{ user.username }} | 
-            Role: {% if user.groups.all.0.name == 'Admins' %}Administrator{% elif user.groups.all.0.name == 'Customers' %}Customer{% else %}No role assigned{% endif %} | 
-            <a href="{% url 'home_rest_basic' %}">Home</a> |
-            <a href="{% url 'profile_rest_basic' %}">Profile</a> |
-            {% dark_mode_button %} |
-            <form action="{% url 'logout_rest_basic' %}" method="post" style="display:inline;">
-                {% csrf_token %}
-                <button type="submit" style="background:none; border:none; color:blue; cursor:pointer;">Logout</button>
-            </form> |
-        </div>
-        <hr>
+        <nav class="navbar">
+            <div class="navbar-left">Django Quickstart</div>
+            <div class="navbar-center">
+                <a href="{% url 'home_rest_basic' %}">Home</a> |
+                <a href="/pages/about/">About</a> |
+                <a href="/pages/policies/">Policies</a> |
+                <span>Role: {% if user.groups.all.0.name == 'Admins' %}Administrator{% elif user.groups.all.0.name == 'Customers' %}Customer{% else %}No role assigned{% endif %}</span>
+            </div>
+            <div class="navbar-right">
+                <i class="bi bi-person-fill"></i>
+                <div class="user-dropdown">
+                    <span>{{ user.username }}</span>
+                    <div class="dropdown-content">
+                        <a href="{% url 'profile_rest_basic' %}" style="color:black">Profile</a>
+                        <form action="{% url 'logout_rest_basic' %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit">Logout</button>
+                        </form>
+                    </div>
+                </div>
+                <span>{% dark_mode_button %}</span> 
+            </div>
+        </nav>
         {% endif %}
-        
         {% if messages %}
-            <div class="messages-container">
+        <div class="messages-container">
             {% for message in messages %}
                 <div class="message {{ message.tags|default:'info' }}">
                     {{ message|safe }}
@@ -56,9 +70,215 @@
             {% endfor %}
             </div>
         {% endif %}
-        {% block body %}
-        {% endblock %}
+        <div class="content-wrapper">
+            {% block body %}
+            <!-- Container -->
+            {% endblock %}
+        </div>
+        <div class="side-bar">
+            <div class="close-btn">
+                <i class="bi bi-x-lg"></i>
+            </div>
+            <div class="menu">
+                <!-- Generic section-->
+                <div class="item">
+                    <a href="#" class="sub-btn">
+                        CRUD
+                        <i class="bi bi-chevron-right dropdown"></i>
+                    </a>
+                    <div class="sub-menu">
+                        <!-- Generic table -->
+                        <a href="{% url 'get_data' %}" class="sub-item">
+                            get_data
+                        </a>
+                        <a href="{% url 'add_data' %}" class="sub-item">
+                            add_data
+                        </a>
+                        <a href="{% url 'update_data' %}" class="sub-item">
+                            update_data
+                        </a>
+                        <a href="{% url 'delete_data_1' %}" class="sub-item">
+                            delete_data_1
+                        </a>
+                        <a href="{% url 'delete_data_2' %}" class="sub-item">
+                            delete_data_2
+                        </a>
+
+                    </div>
+                </div>
+                <!-- Layers section-->
+                <div class="item">
+                    <a href="#" class="sub-btn">
+                        CRUD FORM
+                        <i class="bi bi-chevron-right dropdown"></i>
+                    </a>
+                    <div class="sub-menu">
+                        <div class="item">
+                            <a href="{% url 'get_data_form' %}" class="sub-item">
+                                get_data
+                            </a>
+                            <a href="#" class="sub-btn">
+                                add_data
+                                <i class="bi bi-chevron-right dropdown"></i>
+                            </a>
+                            <div class="sub-menu">
+                                <a href="{% url 'form' 'table1' %}" class="sub-item">
+                                    Table 1
+                                </a>
+                                <a href="{% url 'form' 'table2' %}" class="sub-item">
+                                    Table 2
+                                </a>
+                                <a href="{% url 'form' 'table3' %}" class="sub-item">
+                                    Table 3
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Table 2 -->
+                        <div class="item">
+                            <a href="update_data_form" class="sub-btn">
+                                update_data
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="item">
+                    <a href="#" class="sub-btn">
+                        MAKING QUERIES
+                        <i class="bi bi-chevron-right dropdown"></i>
+                    </a>
+                    <div class="sub-menu">
+                        <div class="item">
+                            <a href="#" class="sub-btn">
+                                Basic Queries
+                                <i class="bi bi-chevron-right dropdown"></i>
+                            </a>
+                            <div class="sub-menu">
+                                <a href="{% url 'all_example' %}" class="sub-item">
+                                    All
+                                </a>
+                                <a href="{% url 'get_example' %}" class="sub-item">
+                                    Get
+                                </a>
+                                <a href="{% url 'filter_example' %}" class="sub-item">
+                                    Filter
+                                </a>
+                                <a href="{% url 'exclude_example' %}" class="sub-item">
+                                    Exclude
+                                </a>
+                                <a href="{% url 'order_by_example' %}" class="sub-item">
+                                    Order By
+                                </a>
+                                <a href="{% url 'slice_example' %}" class="sub-item">
+                                    Slice
+                                </a>
+                                <a href="{% url 'exists_example' %}" class="sub-item">
+                                    Exists
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Table 2 -->
+                        <div class="item">
+                            <a href="#" class="sub-btn">
+                                Advanced Queries
+                                <i class="bi bi-chevron-right dropdown"></i>
+                            </a>
+                            <div class="sub-menu">
+                                <a href="{% url 'select_related_example' %}" class="sub-item">
+                                    Select Related
+                                </a>
+                                <a href="{% url 'prefetch_related_example' %}" class="sub-item">
+                                    Prefech Related
+                                </a>
+                                <a href="{% url 'Q_example' %}" class="sub-item">
+                                    Q Objects
+                                </a>
+                                <a href="{% url 'f_example' %}" class="sub-item">
+                                    F() Expressions
+                                </a>
+                            </div>
+                        </div>
+                        <a href="{% url 'query_values_example' %}" class="sub-item">
+                            Aggregations
+                        </a>
+                    </div>
+
+                <div class="item">
+                    <a href="#" class="sub-btn">
+                        MODIFY HTML
+                        <i class="bi bi-chevron-right dropdown"></i>
+                    </a>
+                    <div class="sub-menu">
+                        <!-- Generic table -->
+                        <a href="{% url 'html_example' %}" class="sub-item">
+                            HTML Example
+                        </a>
+                    </div>
+                </div>
+
+                <div class="item">
+                    <a href="#" class="sub-btn">
+                        TEMPLATE TAGS
+                        <i class="bi bi-chevron-right dropdown"></i>
+                    </a>
+                    <div class="sub-menu">
+                        <!-- Generic table -->
+                        <a href="{% url 'template_tags' %}" class="sub-item">
+                            Examples
+                        </a>
+                    </div>
+                </div>
+
+                <div class="item">
+                    <a href="#" class="sub-btn">
+                        EXPORT TO FILE
+                        <i class="bi bi-chevron-right dropdown"></i>
+                    </a>
+                    <div class="sub-menu">
+                        <!-- Generic table -->
+                        <a href="{% url 'export_pdf' %}" class="sub-item">
+                            PDF
+                        </a>
+                        <a href="{% url 'export_excel' %}" class="sub-item">
+                            Excel
+                        </a>
+                    </div>
+                </div>
+
+                <div class="item">
+                    <a href="#" class="sub-btn">
+                        EMAIL
+                        <i class="bi bi-chevron-right dropdown"></i>
+                    </a>
+                    <div class="sub-menu">
+                        <!-- Generic table -->
+                        <a href="{% url 'email_send' %}" class="sub-item">
+                            Send Email
+                        </a>
+                    </div>
+                </div>
+                {% if user.groups.all.0.name == 'Admins' %}
+                <div class="item">
+                    <a href="#" class="sub-btn">
+                        MANAGE USERS
+                        <i class="bi bi-chevron-right dropdown"></i>
+                    </a>
+                    <div class="sub-menu">
+                        <!-- Generic table -->
+                        <a href="{% url 'user_management' %}" class="sub-item">
+                            User Management
+                        </a>
+                        <a href="{% url 'user_logs' %}" class="sub-item">
+                            User Logs
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
         <!-- Dark mode script -->
+        <script src="{% static 'scripts/sidebar.js' %}"></script>
         <script src="{% static 'scripts/dark_mode.js' %}"></script>
     </body>
 </html>
