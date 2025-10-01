@@ -398,7 +398,7 @@ table.crud-table a:hover {
 }
 
 .delete_button {
-    background: rgb(255, 72, 0);
+    background: #9C0909;
 }
 
 .save_button {
@@ -781,6 +781,57 @@ table.crud-table a:hover {
     color: #dc3545;
     margin-left: 3px;
 }
+
+/* rest */
+.card-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 75px;
+    padding: 30px;
+}
+
+.card {
+    background: #262a35;
+    border-radius: 10px;
+    border-color: #3c4355;
+    border-width: 5px;
+    border-style: solid;
+    padding: 20px;
+    text-align: center;
+    color: var(--white-color);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6);
+}
+
+.card h3 {
+    font-size: 1.2em;
+    margin-bottom: 25%;
+    color: var(--white-color);
+}
+
+.card p {
+    font-size: 0.9em;
+    margin-bottom: 25%;
+}
+
+.card-link {
+    display: inline-block;
+    text-decoration: none;
+    color: var(--white-color);
+    font-weight: bold;
+    border-bottom: 1px solid transparent;
+    transition: color 0.3s, border-bottom 0.3s;
+}
+
+.card-link:hover {
+    color: #2ecc71;
+    border-bottom: 1px solid #2ecc71;
+}
+
 
 /* Dark mode support*/
 [data-theme="dark"] .form-container {
