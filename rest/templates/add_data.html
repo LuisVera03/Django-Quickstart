@@ -1,95 +1,150 @@
 {% extends "base.html" %}
 
 {% block body %}
-<h2>Table3 Form</h2>
-<form action="{% url 'add_data' %}" method="POST">
-    {% csrf_token %}
-    <input type="hidden" name="form_type" value="table3">
-    <label for="duration_field">Duration (e.g., DD HH:MM:SS):</label>
-    <input type="text" name="duration_field" placeholder="e.g., 5 03:00:00" required><br>
+{% include "title.html" with title="- CRUD" %}
+<div class="container-input-rest">
+    <h1 class="subtitle" style="text-align: center;">ADD DATA</h1>
+    <hr class="horizontal-line">
+    
+    <div class="container_add_data">
+        <div class="table_form_table2 form-rest add-card">
+            <h2 style="text-decoration: underline;">Table 2</h2>
+            <form action="{% url 'add_data' %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="form_type" value="table2">
+                <div class="form-row">
+                    <label for="positive_small_int">Option:</label>
+                    <select name="positive_small_int">
+                        {% for value,label in table2_choices %}
+                            <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="submit">Submit</button>
+                </div>
+            </form>
+        </div>
 
-    <label for="email_field">Email:</label>
-    <input type="email" name="email_field" required><br>
+        <div class="table_form_table3 form-rest add-card">
+            <h2 style="text-decoration: underline;">Table 3</h2>
+            <form action="{% url 'add_data' %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="form_type" value="table3">
+                <div class="form-row">
+                    <label for="duration_field">Duration :</label>
+                    <input type="text" name="duration_field" placeholder="e.g., DD HH:MM:SS" required>
+                </div>
+                <div class="form-row">
+                    <label for="email_field">Email:</label>
+                    <input type="email" name="email_field" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit">Submit</button>
+                </div>
+            </form>
+        </div>
 
-    <button type="submit">Submit Table3</button>
-</form>
+        <div class="table_form_table1 form-rest add-card">
+            <h2 style="text-decoration: underline;">Table 1</h2>
+            <form action="{% url 'add_data' %}" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="form_type" value="table1">
 
-<hr>
+                <div class="split-form">
+                    <div class="form-left">
+                        <div class="form-row">
+                            <label for="integer_field">Integer Field:</label>
+                            <input type="number" name="integer_field">
+                        </div>
 
-<h2>Table2 Form</h2>
-<form action="{% url 'add_data' %}" method="POST">
-    {% csrf_token %}
-    <input type="hidden" name="form_type" value="table2">
-    <label for="positive_small_int">Option:</label>
-    <select name="positive_small_int">
-        <option value="1">option1</option>
-        <option value="2">option2</option>
-    </select><br>
+                        <div class="form-row">
+                            <label for="float_field">Float Field:</label>
+                            <input type="number" step="any" name="float_field">
+                        </div>
 
-    <button type="submit">Submit Table2</button>
-</form>
+                        <div class="form-row">
+                            <label for="char_field">Char Field:</label>
+                            <input type="text" name="char_field" maxlength="15" required>
+                        </div>
 
-<hr>
+                        <div class="form-row">
+                            <label for="text_field">Text Field:</label>
+                            <textarea name="text_field"></textarea>
+                        </div>
 
-<h2>Table1 Form</h2>
-<form action="{% url 'add_data' %}" method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    <input type="hidden" name="form_type" value="table1">
-    <!-- ForeignKey and OneToOneField would typically use IDs or dropdowns populated dynamically -->
-    <label for="foreign_key">Foreign Key (Table2 ID):</label>
-    <select name="foreign_key">
-    <option value="">-- Select Table2 ID --</option>
-    {% for id in table2 %}
-        <option value="{{ id }}">{{ id }}</option>
-    {% endfor %}
-    </select><br>
+                        <div class="form-row">
+                            <label for="boolean_field">Boolean Field:</label>
+                            <input type="checkbox" name="boolean_field">
+                        </div>
 
-    <label for="one_to_one">One to One (Table2 ID):</label>
-    <select name="one_to_one">
-    <option value="">-- Select Table2 ID --</option>
-    {% for id in table2%}
-        <option value="{{ id }}">{{ id }}</option>
-    {% endfor %}
-    </select><br>
+                        <div class="form-row">
+                            <label for="date_field">Date Field:</label>
+                            <input type="date" name="date_field" placeholder="dd-mm-yyyy" title="dd-mm-yyyy">
+                        </div>
 
-    <label for="many_to_many">Many to Many (Table3 IDs, comma separated):</label>
-    <select name="many_to_many">
-    <option value="">-- Select table3 ID --</option>
-    {% for id in table3 %}
-        <option value="{{ id }}">{{ id }}</option>
-    {% endfor %}
-    </select><br>
+                        <div class="form-row">
+                            <label for="time_field">Time Field:</label>
+                            <input type="time" name="time_field" placeholder="--:--" title="--:--">
+                        </div>
 
-    <label for="integer_field">Integer Field:</label>
-    <input type="number" name="integer_field"><br>
+                        <div class="form-row">
+                            <label for="datetime_field">DateTime Field:</label>
+                            <input type="datetime-local" name="datetime_field">
+                        </div>
+                    </div>
 
-    <label for="float_field">Float Field:</label>
-    <input type="number" step="any" name="float_field"><br>
+                    <!-- Divisor -->
+                    <div class="v-divider" aria-hidden="true"></div>
 
-    <label for="char_field">Char Field:</label>
-    <input type="text" name="char_field" maxlength="15" required><br>
+                    <div class="form-right">
+                        <div class="form-row">
+                            <label for="foreign_key">Foreign Key (Table2 ID):</label>
+                            <select name="foreign_key">
+                                <option value="">-- Select Table2 ID --</option>
+                                {% for id in table2 %}
+                                    <option value="{{ id }}">{{ id }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
 
-    <label for="text_field">Text Field:</label><br>
-    <textarea name="text_field"></textarea><br>
+                        <div class="form-row">
+                            <label for="one_to_one">One to One (Table2 ID):</label>
+                            <select name="one_to_one">
+                                <option value="">-- Select Table2 ID --</option>
+                                {% for id in table2%}
+                                    <option value="{{ id }}">{{ id }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
 
-    <label for="boolean_field">Boolean Field:</label>
-    <input type="checkbox" name="boolean_field"><br>
+                        <div class="form-row">
+                            <label for="many_to_many">Many to Many (Table3 IDs):</label>
+                            <select name="many_to_many">
+                                <option value="">-- Select table3 ID --</option>
+                                {% for id in table3 %}
+                                    <option value="{{ id }}">{{ id }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
 
-    <label for="date_field">Date Field:</label>
-    <input type="date" name="date_field"><br>
+                        <div class="form-row">
+                            <label for="image_field">Image Upload:</label>
+                            <input type="file" name="image_field" accept="image/*">
+                        </div>
 
-    <label for="time_field">Time Field:</label>
-    <input type="time" name="time_field"><br>
+                        <div class="form-row">
+                            <label for="file_field">File Upload:</label>
+                            <input type="file" name="file_field">
+                        </div>
+                    </div>
+                </div>
 
-    <label for="datetime_field">DateTime Field:</label>
-    <input type="datetime-local" name="datetime_field"><br>
-
-    <label for="image_field">Image Upload:</label>
-    <input type="file" name="image_field" accept="image/*"><br>
-
-    <label for="file_field">File Upload:</label>
-    <input type="file" name="file_field"><br>
-
-    <button type="submit">Submit Table1</button>
-</form>
+                <div class="form-actions">
+                    <button type="submit">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}
