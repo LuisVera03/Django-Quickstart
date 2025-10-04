@@ -42,6 +42,10 @@ hr{
     background-color: var(--text-color);
 }
 
+.subtitle {
+    font-weight: 900;
+    color: var(--text-color);
+}
 /* Layer and generic */
 
 .dark-mode-toggle {

@@ -3,7 +3,7 @@
 {% block body %}
 {% include "title.html" with title="- CRUD FORM" %}
 <div class="container-table-rest">
-    <h1 class="subtitle" style="text-align: center;">UPDATE-DATA</h1>
+    <h1 class="subtitle" style="text-align: center;">GET-DATA</h1>
     <hr class="horizontal-line">
     <h2 class="subtitle">Table3</h2>
     <div class="table-container">
@@ -13,7 +13,6 @@
                     <th>ID</th>
                     <th>Duration</th>
                     <th>Email</th>
-                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -22,10 +21,9 @@
                     <td>{{ entry.id }}</td>
                     <td>{{ entry.duration_field }}</td>
                     <td>{{ entry.email_field }}</td>
-                    <td><a class="table-button-edit" href="{% url 'update_form' 'table3' entry.id %}">Update</a></td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="4">Table3 is empty</td></tr>
+                <tr><td colspan="3">Table3 is empty</td></tr>
                 {% endfor %}
             </tbody>
         </table>
@@ -39,7 +37,6 @@
                     <th>ID</th>
                     <th>Number choice</th>
                     <th>Option</th>
-                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -50,10 +47,9 @@
                     <td>{{ entry.positive_small_int}}</td>
                     <!-- this is how the option looks in html -->
                     <td>{{ entry.get_positive_small_int_display }}</td>
-                    <td><a class="table-button-edit" href="{% url 'update_form' 'table2' entry.id %}">Update</a></td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="4">Table2 is empty</td></tr>
+                <tr><td colspan="3">Table2 is empty</td></tr>
                 {% endfor %}
             </tbody>
         </table>
@@ -78,7 +74,6 @@
                     <th>DateTime</th>
                     <th>Image</th>
                     <th>File</th>
-                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -116,10 +111,9 @@
                             -
                         {% endif %}
                     </td>
-                    <td><a class="table-button-edit" href="{% url 'update_form' 'table1' entry.id %}">Update</a></td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="15">Table1 is empty</td></tr>
+                <tr><td colspan="6">Table1 is empty</td></tr>
                 {% endfor %}
             </tbody>
         </table>
