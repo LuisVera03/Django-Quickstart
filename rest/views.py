@@ -481,9 +481,9 @@ def delete_data_2(request):
     })
 
 # Form-based CRUD views
-@require_GET
-def crud_form(request):
-    return render(request, 'crud_form.html')
+#@require_GET
+#def crud_form(request):
+#    return render(request, 'crud_form.html')
 
 # View to display data from all three tables using forms
 @require_GET

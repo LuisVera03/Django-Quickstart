@@ -22,7 +22,7 @@ urlpatterns = [
     path('delete_data_1', views.delete_data_1, name='delete_data_1'),
     path('delete_data_2', views.delete_data_2, name='delete_data_2'),
     # CRUD with forms
-    path('crud_form', views.crud_form, name='crud_form'),
+    #path('crud_form', views.crud_form, name='crud_form'),
     path('get_data_form', views.get_data_form, name='get_data_form'),
     path('form/<str:table>', views.form, name='form'),
     path('update_form/<str:table>/<int:id>', views.update_form, name='update_form'),

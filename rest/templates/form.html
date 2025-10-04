@@ -1,12 +1,22 @@
 {% extends "base.html" %}
 
 {% block body %}
-<h2>Form for {{ model_name }}</h2>
-
-<form method="post" enctype="multipart/form-data">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Save</button>
-</form>
-
+{% include "title.html" with title="- CRUD FORM" %}
+<div class="container-input-rest">
+  <h1 class="subtitle" style="text-align: center;">FORM</h1>
+  <hr class="horizontal-line">
+  <div class="form-rest">
+    <form method="post" enctype="multipart/form-data">
+      <h2 style="text-decoration: underline;">Form for {{ model_name }}</h2>
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="form-row">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+        </div>
+      {% endfor %}
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+</div>
 {% endblock %}
