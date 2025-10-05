@@ -1,215 +1,317 @@
 {% extends "base.html" %}
 
 {% block body %}
-<h2>Edit Table3</h2>
-<table>
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Duration</th>
-            <th>Email</th>
-            <th>Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for entry in table3 %}
-        <tr>
-            <td>{{ entry.id }}</td>
-            <td>{{ entry.duration_field }}</td>
-            <td>{{ entry.email_field }}</td>
-            <td>
-                <a href="?edit_table=table3&edit_id={{ entry.id }}">Edit</a>
-            </td>
-        </tr>
-        {% if editing and editing_table == 'table3' and editing.id == entry.id %}
-        <tr>
-            <td colspan="4">
-                <!-- Edit form for Table3 -->
-                <form method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="edit_table" value="table3">
-                    <input type="hidden" name="edit_id" value="{{ editing.id }}">
-                    <label>Duration: <input type="text" name="duration_field" value="{{ editing.duration_field }}"></label>
-                    <label>Email: <input type="email" name="email_field" value="{{ editing.email_field }}"></label>
-                    <button type="submit">Update</button>
-                </form>
-            </td>
-        </tr>
-        {% endif %}
-        {% empty %}
-        <tr>
-            <td colspan="4">Table3 is empty</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+{% include "title.html" with title="- CRUD" %}
+    <div class="container-table-rest">
+        <h1 class="subtitle" style="text-align: center;">UPDATE-DATA</h1>
+        <hr class="horizontal-line">
 
-<h2>Edit Table2</h2>
-<table>
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Number choice</th>
-            <th>Option</th>
-            <th>Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for entry in table2 %}
-        <tr>
-            <td>{{ entry.id }}</td>
-            <td>{{ entry.positive_small_int }}</td>
-            <td>{{ entry.get_positive_small_int_display }}</td>
-            <td>
-                <a href="?edit_table=table2&edit_id={{ entry.id }}">Edit</a>
-            </td>
-        </tr>
-        {% if editing and editing_table == 'table2' and editing.id == entry.id %}
-        <tr>
-            <td colspan="4">
-                <!-- Edit form for Table2 -->
-                <form method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="edit_table" value="table2">
-                    <input type="hidden" name="edit_id" value="{{ editing.id }}">
-                    <label>Number choice:
-                        <select name="positive_small_int">
-                            <option value="1" {% if editing.positive_small_int|stringformat:"s" == "1" %}selected{% endif %}>option1</option>
-                            <option value="2" {% if editing.positive_small_int|stringformat:"s" == "2" %}selected{% endif %}>option2</option>
-                        </select>
-                    </label>
-                    <button type="submit">Update</button>
-                </form>
-            </td>
-        </tr>
-        {% endif %}
-        {% empty %}
-        <tr>
-            <td colspan="4">Table2 is empty</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        <h2 class="subtitle">Edit Table 1</h2>
+        <div class="table-container">
+            <table class="crud-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>ForeignKey</th>
+                        <th>OneToOne</th>
+                        <th>ManyToMany</th>
+                        <th>Integer</th>
+                        <th>Float</th>
+                        <th>Char</th>
+                        <th>Text</th>
+                        <th>Boolean</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>DateTime</th>
+                        <th>Image</th>
+                        <th>File</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in table1 %}
+                    <tr>
+                        <td>{{ entry.id }}</td>
+                        <td>{{ entry.foreign_key }}</td>
+                        <td>{{ entry.one_to_one }}</td>
+                        <td>
+                            {% for m in entry.many_to_many.all %}
+                                {{ m.email_field }}{% if not forloop.last %}, {% endif %}
+                            {% empty %}
+                                -
+                            {% endfor %}
+                        </td>
+                        <td>{{ entry.integer_field }}</td>
+                        <td>{{ entry.float_field }}</td>
+                        <td>{{ entry.char_field }}</td>
+                        <td>{{ entry.text_field|default:"-" }}</td>
+                        <td>{{ entry.boolean_field }}</td>
+                        <td>{{ entry.date_field }}</td>
+                        <td>{{ entry.time_field }}</td>
+                        <td>{{ entry.datetime_field }}</td>
+                        <td>
+                            {% if entry.image_field %}
+                                <img src="{{ entry.image_field.url }}" alt="img" width="50">
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if entry.file_field %}
+                                <a href="{{ entry.file_field.url }}">Download</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            <button class="edit_button open-edit" data-table="table1" data-id="{{ entry.id }}" type="button">Edit</button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="15">Table1 is empty</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
-<h2>Edit Table1</h2>
-<table>
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>ForeignKey</th>
-            <th>OneToOne</th>
-            <th>ManyToMany</th>
-            <th>Integer</th>
-            <th>Float</th>
-            <th>Char</th>
-            <th>Text</th>
-            <th>Boolean</th>
-            <th>Date</th>
-            <th>Time</th>
-            <th>DateTime</th>
-            <th>Image</th>
-            <th>File</th>
-            <th>Action</th>
-        </tr>
-    </thead>
-    <tbody>
+        <h2 class="subtitle">Edit Table 2</h2>
+        <div class="table-container">
+            <table class="crud-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Number choice</th>
+                        <th>Option</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in table2 %}
+                    <tr>
+                        <td>{{ entry.id }}</td>
+                        <td>{{ entry.positive_small_int }}</td>
+                        <td>{{ entry.get_positive_small_int_display }}</td>
+                        <td>
+                            <button class="edit_button open-edit" data-table="table2" data-id="{{ entry.id }}" type="button">Edit</button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4">Table2 is empty</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <h2 class="subtitle">Edit Table 3</h2>
+        <div class="table-container">
+            <table class="crud-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Duration</th>
+                        <th>Email</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in table3 %}
+                    <tr>
+                        <td>{{ entry.id }}</td>
+                        <td>{{ entry.duration_field }}</td>
+                        <td>{{ entry.email_field }}</td>
+                        <td>
+                            <button class="edit_button open-edit" data-table="table3" data-id="{{ entry.id }}" type="button">Edit</button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4">Table3 is empty</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {# Modal reutilized from json_app #}
+    <div id="grey_background" class="overlay" style="display:none;" onclick="closeEditModal()"></div>
+    <div id="crudModal" class="modal_crud rest-modal-enhanced" style="display:none;">
+        <h2 id="crudTitle" style="margin: 0px 0px 10px 0px;font-weight: 700;text-decoration: underline;text-decoration-style: double;"></h2>
+        <form id="editForm" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div id="formFields"></div>
+            <button class="save_button" style="float: right;" type="submit" id="crudSubmitBtn">Update</button>
+        </form>
+        <button class="cancel_button" type="button" onclick="closeEditModal()"><i class="bi bi-x-lg"></i> Close</button>
+    </div>
+
+    {# Snippets hidden for each row to inject into the modal, this is to maintain context #}
+    <div id="edit-form-snippets" style="display: none;">
+        {# Table1 snippets #}
         {% for entry in table1 %}
-        <tr>
-            <td>{{ entry.id }}</td>
-            <td>{{ entry.foreign_key }}</td>
-            <td>{{ entry.one_to_one }}</td>
-            <td>
-                {% for m in entry.many_to_many.all %}
-                    {{ m.email_field }}{% if not forloop.last %}, {% endif %}
-                {% empty %}
-                    -
-                {% endfor %}
-            </td>
-            <td>{{ entry.integer_field }}</td>
-            <td>{{ entry.float_field }}</td>
-            <td>{{ entry.char_field }}</td>
-            <td>{{ entry.text_field|default:"-" }}</td>
-            <td>{{ entry.boolean_field }}</td>
-            <td>{{ entry.date_field }}</td>
-            <td>{{ entry.time_field }}</td>
-            <td>{{ entry.datetime_field }}</td>
-            <td>
-                {% if entry.image_field %}
-                    <img src="{{ entry.image_field.url }}" alt="img" width="50">
-                {% else %}
-                    -
-                {% endif %}
-            </td>
-            <td>
-                {% if entry.file_field %}
-                    <a href="{{ entry.file_field.url }}">Download</a>
-                {% else %}
-                    -
-                {% endif %}
-            </td>
-            <td>
-                <a href="?edit_table=table1&edit_id={{ entry.id }}">Edit</a>
-            </td>
-        </tr>
-        {% if editing and editing_table == 'table1' and editing.id == entry.id %}
-        <tr>
-            <td colspan="15">
-                <!-- Edit form for Table1 -->
-                <form action="" method="POST" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <input type="hidden" name="edit_id" value="{{ editing.id }}">
-                    <input type="hidden" name="edit_table" value="table1">
-                    <label>ForeignKey:
-                        <select name="foreign_key">
+        <div id="form-snippet-table1-{{ entry.id }}">
+            <input type="hidden" name="edit_id" value="{{ entry.id }}">
+            <input type="hidden" name="edit_table" value="table1">
+            
+            <div class="split-form">
+                <div class="form-left">
+                    <div class="form-row">
+                        <label class="label_field">Integer:</label> 
+                        <input class="input_field" type="number" name="integer_field" value="{{ entry.integer_field }}">
+                    </div>
+                    <div class="form-row">
+                        <label class="label_field">Float:</label> 
+                        <input class="input_field" type="number" step="any" name="float_field" value="{{ entry.float_field }}">
+                    </div>
+                    <div class="form-row">
+                        <label class="label_field">Char:</label> 
+                        <input class="input_field" type="text" name="char_field" value="{{ entry.char_field }}" maxlength="15">
+                    </div>
+                    <div class="form-row">
+                        <label class="label_field">Text:</label> 
+                        <textarea class="input_field" name="text_field">{{ entry.text_field }}</textarea>
+                    </div>
+                    <div class="form-row">
+                        <label class="label_field">Boolean:</label> 
+                        <input class="input_field" type="checkbox" name="boolean_field" {% if entry.boolean_field %}checked{% endif %}>
+                    </div>
+                    <div class="form-row">
+                        <label class="label_field">Date:</label> 
+                        <input class="input_field" type="date" name="date_field" value="{% if entry.date_field %}{{ entry.date_field|date:'Y-m-d' }}{% endif %}">
+                    </div>
+                    <div class="form-row">
+                        <label class="label_field">Time:</label> 
+                        <input class="input_field" type="time" name="time_field" value="{% if entry.time_field %}{{ entry.time_field|time:'H:i' }}{% endif %}">
+                    </div>
+                    <div class="form-row">
+                        <label class="label_field">DateTime:</label> 
+                        <input class="input_field" type="datetime-local" name="datetime_field" value="{% if entry.datetime_field %}{{ entry.datetime_field|date:'Y-m-d\\TH:i' }}{% endif %}">
+                    </div>
+                </div>
+
+                <div class="v-divider" aria-hidden="true"></div>
+
+                <div class="form-right">
+                    <div class="form-row">
+                        <label class="label_field">Foreign Key:</label>
+                        <select class="input_field" name="foreign_key">
                             <option value="">-- Select Table2 ID --</option>
                             {% for id in table2_ids %}
-                            <option value="{{ id }}" {% if id|stringformat:"s" == editing.foreign_key_id|stringformat:"s" %}selected{% endif %}>{{ id }}</option>
+                                <option value="{{ id }}" {% if id|stringformat:"s" == entry.foreign_key_id|stringformat:"s" %}selected{% endif %}>{{ id }}</option>
                             {% endfor %}
                         </select>
-                    </label>
-                    <label>OneToOne:
-                        <select name="one_to_one">
+                    </div>
+                    <div class="form-row">
+                        <label class="label_field">One to One:</label>
+                        <select class="input_field" name="one_to_one">
                             <option value="">-- Select Table2 ID --</option>
                             {% for id in table2_ids %}
-                            <option value="{{ id }}" {% if id|stringformat:"s" == editing.one_to_one_id|stringformat:"s" %}selected{% endif %}>{{ id }}</option>
+                                <option value="{{ id }}" {% if id|stringformat:"s" == entry.one_to_one_id|stringformat:"s" %}selected{% endif %}>{{ id }}</option>
                             {% endfor %}
                         </select>
-                    </label>
-                    <label>Integer: <input type="text" name="integer_field" value="{{ editing.integer_field }}"></label>
-                    <label>Float: <input type="text" name="float_field" value="{{ editing.float_field }}"></label>
-                    <label>Char: <input type="text" name="char_field" value="{{ editing.char_field }}"></label>
-                    <label>Text: <input type="text" name="text_field" value="{{ editing.text_field }}"></label>
-                    <label>Boolean: <input type="checkbox" name="boolean_field" {% if editing.boolean_field %}checked{% endif %}></label>
-                    <label>Date: <input type="date" name="date_field" value="{% if editing.date_field %}{{ editing.date_field|date:'Y-m-d' }}{% endif %}"></label>
-                    <label>Time: <input type="time" name="time_field" value="{% if editing.time_field %}{{ editing.time_field|time:'H:i' }}{% endif %}"></label>
-                    <label>DateTime: <input type="datetime-local" name="datetime_field" value="{% if editing.datetime_field %}{{ editing.datetime_field|date:'Y-m-d\\TH:i' }}{% endif %}"></label>
-                    <br>
-                    <strong>Upload image (optional):</strong> <input type="file" name="image_field">
-                    {% if editing.image_field %}
-                        <span>Current: <img src="{{ editing.image_field.url }}" alt="img" width="50"></span>
-                    {% endif %}
-                    <br>
-                    <strong>Upload file (optional):</strong> <input type="file" name="file_field">
-                    {% if editing.file_field %}
-                        <span>Current: <a href="{{ editing.file_field.url }}">Download</a></span>
-                    {% endif %}
-                    <br>
-                    <label>ManyToMany:</label>
-                    <select name="many_to_many" multiple>
-                        {% for t3 in table3 %}
-                            <option value="{{ t3.id }}" {% if t3.id in selected_many %}selected{% endif %}>{{ t3.email_field }}</option>
-                        {% endfor %}
-                    </select>
-                    <button type="submit">Update</button>
-                </form>
-            </td>
-        </tr>
-        {% endif %}
-        {% empty %}
-        <tr>
-            <td colspan="15">Table1 is empty</td>
-        </tr>
+                    </div>
+                    <div class="form-row">
+                        <label class="label_field">Many to Many:</label>
+                        <select class="input_field" name="many_to_many" multiple size="3">
+                            {% for t3 in table3 %}
+                                <option value="{{ t3.id }}" {% if t3 in entry.many_to_many.all %}selected{% endif %}>{{ t3.email_field }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label class="label_field">Image Upload:</label>
+                        <input class="input_field" type="file" name="image_field" accept="image/*">
+                        {% if entry.image_field %}
+                            <div class="current-file">Current: <img src="{{ entry.image_field.url }}" alt="img" width="60"></div>
+                        {% endif %}
+                    </div>
+                    <div class="form-row">
+                        <label class="label_field">File Upload:</label>
+                        <input class="input_field" type="file" name="file_field">
+                        {% if entry.file_field %}
+                            <div class="current-file">Current: <a href="{{ entry.file_field.url }}">Download</a></div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
         {% endfor %}
-    </tbody>
-</table>
+
+        {# Table2 snippets #}
+        {% for entry in table2 %}
+        <div id="form-snippet-table2-{{ entry.id }}">
+            <input type="hidden" name="edit_table" value="table2">
+            <input type="hidden" name="edit_id" value="{{ entry.id }}">
+            <div class="form-row">
+                <label class="label_field">Number choice:</label>
+                <select class="input_field" name="positive_small_int">
+                    {% for value, label in table2_choices %}
+                        <option value="{{ value }}" {% if entry.positive_small_int|stringformat:"s" == value|stringformat:"s" %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        {% endfor %}
+
+        {# Table3 snippets #}
+        {% for entry in table3 %}
+        <div id="form-snippet-table3-{{ entry.id }}">
+            <input type="hidden" name="edit_table" value="table3">
+            <input type="hidden" name="edit_id" value="{{ entry.id }}">
+            <div class="form-row">
+                <label class="label_field">Duration:</label> 
+                <input class="input_field" type="text" name="duration_field" value="{{ entry.duration_field }}" placeholder="e.g., DD HH:MM:SS">
+            </div>
+            <div class="form-row">
+                <label class="label_field">Email:</label> 
+                <input class="input_field" type="email" name="email_field" value="{{ entry.email_field }}">
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        function openEditModal(tableName, id) {
+            const title = document.getElementById('crudTitle');
+            const fieldsContainer = document.getElementById('formFields');
+            const modal = document.getElementById('crudModal');
+            const overlay = document.getElementById('grey_background');
+
+            title.textContent = `Edit Record on ${tableName.replace('table', 'Table ')} - ID ${id}`;
+
+            const snippet = document.getElementById(`form-snippet-${tableName}-${id}`);
+            if (!snippet) {
+                console.warn('Form snippet not found for', tableName, id);
+                return;
+            }
+            fieldsContainer.innerHTML = snippet.innerHTML;
+
+            overlay.style.display = 'block';
+            modal.style.display = 'block';
+        }
+
+        function closeEditModal() {
+            const modal = document.getElementById('crudModal');
+            const overlay = document.getElementById('grey_background');
+            const fieldsContainer = document.getElementById('formFields');
+            modal.style.display = 'none';
+            overlay.style.display = 'none';
+            fieldsContainer.innerHTML = '';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('button.open-edit').forEach(function(button) {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const tableName = this.dataset.table;
+                    const id = this.dataset.id;
+                    openEditModal(tableName, id);
+                });
+            });
+        });
+    </script>
 {% endblock %}

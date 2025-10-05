@@ -15,7 +15,7 @@ urlpatterns = [
     path('user_management', views.user_management, name='user_management'),
     path('user_logs', views.user_logs, name='user_logs'),
     # CRUD operations
-    path('crud', views.crud, name='crud'),
+    #path('crud', views.crud, name='crud'),
     path('get_data', views.get_data, name='get_data'),
     path('add_data', views.add_data, name='add_data'),
     path('update_data', views.update_data, name='update_data'),

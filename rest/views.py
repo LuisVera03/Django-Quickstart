@@ -295,7 +295,13 @@ def add_data(request):
         # values list for foreign key and many to many fields      
         table2 = Table2.objects.values_list('id', flat=True)
         table3 = Table3.objects.values_list('id', flat=True)
-        return render(request, 'add_data.html',{"table3":table3,"table2":table2})
+        # this is for not harcoding the options on the table 2
+        table2_choices = Table2._meta.get_field('positive_small_int').choices
+        return render(request, 'add_data.html',{
+            "table3": table3,
+            "table2": table2,
+            "table2_choices": table2_choices,
+        })
 
 # View to update data in the tables
 @permission_required('rest_basic.change_data', raise_exception=True)
@@ -389,18 +395,8 @@ def update_data(request):
             return redirect('update_data')
         except Exception as e:
             messages.error(request, f"Error updating: {e}")
-            # If there's an error, re-render the page with the current editing context
-            return render(request, 'update_data.html', {
-                "table1": table1,
-                "table2": table2,
-                "table3": table3,
-                "editing": editing,
-                "editing_table": editing_table,
-                "selected_many": selected_many,
-                "table2_ids": table2_ids,
-                "table3_ids": table3_ids,
-                "error": str(e),
-            })
+            # Apply PRG pattern on error to avoid browser 'Confirm form resubmission'
+            return redirect('update_data')
 
     # Get request to load the record to edit
     elif request.GET.get('edit_id') and request.GET.get('edit_table'):
@@ -423,6 +419,7 @@ def update_data(request):
         "selected_many": selected_many,
         "table2_ids": table2_ids,
         "table3_ids": table3_ids,
+        "table2_choices": Table2._meta.get_field('positive_small_int').choices,
     })
 
 # View to delete data from Table1 (soft delete by marking as inactive)
