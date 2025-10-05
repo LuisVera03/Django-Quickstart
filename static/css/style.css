@@ -1095,3 +1095,153 @@ table.crud-table a:hover {
     border-radius: 6px;
     align-self: center;
 }
+
+/* Modal CRUD Styles */
+.modal_crud.rest-modal-enhanced {
+    width: min(85vw, 1200px);
+    max-width: 1200px;
+    background: #3c4355;
+    color: var(--white-color);
+}
+
+@media (max-width: 900px) {
+    .modal_crud.rest-modal-enhanced {
+        width: 95vw;
+        max-width: 95vw;
+    }
+}
+
+.modal_crud.rest-modal-enhanced #formFields {
+    padding: 10px 0;
+}
+
+.modal_crud.rest-modal-enhanced .split-form {
+    display: grid;
+    grid-template-columns: 1fr 12px 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+.modal_crud.rest-modal-enhanced .v-divider {
+    width: 8px;
+    background: #797979;
+    border-radius: 8px;
+    opacity: 0.6;
+    height: 100%;
+    min-height: 300px;
+}
+
+.modal_crud.rest-modal-enhanced .form-left,
+.modal_crud.rest-modal-enhanced .form-right {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+@media (max-width: 900px) {
+    .modal_crud.rest-modal-enhanced .split-form {
+        grid-template-columns: 1fr;
+    }
+
+    .modal_crud.rest-modal-enhanced .v-divider {
+        display: none;
+    }
+}
+
+.modal_crud.rest-modal-enhanced .form-row {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    align-items: center;
+    margin-bottom: 12px;
+    gap: 10px;
+}
+
+.modal_crud.rest-modal-enhanced .label_field {
+    text-align: right;
+    margin-right: 0;
+    font-size: 1rem;
+    color: var(--white-color);
+    font-weight: 600;
+}
+
+.modal_crud.rest-modal-enhanced .input_field {
+    font-family: var(--font-small);
+    background: #797979;
+    border-radius: 5px;
+    border: none;
+    color: var(--white-color);
+    width: 100%;
+    max-width: 350px;
+    height: 36px;
+    padding: 5px 8px;
+    font-weight: 600;
+    box-sizing: border-box;
+}
+
+.modal_crud.rest-modal-enhanced .input_field[type="textarea"],
+.modal_crud.rest-modal-enhanced textarea.input_field {
+    height: 60px;
+    resize: vertical;
+}
+
+.modal_crud.rest-modal-enhanced .input_field[type="checkbox"] {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    min-height: 24px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background: #797979;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.modal_crud.rest-modal-enhanced .input_field[type="checkbox"]:checked {
+    background: #4CAF50;
+    border-color: #4CAF50;
+}
+
+.modal_crud.rest-modal-enhanced select.input_field[multiple] {
+    height: auto;
+    min-height: 80px;
+}
+
+.modal_crud.rest-modal-enhanced .current-file {
+    margin-top: 5px;
+    font-size: 0.9em;
+    opacity: 0.9;
+    grid-column: 2;
+}
+
+.modal_crud.rest-modal-enhanced .current-file img {
+    max-width: 100px;
+    height: auto;
+    border-radius: 4px;
+    border: 1px solid #555;
+}
+
+.modal_crud.rest-modal-enhanced .save_button,
+.modal_crud.rest-modal-enhanced .cancel_button {
+    font-family: var(--font-small);
+    border: none;
+    border-radius: 5px;
+    padding: 8px 25px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.modal_crud.rest-modal-enhanced .save_button {
+    background-color: #0C4B33;
+    color: var(--white-color);
+}
+
+.modal_crud.rest-modal-enhanced .cancel_button {
+    background-color: #6c757d;
+    color: var(--white-color);
+}

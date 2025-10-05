@@ -395,18 +395,8 @@ def update_data(request):
             return redirect('update_data')
         except Exception as e:
             messages.error(request, f"Error updating: {e}")
-            # If there's an error, re-render the page with the current editing context
-            return render(request, 'update_data.html', {
-                "table1": table1,
-                "table2": table2,
-                "table3": table3,
-                "editing": editing,
-                "editing_table": editing_table,
-                "selected_many": selected_many,
-                "table2_ids": table2_ids,
-                "table3_ids": table3_ids,
-                "error": str(e),
-            })
+            # Apply PRG pattern on error to avoid browser 'Confirm form resubmission'
+            return redirect('update_data')
 
     # Get request to load the record to edit
     elif request.GET.get('edit_id') and request.GET.get('edit_table'):
@@ -429,6 +419,7 @@ def update_data(request):
         "selected_many": selected_many,
         "table2_ids": table2_ids,
         "table3_ids": table3_ids,
+        "table2_choices": Table2._meta.get_field('positive_small_int').choices,
     })
 
 # View to delete data from Table1 (soft delete by marking as inactive)
