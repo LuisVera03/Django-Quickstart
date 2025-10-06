@@ -1,21 +1,39 @@
 {% extends "base.html" %}
 
 {% block body %}
-<h1>Examples of {{ type }}</h1>
-<br>
-{% for name, desc, value in value_pairs %}
-<h3>{{ name }}</h3>
-<p>{{ desc }}:
-{% if value|length > 1 and value.0 is not string %}
-    <ul>
-      {% for v in value %}
-        <li>{{ v }}</li>
-      {% endfor %}
-    </ul>
-{% else %}
-    <b>{{ value }}</b>
+{% include "title.html" with title="- Making Queries" %}
+<div class="container-table-rest">
+  <h1 class="subtitle" style="text-align: center;">{{ type }}</h1>
+  <hr class="horizontal-line">
+  <br>
+  {% for name, desc, value in value_pairs %}
+  <h2 class="subtitle">{{ name }}</h2>
+  <p class="text">{{ desc }} :
+  {% if value|length > 1 and value.0 is not string %}
+      <div class="table-container">
+        <table class="crud-table">
+          <thead>
+            <tr>
+                <th>ID Table 1</th>
+                <th>Number of related items</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for v in value %}
+            <tr>
+                <td>{{ v.id }}</td>
+                <td>{{ v.num_table3 }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+  {% else %}
+      <b class="text_keywords">{{ value }}</b>
   {% endif %}
-</p>
-{% endfor %}
-
+  </p>
+  {% endfor %}
+  <br>
+  <a class="back_button" href="{% url 'making_queries' %}">< Back to Query Examples</a>
+</div>
 {% endblock %}

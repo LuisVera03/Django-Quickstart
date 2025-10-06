@@ -795,10 +795,27 @@ table.crud-table a:hover {
     color: var(--white-color);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
+.card.title-card {
+    grid-column: 1 / -1; /* Rompe la fila del grid */
+    background: #1a1d26; /* Color distinto */
+    border: none;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+    padding: 40px 20px;
+    display: flex;
+    align-items: center;  /* Centrado vertical */
+    justify-content: center; /* Centrado horizontal */
+    text-align: center;
+    margin-top: 10px;
+}
 
+.card.title-card h1 {
+    font-size: 1.8em;
+    color: rgb(46, 204, 113);
+    margin: 0;
+}
 .card:hover {
     transform: translateY(-8px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 10px 20px rgba(255, 255, 255, 0.6);
 }
 
 .card h3 {
@@ -836,7 +853,6 @@ table.crud-table a:hover {
 }
 .table-button-edit,
 .table-button-delete {
-    color: rgb(0, 0, 0);
     font-family: var(--font-small);
     text-decoration: none;
     font-size: large;
@@ -857,6 +873,23 @@ table.crud-table a:hover {
 .table-button-delete:hover {
     opacity: 1;
 }
+
+.back_button{
+    font-family: var(--font-small);
+    background-color: #0C4B33;
+    color: var(--white-color);
+    text-decoration: none;
+    border-radius: 4px;
+    padding: 7.5px 15px 7.5px 15px;
+    font-size: 1.25em;
+    cursor: pointer;
+    border: none;
+    font-weight: 900;
+    text-align: center;
+    display: block;
+    margin-bottom: 10px;
+}
+
 .container-input-rest{
     padding: 10px;
     margin: 10px;

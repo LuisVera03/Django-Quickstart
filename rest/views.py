@@ -635,6 +635,7 @@ def all_example(request):
     
     # Create a combined context for all tables
     context = {
+        'class': 'Basic',
         'type': 'All',
         'table1_data': all_table1,
         'table2_data': all_table2,
@@ -649,28 +650,29 @@ def all_example(request):
 # View to demonstrate filter lookups
 def filter_example(request):
     #Example of filter lookups:
-    # __in = en
-    # __contains = contiene
-    # __icontains = contiene (case insensitive)
-    # __startswith = empieza con
-    # __istartswith = empieza con (case insensitive)
-    # __endswith = termina con
-    # __iendswith = termina con (case insensitive)
-    # __exact = exacto
-    # __iexact = exacto (case insensitive)
-    # __regex = expresión regular
-    # __iregex = expresión regular (case insensitive)
-    # __gt = mayor que
-    # __lt = menor que
-    # __gte = mayor o igual
-    # __lte = menor o igual
+    # __in = in
+    # __contains = contains
+    # __icontains = contains (case insensitive)
+    # __startswith = starts with
+    # __istartswith = starts with (case insensitive)
+    # __endswith = ends with
+    # __iendswith = ends with (case insensitive)
+    # __exact = exact
+    # __iexact = exact (case insensitive)
+    # __regex = regular expression
+    # __iregex = regular expression (case insensitive)
+    # __gt = greater than
+    # __lt = less than
+    # __gte = greater than or equal to
+    # __lte = less than or equal to
 
     filtered_data = Table1.objects.filter(integer_field__gte=5)  # Example filter
-    filtered_data_1 = Table1.objects.filter(integer_field=1)
+    filtered_data_1 = Table1.objects.filter(integer_field__contains=1)
     return render(request, 'queries.html', {
+        'class': 'Basic',
         'type': 'Filter',
-        'query1_name': 'Entries with integer_field >= 5',
-        'query2_name': 'Entries with integer_field = 1',
+        'query1_name': 'Entries where integer_field is greater than or equal to 5',
+        'query2_name': 'Entries where integer_field contains the digit 1',
         'query1': filtered_data,
         'query2': filtered_data_1
     })
@@ -679,9 +681,9 @@ def filter_example(request):
 def get_example(request):
     try:
         # Get first entry or None if it doesn't exist
-        first_table1 = Table1.objects.filter(id=1).first()
+        first_table1 = Table1.objects.get(id=1) if Table1.objects.filter(id=1).exists() else None
         # Get entry with highest integer_field value
-        max_integer_entry = Table1.objects.filter(integer_field__isnull=False).order_by('-integer_field').first()
+        max_integer_entry = Table1.objects.get(integer_field=Table1.objects.aggregate(Max('integer_field'))['integer_field__max'])
         
         get_data = [first_table1] if first_table1 else []
         get_data_2 = [max_integer_entry] if max_integer_entry else []
@@ -695,6 +697,7 @@ def get_example(request):
         })
     except Exception as e:
         return render(request, 'queries.html', {
+            'class': 'Basic',
             'type': 'Get',
             'query1_name': 'Error occurred',
             'query2_name': str(e),
@@ -706,6 +709,7 @@ def get_example(request):
 def exclude_example(request):
     excluded_data = Table1.objects.exclude(boolean_field=True)  # Example exclude
     return render(request, 'queries.html', {
+        'class': 'Basic',
         'type': 'Exclude',
         'query1_name': 'Entries excluding boolean field = True',
         'query2_name': '',
@@ -721,6 +725,7 @@ def order_by_example(request):
     ordered_desc = Table1.objects.order_by('-integer_field')
     
     return render(request, 'queries.html', {
+        'class': 'Basic',
         'type': 'Order By',
         'query1_name': 'Table1 entries ordered by integer_field (ascending)',
         'query2_name': 'Table1 entries ordered by integer_field (descending)',
@@ -732,6 +737,7 @@ def order_by_example(request):
 def slice_example(request):
     sliced_data = Table1.objects.all()[:3]  # Example slice
     return render(request, 'queries.html', {
+        'class': 'Basic',
         'type': 'Slice',
         'query1_name': 'First 3 entries from Table1',
         'query2_name': '',
@@ -748,14 +754,14 @@ def exists_example(request):
     # Prepare data for template
     value_names = ['Boolean Field Check', 'Integer Field Check']
     value_description = [
-        'Checks if any records have boolean_field=True',
-        'Checks if any records have integer_field > 10'
+        'Checks if any records have "boolean_field=True"',
+        'Checks if any records have "integer_field > 10"'
     ]
     values = [has_active, has_high_values]
     value_pairs = list(zip(value_names, value_description, values))
     
     return render(request, 'values_query.html', {
-        'type': 'Exists Check',
+        'type': 'Basic Query Methods - Exists',
         'value_pairs': value_pairs,
     })
 
@@ -765,6 +771,7 @@ def select_related_example(request):
     select_related_data = Table1.objects.select_related('foreign_key', 'one_to_one')
     
     return render(request, 'queries.html', {
+        'class': 'Advanced',
         'type': 'Select Related',
         'query1_name': 'Table1 with select_related ForeignKey and OneToOne relationships',
         'query2_name': '',
@@ -780,6 +787,7 @@ def prefetch_related_example(request):
     prefetch_data = Table1.objects.prefetch_related('many_to_many')
     
     return render(request, 'queries.html', {
+        'class': 'Advanced',
         'type': 'Prefetch Related',
         'query1_name': 'Table1 with prefetched many-to-many relationships with Table3',
         'query2_name': '',
@@ -797,8 +805,8 @@ def f_example(request):
     f_annotation = Table1.objects.filter(integer_field__isnull=False).annotate(
         integer_plus_ten=F('integer_field') + 10
     )[:5]  # Limit to first 5 for display
-    
     return render(request, 'queries.html', {
+        'class': 'Advanced',
         'type': 'F() Expression',
         'query1_name': 'Table1 entries with non-null integer and float fields',
         'query2_name': 'Table1 entries with integer_field + 10 annotation (first 5)',
@@ -813,6 +821,7 @@ def Q_example(request):
     q_data_and = Table1.objects.filter(Q(integer_field__gt=5) & Q(boolean_field=True))
 
     return render(request, 'queries.html', {
+        'class': 'Advanced',
         'type': 'Q',
         'query1_name': 'Table1 where integer_field > 5 OR boolean_field is True',
         'query2_name': 'Table1 where integer_field > 5 AND boolean_field is True',
@@ -834,10 +843,6 @@ def query_values_example(request):
     
     # Count many-to-many relationships
     count_many_to_many = Table1.objects.annotate(num_table3=Count('many_to_many'))
-    count_many_to_many = [
-        f"Table1 entry with id {obj.id} has {obj.num_table3} many-to-many relationship(s) with Table3."
-        for obj in count_many_to_many
-    ]
     
     # Prepare data for template
     value_names = [
@@ -875,7 +880,7 @@ def query_values_example(request):
     # Combine names, descriptions, and values for template
     value_pairs = list(zip(value_names, value_description, values))
     return render(request, 'values_query.html', {
-        'type': 'Aggregate Functions & Counts',
+        'type': 'Aggregate Functions - Count, Max, Min, Avg & Annotations',
         'value_pairs': value_pairs,
     })
 

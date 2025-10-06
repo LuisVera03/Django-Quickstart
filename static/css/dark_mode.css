@@ -4,12 +4,14 @@
     --text-color: #181D27;
     --dark-color: #222937;
     --green-dark: #0C4B33;
+    --green-text:#008854;
     --grey: #3a3a3a;
 }
 
 [data-theme="dark"] {
     --back-color: #181D27;
     --text-color: #F8F8F8;
+    --green-text: #00FF11;
 }
 
 body {
@@ -45,6 +47,16 @@ hr{
 .subtitle {
     font-weight: 900;
     color: var(--text-color);
+}
+
+.text {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.text_keywords{
+    font-weight: 900;
+    color: var(--green-text);
 }
 /* Layer and generic */
 

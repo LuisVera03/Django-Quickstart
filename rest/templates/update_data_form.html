@@ -22,7 +22,7 @@
                     <td>{{ entry.id }}</td>
                     <td>{{ entry.duration_field }}</td>
                     <td>{{ entry.email_field }}</td>
-                    <td><a class="table-button-edit" href="{% url 'update_form' 'table3' entry.id %}">Update</a></td>
+                    <td><a class="table-button-edit" href="{% url 'update_form' 'table3' entry.id %}">Edit</a></td>
                 </tr>
                 {% empty %}
                 <tr><td colspan="4">Table3 is empty</td></tr>
@@ -50,7 +50,7 @@
                     <td>{{ entry.positive_small_int}}</td>
                     <!-- this is how the option looks in html -->
                     <td>{{ entry.get_positive_small_int_display }}</td>
-                    <td><a class="table-button-edit" href="{% url 'update_form' 'table2' entry.id %}">Update</a></td>
+                    <td><a class="table-button-edit" href="{% url 'update_form' 'table2' entry.id %}">Edit</a></td>
                 </tr>
                 {% empty %}
                 <tr><td colspan="4">Table2 is empty</td></tr>
@@ -116,7 +116,7 @@
                             -
                         {% endif %}
                     </td>
-                    <td><a class="table-button-edit" href="{% url 'update_form' 'table1' entry.id %}">Update</a></td>
+                    <td><a class="table-button-edit" href="{% url 'update_form' 'table1' entry.id %}">Edit</a></td>
                 </tr>
                 {% empty %}
                 <tr><td colspan="15">Table1 is empty</td></tr>

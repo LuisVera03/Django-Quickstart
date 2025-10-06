@@ -1,26 +1,91 @@
 {% extends "base.html" %}
 
 {% block body %}
-<h1>Examples of Making Queries</h1>
+{% include "title.html" with title="- Making Queries" %}
 
-<h2>Basic Query Methods</h2>
-<p><a href="{% url 'all_example' %}">All - Get all records</a></p>
-<p><a href="{% url 'get_example' %}">Get - Retrieve specific records</a></p>
-<p><a href="{% url 'filter_example' %}">Filter - Filter records by criteria</a></p>
-<p><a href="{% url 'exclude_example' %}">Exclude - Exclude records by criteria</a></p>
-<p><a href="{% url 'order_by_example' %}">Order By - Sort records</a></p>
-<p><a href="{% url 'slice_example' %}">Slice - Limit records</a></p>
-<p><a href="{% url 'exists_example' %}">Exists - Check if records exist</a></p>
+<div class="card-container">
+    <div class="card title-card">
+        <h1>Basic Query Methods</h1>
+    </div>
 
-<h2>Advanced Query Methods</h2>
-<p><a href="{% url 'select_related_example' %}">Select Related - Optimize ForeignKey queries</a></p>
-<p><a href="{% url 'prefetch_related_example' %}">Prefetch Related - Optimize ManyToMany queries</a></p>
-<p><a href="{% url 'Q_example' %}">Q Objects - Complex query conditions</a></p>
-<p><a href="{% url 'f_example' %}">F() Expressions - Field references</a></p>
+    <div class="card">
+        <h3>All()</h3>
+        <p>Returns every object from the database table. Equivalent to a SQL SELECT * query.</p>
+        <a href="{% url 'all_example' %}" class="card-link">See more <i class="bi bi-box-arrow-up-right"></i></a>
+    </div>
 
-<h2>Aggregate Functions</h2>
-<p><a href="{% url 'query_values_example' %}">Aggregate Functions - Count, Max, Min, Average & ManyToMany Relations</a></p>
+    <div class="card">
+        <h3>Get()</h3>
+        <p>Fetches exactly one object matching the condition. Raises an error if none or multiple are found.</p>
+        <a href="{% url 'get_example' %}" class="card-link">See more <i class="bi bi-box-arrow-up-right"></i></a>
+    </div>
 
-<br>
-<p><a href="{% url 'home_rest_basic' %}">Home</a></p>
+    <div class="card">
+        <h3>Filter()</h3>
+        <p>Returns a QuerySet of objects that match the specified lookup conditions.</p>
+        <a href="{% url 'filter_example' %}" class="card-link">See more <i class="bi bi-box-arrow-up-right"></i></a>
+    </div>
+
+    <div class="card">
+        <h3>Exclude()</h3>
+        <p>Filters out records that meet the given criteria, returning all others.</p>
+        <a href="{% url 'exclude_example' %}" class="card-link">See more <i class="bi bi-box-arrow-up-right"></i></a>
+    </div>
+
+    <div class="card">
+        <h3>Order By()</h3>
+        <p>Orders the returned records by one or more fields, ascending or descending.</p>
+        <a href="{% url 'order_by_example' %}" class="card-link">See more <i class="bi bi-box-arrow-up-right"></i></a>
+    </div>
+
+    <div class="card">
+        <h3>Slice[]</h3>
+        <p>Restricts the QuerySet to a certain number of results, similar to SQL LIMIT.</p>
+        <a href="{% url 'slice_example' %}" class="card-link">See more <i class="bi bi-box-arrow-up-right"></i></a>
+    </div>
+
+    <div class="card">
+        <h3>Exists()</h3>
+        <p>Returns True if the QuerySet contains any results, without fetching them.</p>
+        <a href="{% url 'exists_example' %}" class="card-link">See more <i class="bi bi-box-arrow-up-right"></i></a>
+    </div>
+
+    <div class="card title-card">
+        <h1>Advanced Query Methods</h1>
+    </div>
+
+    <div class="card">
+        <h3>Select Related()</h3>
+        <p>Performs a SQL JOIN to fetch related objects in one query, reducing database hits.</p>
+        <a href="{% url 'select_related_example' %}" class="card-link">See more <i class="bi bi-box-arrow-up-right"></i></a>
+    </div>
+
+    <div class="card">
+        <h3>Prefetch Related()</h3>
+        <p>Fetches related objects for ManyToMany or reverse relations using separate optimized queries.</p>
+        <a href="{% url 'prefetch_related_example' %}" class="card-link">See more <i class="bi bi-box-arrow-up-right"></i></a>
+    </div>
+
+    <div class="card">
+        <h3>Q()</h3>
+        <p>Allows complex lookups using logical operators (AND, OR, NOT) inside filters.</p>
+        <a href="{% url 'Q_example' %}" class="card-link">See more <i class="bi bi-box-arrow-up-right"></i></a>
+    </div>
+
+    <div class="card">
+        <h3>F()</h3>
+        <p>Enables operations between model fields directly in the database, without fetching data first.</p>
+        <a href="{% url 'f_example' %}" class="card-link">See more <i class="bi bi-box-arrow-up-right"></i></a>
+    </div>
+
+    <div class="card title-card">
+        <h1>Aggregate Functions</h1>
+    </div>
+
+    <div class="card">
+        <h3>Aggregation — Calculate Summary Values</h3>
+        <p>Performs calculations like COUNT, MAX, MIN, AVG, and Annotate directly in the database.</p>
+        <a href="{% url 'query_values_example' %}" class="card-link">See more <i class="bi bi-box-arrow-up-right"></i></a>
+    </div>
+</div>
 {% endblock %}

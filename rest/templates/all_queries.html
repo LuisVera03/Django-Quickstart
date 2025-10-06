@@ -1,127 +1,133 @@
 {% extends "base.html" %}
 
 {% block body %}
-<h1>Examples of {{ type }} Method</h1>
-
-<!-- Table1 Results -->
-<h3>All entries from Table1 ({{ table1_count }} records)</h3>
-{% if table1_data %}
-<table>
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>ForeignKey</th>
-            <th>OneToOne</th>
-            <th>ManyToMany</th>
-            <th>Integer</th>
-            <th>Float</th>
-            <th>Char</th>
-            <th>Text</th>
-            <th>Boolean</th>
-            <th>Date</th>
-            <th>Time</th>
-            <th>DateTime</th>
-            <th>Image</th>
-            <th>File</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for entry in table1_data %}
-        <tr>
-            <td>{{ entry.id }}</td>
-            <td>{{ entry.foreign_key|default:"-" }}</td>
-            <td>{{ entry.one_to_one|default:"-" }}</td>
-            <td>
-                {% for m in entry.many_to_many.all %}
-                    {{ m.email_field }}{% if not forloop.last %}, {% endif %}
-                {% empty %}
-                    -
+{% include "title.html" with title="- Making Queries" %}
+<div class="container-table-rest">
+    <h1 class="subtitle" style="text-align: center;">{{ class }} Query Methods - {{ type }}</h1>
+    <hr class="horizontal-line">
+    <h2 class="subtitle">All entries from Table1 ({{ table1_count }} records)</h2>
+    {% if table1_data %}
+    <div class="table-container">
+        <table class="crud-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>ForeignKey</th>
+                    <th>OneToOne</th>
+                    <th>ManyToMany</th>
+                    <th>Integer</th>
+                    <th>Float</th>
+                    <th>Char</th>
+                    <th>Text</th>
+                    <th>Boolean</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>DateTime</th>
+                    <th>Image</th>
+                    <th>File</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in table1_data %}
+                <tr>
+                    <td>{{ entry.id }}</td>
+                    <td>{{ entry.foreign_key|default:"-" }}</td>
+                    <td>{{ entry.one_to_one|default:"-" }}</td>
+                    <td>
+                        {% for m in entry.many_to_many.all %}
+                            {{ m.email_field }}{% if not forloop.last %}, {% endif %}
+                        {% empty %}
+                            -
+                        {% endfor %}
+                    </td>
+                    <td>{{ entry.integer_field|default:"-" }}</td>
+                    <td>{{ entry.float_field|default:"-" }}</td>
+                    <td>{{ entry.char_field|default:"-" }}</td>
+                    <td>{{ entry.text_field|default:"-" }}</td>
+                    <td>{{ entry.boolean_field }}</td>
+                    <td>{{ entry.date_field|default:"-" }}</td>
+                    <td>{{ entry.time_field|default:"-" }}</td>
+                    <td>{{ entry.datetime_field|default:"-" }}</td>
+                    <td>
+                        {% if entry.image_field %}
+                            <img src="{{ entry.image_field.url }}" alt="img" width="50">
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if entry.file_field %}
+                            <a href="{{ entry.file_field.url }}">Download</a>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                </tr>
                 {% endfor %}
-            </td>
-            <td>{{ entry.integer_field|default:"-" }}</td>
-            <td>{{ entry.float_field|default:"-" }}</td>
-            <td>{{ entry.char_field|default:"-" }}</td>
-            <td>{{ entry.text_field|default:"-" }}</td>
-            <td>{{ entry.boolean_field }}</td>
-            <td>{{ entry.date_field|default:"-" }}</td>
-            <td>{{ entry.time_field|default:"-" }}</td>
-            <td>{{ entry.datetime_field|default:"-" }}</td>
-            <td>
-                {% if entry.image_field %}
-                    <img src="{{ entry.image_field.url }}" alt="img" width="50">
-                {% else %}
-                    -
-                {% endif %}
-            </td>
-            <td>
-                {% if entry.file_field %}
-                    <a href="{{ entry.file_field.url }}">Download</a>
-                {% else %}
-                    -
-                {% endif %}
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-{% else %}
-<p>No records found in Table1.</p>
-{% endif %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <h3 style="color: #28a728;">No records found in Table1.</h3>
+    {% endif %}
+    <br>
 
-<br>
+    <!-- Table2 Results -->
+    <h2 class="subtitle">All entries from Table2 ({{ table2_count }} records)</h2>
+    {% if table2_data %}
+    <div class="table-container">
+        <table class="crud-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Positive Small Int</th>
+                    <th>Choice Display</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in table2_data %}
+                <tr>
+                    <td>{{ entry.id }}</td>
+                    <td>{{ entry.positive_small_int }}</td>
+                    <td>{{ entry.get_positive_small_int_display }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <h3 style="color: #28a728;">No records found in Table2.</h3>
+    {% endif %}
 
-<!-- Table2 Results -->
-<h3>All entries from Table2 ({{ table2_count }} records)</h3>
-{% if table2_data %}
-<table>
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Positive Small Int</th>
-            <th>Choice Display</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for entry in table2_data %}
-        <tr>
-            <td>{{ entry.id }}</td>
-            <td>{{ entry.positive_small_int }}</td>
-            <td>{{ entry.get_positive_small_int_display }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-{% else %}
-<p>No records found in Table2.</p>
-{% endif %}
+    <br>
 
-<br>
-
-<!-- Table3 Results -->
-<h3>All entries from Table3 ({{ table3_count }} records)</h3>
-{% if table3_data %}
-<table>
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Duration Field</th>
-            <th>Email Field</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for entry in table3_data %}
-        <tr>
-            <td>{{ entry.id }}</td>
-            <td>{{ entry.duration_field }}</td>
-            <td>{{ entry.email_field }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-{% else %}
-<p>No records found in Table3.</p>
-{% endif %}
-
-<br>
-<p><a href="{% url 'making_queries' %}">Back to Query Examples</a></p>
+    <!-- Table3 Results -->
+    <h2 class="subtitle">All entries from Table3 ({{ table3_count }} records)</h2>
+    {% if table3_data %}
+    <div class="table-container">
+        <table class="crud-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Duration Field</th>
+                    <th>Email Field</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in table3_data %}
+                <tr>
+                    <td>{{ entry.id }}</td>
+                    <td>{{ entry.duration_field }}</td>
+                    <td>{{ entry.email_field }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <h3 style="color: #28a728;">No records found in Table3.</h3>
+    {% endif %}
+    <br>
+    <a class="back_button" href="{% url 'making_queries' %}">< Back to Query Examples</a>
+</div>
 {% endblock %}
