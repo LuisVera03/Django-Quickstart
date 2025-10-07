@@ -984,8 +984,44 @@ table.crud-table a:hover {
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
-/* Dark mode support*/
 
+/* template tags */
+.double-div{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(1, 1fr);
+    gap: 8px;
+}
+.double-div .container{
+    padding: 10px;
+    margin: 10px;
+    border-radius: 20px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #3c4355;
+}
+.double-div-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.double-div-row p{
+    width: 20%;
+}
+.double-div-row code{
+    width: 80%;
+}
+code{
+    display: block;
+    background: #1e1e1e;
+    color: #d4ffda;
+    padding: 0.6rem 0.8rem;
+    border-radius: 5px;
+    font-family: "Fira Code", monospace;
+    white-space: pre-wrap;
+    box-shadow: 0 2px 6px rgba(255, 255, 255, 0.438);
+}
+/* Dark mode suppsort*/
 [data-theme="dark"] .form-container {
     background-color: #2d2d2d;
     color: var(--white-color);
