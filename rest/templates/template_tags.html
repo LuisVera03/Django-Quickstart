@@ -3,30 +3,95 @@
 {% load tags_example %}
 
 {% block body %}
-<h2>Template Tags Example</h2>
-<p>Here is an example of using template tags:</p>
+{% include "title.html" with title="- Template Tags" %}
 
-Integer
-<p>{{ data.integer_field }}</p>
+<div class="double-div">
+    <div class="container">
+        <h2 class="subtitle">Template Tags Example (Code)</h2>
 
-Integer plus 10
-<p>{{ data.integer_field|plus:10 }}</p>
+        <div class="double-div-row">
+            <p class="text">Integer:</p>
+            <code>data.integer_field</code>
+        </div>
 
-Float
-<p>Float: {{ data.float_field }}</p>
+        <div class="double-div-row">
+            <p class="text">Integer plus 10:</p>
+            <code>data.integer_field|plus:10</code>
+        </div>
 
-Float minus 1.5
-<p>{{ data.float_field|minus:1.5 }}</p>
+        <div class="double-div-row">
+            <p class="text">Float:</p>
+            <code>data.float_field</code>
+        </div>
 
-<p>Char</p>
-<p>{{ data.char_field }}</p>
+        <div class="double-div-row">
+            <p class="text">Float minus 1.5:</p>
+            <code>data.float_field|minus:1.5</code>
+        </div>
 
-<p>Char in uppercase</p>
-<p>{{ data.char_field|upper }}</p>
+        <div class="double-div-row">
+            <p class="text">Char:</p>
+            <code>data.char_field</code>
+        </div>
 
-<p>Text</p>
-<p>{{ data.text_field }}</p>
+        <div class="double-div-row">
+            <p class="text">Char in uppercase:</p>
+            <code>data.char_field|upper</code>
+        </div>
 
-<p>Text in lower case</p>
-<p>{{ data.text_field|lower }}</p>
+        <div class="double-div-row">
+            <p class="text">Text:</p>
+            <code>data.text_field</code>
+        </div>
+
+        <div class="double-div-row">
+            <p class="text">Text in lower case:</p>
+            <code>data.text_field|lower</code>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2 class="subtitle">Template Tags Example (Rendered)</h2>
+
+        <div class="double-div-row">
+            <p class="text">Integer:</p>
+            <p class="text_keywords">{{ data.integer_field }}</p>
+        </div>
+
+        <div class="double-div-row">
+            <p class="text">Integer plus 10:</p>
+            <p class="text_keywords">{{ data.integer_field|plus:10 }}</p>
+        </div>
+
+        <div class="double-div-row">
+            <p class="text">Float:</p>
+            <p class="text_keywords">{{ data.float_field }}</p>
+        </div>
+
+        <div class="double-div-row">
+            <p class="text">Float minus 1.5:</p>
+            <p class="text_keywords">{{ data.float_field|minus:1.5 }}</p>
+        </div>
+
+        <div class="double-div-row">
+            <p class="text">Char:</p>
+            <p class="text_keywords">{{ data.char_field }}</p>
+        </div>
+
+        <div class="double-div-row">
+            <p class="text">Char in uppercase:</p>
+            <p class="text_keywords">{{ data.char_field|upper }}</p>
+        </div>
+
+        <div class="double-div-row">
+            <p class="text">Text:</p>
+            <p class="text_keywords">{{ data.text_field }}</p>
+        </div>
+
+        <div class="double-div-row">
+            <p class="text">Text in lower case:</p>
+            <p class="text_keywords">{{ data.text_field|lower }}</p>
+        </div>
+    </div>
+</div>
 {% endblock %}
