@@ -1,42 +1,29 @@
 {% extends "base.html" %}
 
 {% block body %}
-{% include "title.html" %}
+{% include "title.html" with title="- PROFILE" %}
+    <div class="container-profile-rest">
+        <h1 class="subtitle" style="text-align: center;">User Data</h1>
+        <hr class="horizontal-line">
 
-<h2>User Profile</h2>
+        <div class="profile-info">
+            <p><strong>Username:</strong> {{ username }}</p>
+            <p><strong>Email:</strong> {{ email|default:"-" }}</p>
+            <p><strong>Role:</strong> {{ role }}</p>
+        </div>
 
-<table>
-    <tr>
-        <td><strong>Username:</strong></td>
-        <td>{{ username }}</td>
-    </tr>
-    <tr>
-        <td><strong>Email:</strong></td>
-        <td>{{ email|default:"-" }}</td>
-    </tr>
-    <tr>
-        <td><strong>Role:</strong></td>
-        <td>{{ role }}</td>
-    </tr>
-</table>
+        {% if permissions %}
+            <h2>Permissions:</h2>
+            <ul>
+                {% for permission in permissions %}
+                    <li>{{ permission }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
 
-{% if permissions %}
-    <h3>Permissions:</h3>
-    <ul>
-        {% for permission in permissions %}
-            <li>{{ permission }}</li>
-        {% endfor %}
-    </ul>
-{% endif %}
-<br>
-{% if role == 'Administrator' %}
-    <h3>Administration Panel</h3>
-    <p><a href="{% url 'user_management' %}">Manage Users</a></p>
-    <p><a href="{% url 'user_logs' %}">User Logs</a></p>
-{% endif %}
-<hr>
-
-<p><a href="{% url 'home_rest_basic' %}">Home</a></p>
-<p><a href="{% url 'logout_rest_basic' %}">Logout</a></p>
-
+        {% if role == 'Administrator' %}
+            <h2>Administration Panel</h2>
+            <p><a href="{% url 'user_logs' %}">User Logs</a></p>
+        {% endif %}
+    </div>
 {% endblock %}

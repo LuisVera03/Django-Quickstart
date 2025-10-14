@@ -1,43 +1,49 @@
 {% extends "base.html" %}
 
 {% block body %}
-<h1>User Management</h1>
-
-<table>
-    <thead>
-        <tr>
-            <th>Username</th>
-            <th>Email</th>
-            <th>Current Role</th>
-            <th>Change Role</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for item in users_with_roles %}
-        <tr>
-            <td>{{ item.user.username }}</td>
-            <td>{{ item.user.email|default:"-" }}</td>
-            <td>{{ item.role }}</td>
-            <td>
-                <form method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="user_id" value="{{ item.user.id }}">
-                    <select name="role">
-                        <option value="customer" {% if item.role == 'Customer' %}selected{% endif %}>Customer</option>
-                        <option value="admin" {% if item.role == 'Administrator' %}selected{% endif %}>Administrator</option>
-                    </select>
-                    <button type="submit">Update</button>
-                </form>
-            </td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="4">No users found</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-
-<p><a href="{% url 'profile_rest_basic' %}">Back to Profile</a></p>
-
+{% include "title.html" with title="- USER MANAGEMENT" %}
+    <div class="container-table-rest">
+        <h1 class="subtitle" style="text-align: center;">Change Roles</h1>
+        <hr class="horizontal-line">
+        <div class="table-container">
+            <table class="crud-table">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Current Role</th>
+                        <th>Change Role</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in users_with_roles %}
+                    <tr>
+                        <td>{{ item.user.username }}</td>
+                        <td>{{ item.user.email|default:"-" }}</td>
+                        <td>{{ item.role }}</td>
+                        <td>
+                            <form method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="user_id" value="{{ item.user.id }}">
+                                <div class="form-row">
+                                    <select name="role">
+                                        <option value="customer" {% if item.role == 'Customer' %}selected{% endif %}>Customer</option>
+                                        <option value="admin" {% if item.role == 'Administrator' %}selected{% endif %}>Administrator</option>
+                                    </select>
+                                </div>
+                        </td>
+                        <td>
+                                <button class="edit_button" type="submit">Update</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4">No users found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 {% endblock %}
