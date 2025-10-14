@@ -595,6 +595,7 @@ def user_management(request):
             messages.error(request, "User not found.")
         except Exception as e:
             messages.error(request, f"Error updating permissions: {e}")
+        return redirect('user_management')
     
     # Get all users with their roles
     users_with_roles = []
