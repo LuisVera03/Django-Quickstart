@@ -1005,7 +1005,7 @@ table.crud-table a:hover {
     align-items: center;
     gap: 10px;
 }
-.double-div-row p{
+.double-div-row .text{
     width: 20%;
 }
 .double-div-row code{
