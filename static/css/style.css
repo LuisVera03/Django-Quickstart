@@ -1314,3 +1314,85 @@ code{
     background-color: #6c757d;
     color: var(--white-color);
 }
+
+/* Profile styles */
+.container-profile-rest {
+    padding: 10px;
+    margin: 10px auto;
+    border-radius: 20px;
+    border-width: 5px;
+    border-style: solid;
+    width: 50%;
+    border-color: #3c4355;
+    color: var(--dark-color);
+}
+
+.profile-info {
+    margin: 20px 0;
+    color: var(--dark-color);
+}
+
+.profile-info p {
+    font-size: 1.1em;
+    margin: 10px 0;
+    color: var(--dark-color);
+}
+
+.profile-info strong {
+    color: var(--dark-color);
+}
+
+.container-profile-rest h2 {
+    color: var(--dark-color);
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.container-profile-rest ul {
+    color: var(--dark-color);
+    margin-left: 20px;
+}
+
+.container-profile-rest ul li {
+    margin: 5px 0;
+    color: var(--dark-color);
+}
+
+.container-profile-rest a {
+    color: var(--green-body);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.container-profile-rest a:hover {
+    text-decoration: underline;
+}
+
+/* Profile styles - Dark mode */
+[data-theme="dark"] .container-profile-rest {
+    color: var(--white-color);
+}
+
+[data-theme="dark"] .profile-info {
+    color: var(--white-color);
+}
+
+[data-theme="dark"] .profile-info p {
+    color: var(--white-color);
+}
+
+[data-theme="dark"] .profile-info strong {
+    color: var(--white-color);
+}
+
+[data-theme="dark"] .container-profile-rest h2 {
+    color: var(--white-color);
+}
+
+[data-theme="dark"] .container-profile-rest ul {
+    color: var(--white-color);
+}
+
+[data-theme="dark"] .container-profile-rest ul li {
+    color: var(--white-color);
+}
