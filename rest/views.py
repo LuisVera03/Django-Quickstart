@@ -619,7 +619,7 @@ def user_management(request):
 # View to display user activity logs (only for admins)
 @login_required
 def user_logs(request):
-    logs = UserLog.objects.filter().order_by('-timestamp')
+    logs = UserLog.objects.filter().order_by('-timestamp')[:15]
     return render(request, 'user_logs.html', {
         'logs': logs
     })
