@@ -6,55 +6,56 @@
 <div class="card-container">
     <div class="card">
         <h3>CRUD</h3>
-        <p>This is an example of <b>"CRUD"</b> using different Django tools.</p>
+        <p>Create, Read, Update, and Delete data using Django’s built-in ORM and views.</p>
         <a href="{% url 'get_data' %}" class="card-link">See more <i class="bi bi-box-arrow-up-right"></i></a>
     </div>
 
     <div class="card">
         <h3>CRUD FORM</h3>
-        <p>This is an example of <b>"CRUD FORM"</b> using different Django tools.</p>
+        <p>Manage database records through Django forms with validation and user input handling.</p>
         <a href="{% url 'get_data_form' %}" class="card-link">See more <i class="bi bi-box-arrow-up-right"></i></a>
     </div>
 
     <div class="card">
         <h3>MAKING QUERIES</h3>
-        <p>This is an example of <b>"MAKING QUERIES"</b> using different Django tools.</p>
+        <p>Learn how to perform custom database queries using Django’s QuerySet API.</p>
         <a href="{% url 'making_queries' %}" class="card-link">See more <i class="bi bi-box-arrow-up-right"></i></a>
     </div>
 
     <div class="card">
         <h3>MODIFY HTML</h3>
-        <p>This is an example of <b>"MODIFY HTML"</b> using different Django tools.</p>
-        <a href="{% url 'html_modify' %}" class="card-link">See more <i class="bi bi-box-arrow-up-right"></i></a>
+        <p>Dynamically change HTML content from Django views and templates.</p>
+        <a href="{% url 'html_example' %}" class="card-link">See more <i class="bi bi-box-arrow-up-right"></i></a>
     </div>
 
     <div class="card">
         <h3>TEMPLATE TAGS</h3>
-        <p>This is an example of <b>"TEMPLATE TAGS"</b> using different Django tools.</p>
+        <p>Use custom and built-in template tags to add logic inside your Django templates.</p>
         <a href="{% url 'template_tags' %}" class="card-link">See more <i class="bi bi-box-arrow-up-right"></i></a>
     </div>
 
     <div class="card">
         <h3>EXPORT TO FILE</h3>
-        <p>This is an example of <b>"EXPORT TO FILE"</b> using different Django tools.</p>
+        <p>Export your data to different file formats such as CSV, Excel, or PDF.</p>
         <a href="{% url 'export_to_file' %}" class="card-link">See more <i class="bi bi-box-arrow-up-right"></i></a>
     </div>
 
     <div class="card">
         <h3>SEND EMAIL</h3>
-        <p>This is an example of <b>"SEND EMAIL"</b> using different Django tools.</p>
+        <p>Send custom emails directly from your Django application.</p>
         <a href="{% url 'email_send' %}" class="card-link">See more <i class="bi bi-box-arrow-up-right"></i></a>
     </div>
+
     {% if user.groups.all.0.name == 'Admins' %}
     <div class="card">
         <h3>MANAGE USERS</h3>
-        <p>This is an example of <b>"MANAGE USERS"</b> using different Django tools.</p>
+        <p>Create, update, and manage users and permissions within the Django admin or custom views.</p>
         <a href="{% url 'user_management' %}" class="card-link">See more <i class="bi bi-box-arrow-up-right"></i></a>
     </div>
     {% else %}
     <div class="card" style="opacity: 0.5; pointer-events: none;">
         <h3>MANAGE USERS</h3>
-        <p>This is an example of <b>"MANAGE USERS"</b> using different Django tools.</p>
+        <p>Create, update, and manage users and permissions within the Django admin or custom views.</p>
         <a href="" class="card-link">See more <i class="bi bi-box-arrow-up-right"></i></a>
     </div>
     {% endif %}
