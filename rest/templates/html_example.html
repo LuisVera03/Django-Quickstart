@@ -4,66 +4,281 @@
   {# Loads filters like intcomma, naturaltime, etc. #}
 
 {% block body %}
-  <h1>{{ title|upper }}</h1>  {# Variable with filter #}
+{% include "title.html" with title="- HTML EXAMPLE" %}
+<div class="double-div">
+    <div class="container">
+        <h2 class="subtitle">Django Template Language (Code)</h2>
 
-  <p>Logged-in user: {{ user.username }}</p>
-  <p>Current date: {{ date|date:"d/m/Y H:i" }}</p>
-  <p>Pretty number: {{ number }}</p>
+        <br>
+        <h3 class="subtitle">Variable</h3>
+        <div class="double-div-row">
+            <p class="text">Title with filter:</p>
+            <code>title|upper</code>
+        </div>
 
-  <h2>Conditional</h2>
-  {% if products %}
-    <ul>
-      {% for product in products %}
-        <li>
-          {{ forloop.counter }} - {{ product.name }} - {{ product.price|floatformat:2 }}
-          {% if product.stock > 0 %}
-            (In stock)
-          {% else %}
-            (Out of stock)
-          {% endif %}
-        </li>
-      {% empty %}
-        <li>No products available</li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>No products available.</p>
-  {% endif %}
+        <div class="double-div-row">
+            <p class="text">Logged-in user:</p>
+            <code>user.username</code>
+        </div>
 
-  <h2>Accessing dictionaries and lists</h2>
-  <p>Dictionary value: {{ my_dict.key }}</p>
-  <p>List element: {{ my_list.0 }}</p>
+        <div class="double-div-row">
+            <p class="text">Current date:</p>
+            <code>date|date:"d/m/Y H:i"</code>
+        </div>
 
-  <h2>Custom filters</h2>
-  <p>{{ long_text|truncatechars:30 }}</p>
+        <div class="double-div-row">
+            <p class="text">Number:</p>
+            <code>number</code>
+        </div>
 
-  <h2>Comment block</h2>
-  {# This is a comment that won't appear in the rendered HTML #}
+        <br>
+        <hr>
+        <h3 class="subtitle">Conditional</h3>
 
-  <h2>Using include</h2>
-  {% include "greeting_fragment.html" %}
+        <div class="double-div-row">
+            <p class="text">Check:</p>
+            <code>if products / endif</code>
+        </div>
 
-  <h2>Using with</h2>
-  {% with total=products|length %}
-    <p>Total products: {{ total }}</p>
-  {% endwith %}
+        <div class="double-div-row">
+            <p class="text">Comparison:</p>
+            <code>if product.stock > 0 / else / endif</code>
+        </div>
 
-  <h2>Logical operations</h2>
-  {% if user.is_authenticated and user.is_staff %}
-    <p>Admin user</p>
-  {% elif user.is_authenticated %}
-    <p>Registered user</p>
-  {% else %}
-    <p>Anonymous user</p>
-  {% endif %}
+        <br>
+        <hr>
+        <h3 class="subtitle">Accessing dictionaries and lists</h3>
 
-  <h2>Using static</h2>
-  <img src="{% static 'img/icono.jpg' %}" alt="Logo">
+        <div class="double-div-row">
+            <p class="text">Dictionary items</p>
+             <code>my_dict.items</code>
+        </div>
 
-  <h2>Using for loop with range</h2>
-  <ul>
-    {% for i in range %}
-      <li>{{ i }}</li>
-    {% endfor %}
-  </ul>
+        <div class="double-div-row">
+            <p class="text">Dictionary key</p>
+            <code>my_dict.keys</code>
+        </div>
+        <div class="double-div-row">
+            <p class="text">Dictionary value</p>
+            <code>my_dict.values</code>
+        </div>
+        <div class="double-div-row">
+            <p class="text">List element</p>
+            <code>my_list.0</code>
+        </div>
+
+
+        <hr>
+        <h3 class="subtitle">Custom filters</h3>
+
+        <div class="double-div-row">
+            <p class="text">Truncate text to a fixed length:</p>
+            <code>long_text|truncatechars:30</code>
+        </div>
+
+        <br>
+        <hr>
+        <h3 class="subtitle">Comment block</h3>
+
+        <div class="double-div-row">
+            <p class="text">Add a comment:</p>
+            <code>This is a comment that won't appear in the rendered HTML</code>
+        </div>
+
+        <br>
+        <hr>
+        <h3 class="subtitle">Using include</h3>
+
+        <div class="double-div-row">
+            <p class="text">Insert another template file:</p>
+            <code>include "greeting_fragment.html"</code>
+        </div>
+
+        <br>
+        <hr>
+        <h3 class="subtitle">Using “with” Tag</h3>
+
+        <div class="double-div-row">
+            <p class="text">Create and use a temporary variable:</p>
+            <code>with total=products|length / endwith</code>
+        </div>
+
+        <br>
+        <hr>
+        <h3 class="subtitle">Logical operations</h3>
+
+        <div class="double-div-row">
+            <p class="text">Combine conditions with if / elif / else:</p>
+            <code>if user.is_authenticated and user.is_staff / elif user.is_authenticated / else / endif</code>
+        </div>
+
+        <hr>
+        <h3 class="subtitle">For Loop with Range</h3>
+
+        <div class="double-div-row">
+            <p class="text">Iterate over a range of numbers:</p>
+            <code>for i in range / endfor</code>
+        </div>
+
+        <br>
+        <hr>
+        <h3 class="subtitle">Static Files</h3>
+
+        <div class="double-div-row">
+            <p class="text">Load an image from the static folder:</p>
+            <code>img src="{% static 'img/icono.jpg' %}" alt="Logo"</code>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2 class="subtitle">Django Template Language (Rendered)</h2>
+
+        <br>
+        <h3 class="subtitle">Variable</h3>
+        <div class="double-div-row">
+            <p class="text">Title with filter:</p>
+            <p class="text_keywords">{{ title|upper }}</p>
+        </div>
+
+        <div class="double-div-row">
+            <p class="text">Logged-in user:</p>
+            <p class="text_keywords">{{ user.username }}</p>
+        </div>
+
+        <div class="double-div-row">
+            <p class="text">Current date:</p>
+            <p class="text_keywords">{{ date|date:"d/m/Y H:i" }}</p>
+        </div>
+
+        <div class="double-div-row">
+            <p class="text">Number:</p>
+            <p class="text_keywords">{{ number }}</p>
+        </div>
+
+        <br>
+        <hr>
+        <h3 class="subtitle">Conditional</h3>
+
+        <div class="double-div-row">
+          <p class="text">Check and Comparison</p>
+              {% if products %}
+                <ul class="text_keywords">
+                  {% for product in products %}
+                    <li>
+                      {{ forloop.counter }} - {{ product.name }} - {{ product.price|floatformat:2 }}
+                      {% if product.stock > 0 %}
+                        (In stock)
+                      {% else %}
+                        (Out of stock)
+                      {% endif %}
+                    </li>
+                  {% empty %}
+                    <li>No products available</li>
+                  {% endfor %}
+                </ul>
+              {% else %}
+                <p>No products available.</p>
+              {% endif %}
+        </div>
+        <div class="double-div-row">
+            <p class="text"></p>
+            <p class="text_keywords"></p>
+        </div>
+
+        <br>
+        <hr>
+        <h3 class="subtitle">Accessing dictionaries and lists</h3>
+        <div class="double-div-row">
+            <p class="text">Dictionary items</p>
+            <p class="text_keywords">{{ my_dict.items }}</p>
+        </div>
+        <div class="double-div-row">
+            <p class="text">Dictionary key</p>
+            <p class="text_keywords">{{ my_dict.keys }}</p>
+        </div>
+        <div class="double-div-row">
+            <p class="text">Dictionary value</p>
+            <p class="text_keywords">{{ my_dict.values }}</p>
+        </div>
+        <div class="double-div-row">
+            <p class="text">List element</p>
+            <p class="text_keywords">{{ my_list.0 }}</p>
+        </div>
+
+        <br>
+        <hr>
+        <h3 class="subtitle">Custom filters</h3>
+
+        <div class="double-div-row">
+            <p class="text">Truncate text to a fixed length:</p>
+            <p class="text_keywords">{{ long_text|truncatechars:30 }}</p>
+        </div>
+
+        <br>
+        <hr>
+        <h3 class="subtitle">Comment block</h3>
+
+        <div class="double-div-row">
+            <p class="text">Add a comment:</p>
+            <p class="text_keywords">{# This is a comment that won't appear in the rendered HTML #}</p>        
+        </div>
+
+        <br>
+        <hr>
+        <h3 class="subtitle">Using include</h3>
+
+        <div class="double-div-row">
+            <p class="text">Insert another template file:</p>
+            <p class="text_keywords">{% include "greeting_fragment.html" %}</p>
+        </div>
+
+        <br>
+        <hr>
+        <h3 class="subtitle">Using “with” Tag</h3>
+
+        <div class="double-div-row">
+            <p class="text">Create and use a temporary variable:</p>
+            {% with total=products|length %}
+              <p class="text_keywords">Total products: {{ total }}</p>
+            {% endwith %}
+        </div>
+
+        <br>
+        <hr>
+        <h3 class="subtitle">Logical operations</h3>
+
+        <div class="double-div-row">
+            <p class="text">Combine conditions with if / elif / else:</p>
+            {% if user.is_authenticated and user.is_staff %}
+              <p class="text_keywords">Admin user</p>
+            {% elif user.is_authenticated %}
+              <p class="text_keywords">Registered user</p>
+            {% else %}
+              <p class="text_keywords">Anonymous user</p>
+            {% endif %}
+        </div>
+
+        <br>
+        <hr>
+        <h3 class="subtitle">For Loop with Range</h3>
+
+        <div class="double-div-row">
+            <p class="text">Iterate over a range of numbers:</p>
+            <ul class="text_keywords" style="margin:0px">
+              {% for i in range %}
+                <li>{{ i }}</li>
+              {% endfor %}
+            </ul>
+        </div>
+        
+        <br>
+        <hr>
+        <h3 class="subtitle">Static Files</h3>
+
+        <div class="double-div-row">
+            <p class="text">Load an image from the static folder:</p>
+            <p class="text_keywords"><img src="{% static 'img/icono.jpg' %}" alt="Logo"></p>
+        </div>
+    </div>
+</div>
 {% endblock %}

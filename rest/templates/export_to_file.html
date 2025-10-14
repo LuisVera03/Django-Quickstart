@@ -1,7 +1,46 @@
 {% extends "base.html" %}
 
 {% block body %}
-<p><a href="{% url 'export_pdf' %}">Pdf</a></p>
-<p><a href="{% url 'export_excel' %}">Excel</a></p>
+{% include "title.html" with title="- Template Tags" %}
+<div class="a">
+    <div class="double-div" style="justify-content: center;">
+        <div class="container" style="text-align: center;">
+            <h2 class="subtitle" >PDF</h2>
+            <hr style="height: 2px;">
 
+            <p class="text">
+                Generates a PDF file containing all records from the <b>Table1</b> model.  
+                It creates a downloadable response named <code>table1.pdf</code> using the 
+                <code>reportlab</code> library. Each record is written line by line with its 
+                corresponding fields. If the page becomes full, a new page is automatically created.
+            </p>
+            <p><a class="back_button" href="{% url 'export_pdf' %}">Download Pdf</a></p>
+        </div>
+
+        <div class="container" style="text-align: center;">
+            <h2 class="subtitle">XSLX</h2>
+            <hr style="height: 2px;">
+            <p class="text">
+                Exports all data from the <b>Table1</b> model into an Excel file 
+                (<code>table1.xlsx</code>).  
+                It uses the <code>openpyxl</code> library to create the workbook in memory, 
+                adds headers, populates rows with model data, and formats column widths for 
+                better readability. The final file is sent as a downloadable response.
+            </p>
+            <p><a class="back_button" href="{% url 'export_excel' %}">Download Excel</a></p>
+        </div>
+    </div>
+</div>
+<style>
+    .a{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 75vh;
+    }
+    code{
+        display: inline;
+        padding: 0.1rem 0.3rem;
+    }
+</style>
 {% endblock %}

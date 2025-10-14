@@ -43,7 +43,7 @@ urlpatterns = [
     path('f_example', views.f_example, name='f_example'),
     path('Q_example', views.Q_example, name='Q_example'),
     # Template rendering and modification
-    path('html_modify', views.html_modify, name='html_modify'),
+    #path('html_modify', views.html_modify, name='html_modify'),
     path('html_example', views.html_example, name='html_example'),
     # Exporting data to files
     path('export_to_file', views.export_to_file, name='export_to_file'),
