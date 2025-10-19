@@ -115,6 +115,10 @@ def user_login(request):
         # If authentication is successful, log the user in    
         if user is not None:
             login(request, user)
+            # Save current app in session
+            request.session['current_app'] = 'json_app'
+            request.session['home_url'] = 'home_json'
+            request.session['logout_url'] = 'logout_json'
             return redirect('home_json')
         else:
             messages.error(request, "Invalid username or password.")

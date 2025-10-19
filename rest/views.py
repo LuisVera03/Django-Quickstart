@@ -138,6 +138,11 @@ def user_login(request):
         # If authentication is successful, log the user in
         if user is not None:
             login(request, user)
+            # Save current app in session
+            request.session['current_app'] = 'rest'
+            request.session['home_url'] = 'home_rest_basic'
+            request.session['profile_url'] = 'profile_rest_basic'
+            request.session['logout_url'] = 'logout_rest_basic'
             return redirect('home_rest_basic')
         else:
             # Invalid credentials
