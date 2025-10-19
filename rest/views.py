@@ -138,7 +138,7 @@ def user_login(request):
         # If authentication is successful, log the user in
         if user is not None:
             login(request, user)
-            return redirect(profile)
+            return redirect('home_rest_basic')
         else:
             # Invalid credentials
             messages.error(request, "Invalid username or password.")
