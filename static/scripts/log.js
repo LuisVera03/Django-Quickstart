@@ -1,9 +1,9 @@
 // Change these values if you want different demo credentials
-const DEMO_USER = 'demo@example.com';
-const DEMO_PASS = 'demo1234';
+const DEMO_USER = 'Administrator';
+const DEMO_PASS = 'p92lk7HtLhz2pB';
 
-const DEMO_USER_NO_PERM = 'user@example.com';
-const DEMO_PASS_NO_PERM = 'demo1234';
+const DEMO_USER_NO_PERM = 'Customer';
+const DEMO_PASS_NO_PERM = 'EWbVjlvzBGz2sv';
 // Function triggered by your link: <a onclick="Test_Credential()">Click here</a>
 function Test_Credential(event,number) {
     // Prevent default behavior if the <a> has href

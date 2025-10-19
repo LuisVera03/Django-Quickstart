@@ -188,7 +188,10 @@ class LoginView(FormView):
 
     def form_valid(self, form):
         if try_login(self.request, **form.cleaned_data):
-            self.request.session["active_app"] = "lag"
+            # Save current app in session
+            self.request.session['current_app'] = 'layer_and_generic'
+            self.request.session['home_url'] = 'home_layer_and_generic'
+            self.request.session['logout_url'] = 'logout_layer_and_generic'
             return super().form_valid(form)
         messages.error(self.request, "Incorrect username or password")
         return self.form_invalid(form)
@@ -218,7 +221,6 @@ class HomeView(LoginRequiredMixin, TemplateView):
     template_name = "LAG/home.html"
 
     def dispatch(self, request, *args, **kwargs):
-        request.session["active_app"] = "lag"
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):

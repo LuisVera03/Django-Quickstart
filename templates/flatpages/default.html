@@ -1,29 +1,50 @@
 {% load static %}
+{% load dark_mode_tags %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ flatpage.title }} - Django Quickstart</title>
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jersey+10&family=Kode+Mono:wght@400..700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="{% static 'css/dark_mode.css' %}">
 </head>
-<body{% if dark_mode %} data-theme="dark"{% endif %}>
+<body {% if dark_mode %} data-theme="dark"{% endif %}>
     {% if user.is_authenticated %}
-        <div class="navbar">
-            User: {{ user.username }} |
-            <a href="{% url 'home_json' %}">Home</a> | 
-            <a href="{% url 'profile_json' %}">Profile</a> |
-            <a href="/pages/about/">About</a> |
-            <a href="/pages/policies/">Policies</a> |
-            <button id="darkModeToggle" class="dark-mode-toggle" onclick="toggleDarkMode()">
-                {% if dark_mode %}Light{% else %}Dark{% endif %}
-            </button> |
-            <form action="{% url 'logout_json' %}" method="post" style="display:inline;">
-                {% csrf_token %}
-                <button type="submit" style="background:none; border:none; color:blue; cursor:pointer;">Logout</button>
-            </form> | 
-        </div>
-        <hr>
+        <nav class="navbar">
+            <div class="navbar-left">Django Quickstart</div>
+            <div class="navbar-center">
+                <a href="{% url request.session.home_url %}">Home</a> |
+                <a href="/pages/about/">About</a> |
+                <a href="/pages/policies/">Policies</a> |
+                <span>Role: {% if user.groups.all.0.name == 'Admins' %}Administrator{% elif user.groups.all.0.name == 'Customers' %}Customer{% else %}No role assigned{% endif %}</span>
+            </div>
+            <div class="navbar-right">
+                <i class="bi bi-person-fill"></i>
+                <div class="user-dropdown">
+                    <span>{{ user.username }}</span>
+                    <div class="dropdown-content">
+                        {% if request.session.current_app == 'rest' %}
+                            <a href="{% url request.session.profile_url %}" style="color:black">Profile</a>
+                        {% endif %}
+                        <form action="{% url request.session.logout_url %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit">Logout</button>
+                        </form>
+                    </div>
+                </div>
+                <span>{% dark_mode_button %}</span> 
+            </div>
+        </nav>
     {% endif %}
     
     {% if messages %}
@@ -34,12 +55,22 @@
         </ul>
     {% endif %}
 
-    <h1>{{ flatpage.title }}</h1>
-    <div>
-        {{ flatpage.content|safe }}
+    <div class="container-profile-rest">
+        <h1 class="subtitle" style="text-align: center;">{{ flatpage.title|upper }}</h1>
+        <hr class="horizontal-line">
+        
+        <div class="profile-info">
+            {{ flatpage.content|safe }}
+        </div>
+
+        <hr class="horizontal-line">
+        
+        <p style="text-align: center;">
+            <a href="{% url request.session.home_url %}">Back to Home</a>
+        </p>
     </div>
 
-    <footer>
+    <footer style="text-align: center; margin-top: 20px; padding: 20px;">
         <p>&copy; 2025 Django Quickstart. All rights reserved.</p>
     </footer>
     
