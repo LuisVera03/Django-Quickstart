@@ -24,6 +24,13 @@
         {% if role == 'Administrator' %}
             <h2>Administration Panel</h2>
             <p><a href="{% url 'user_logs' %}">User Logs</a></p>
+            <h2>Test Errors</h2>
+            <p>
+                <a href="{% url 'test_400' %}">Error 400</a> | 
+                <a href="{% url 'test_403' %}">Error 403</a> | 
+                <a href="{% url 'test_404' %}">Error 404</a> | 
+                <a href="{% url 'test_500' %}">Error 500</a>
+            </p>
         {% endif %}
     </div>
 {% endblock %}
