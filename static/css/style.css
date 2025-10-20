@@ -84,11 +84,11 @@ body {
 
 .navbar-left {
     font-weight: bolder;
-    font-size: 1em;
+    font-size: 1.35em;
 }
 
 .navbar-center {
-    font-size: 1.5em;
+    font-size: 1.35em;
     flex: 1;                  
     text-align: center;        
 }
@@ -104,7 +104,7 @@ body {
 
 .navbar-right {
     display: flex;
-    font-size: 1.5em;
+    font-size: 1.35em;
     align-items: center;
     gap: 10px;                 
 }

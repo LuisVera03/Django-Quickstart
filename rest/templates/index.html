@@ -1,7 +1,94 @@
 {% extends "base.html" %}
-
+{% load static %}
 {% block body %}
-<a href="{% url 'login_rest_basic' %}">Rest Basic</a>
-<p><a href="{% url 'login_layer_and_generic' %}">Layer and generic</a></p>
-<p><a href="{% url 'login_json' %}">JSON</a></p>
+<div class="background">
+    <div class="header">
+        <h1>Django Quick Start</h1>
+    </div>
+    <div class="about_us">
+        <h2 style="font-size: 2.25em;">About Us</h2>
+        <div>
+            <img src="{% static 'img/icono.png' %}" alt="About Us" style="width: 200px;height: 200px;border-color: #169667;border-width: 5px; border-style: solid; border-radius: 20px; box-shadow: 8px 8px 10px #0000008c;">
+            <p>Welcome to Django Quick Start — a project created by two junior developers who wanted to make building Django projects faster and easier.</p>
+            <p>We know how time-consuming it can be to start a new web app from scratch, so we built this space to share ready-to-use templates, examples, and snippets that anyone can copy and paste to get started right away.</p>
+            <p>Our goal is simple: help other developers (especially beginners) save time, learn faster, and focus on building cool stuff instead of repeating the same setup over and over again.</p>
+            <p>We’re still learning and improving every day — and Django Quick Start grows with us.</p>
+            <p>Meet the developers behind this project:
+            <p><a href="https://www.linkedin.com/in/agustin-palopoli-220739368"><i class="bi bi-linkedin"></i> Agustín Palopoli</a></p>
+            <p><a href="https://www.linkedin.com/in/luis-alejandro-vera-40510a22b"><i class="bi bi-linkedin"></i> Luis Alejandro Vera</a></p>
+            <p>Thanks for checking out our project! We hope it helps you kickstart your next Django app</p>
+        </div>
+    </div>
+    <a href="{% url 'login_rest_basic' %}">Rest Basic</a>
+    <p><a href="{% url 'login_layer_and_generic' %}">Layer and generic</a></p>
+    <p><a href="{% url 'login_json' %}">JSON</a></p>
+</div>
+
+<style>
+    .background {
+        color: #F8F8F8;
+        margin: 0;
+        text-shadow: 8px 8px 10px #0000008c;
+        background-color: #083323;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='49' viewBox='0 0 28 49'%3E%3Cg fill-rule='evenodd'%3E%3Cg id='hexagons' fill='%239C92AC' fill-opacity='0.25' fill-rule='nonzero'%3E%3Cpath d='M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v12.7l10.99 6.34 11-6.35V17.9l-11-6.34L3 17.9zM0 15l12.98-7.5V0h-2v6.35L0 12.69v2.3zm0 18.5L12.98 41v8h-2v-6.85L0 35.81v-2.3zM15 0v7.5L27.99 15H28v-2.31h-.01L17 6.35V0h-2zm0 49v-8l12.99-7.5H28v2.31h-.01L17 42.15V49h-2z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"), 
+            linear-gradient(to right top, #0f6847, #005033, #003a25, #005033, #0f6847);
+    }
+
+    .header {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 2.5em;
+        height: 100vh;
+    }
+
+    .header h1 {
+        text-transform: uppercase;
+        text-align: center;
+        font-weight: bold;
+        background: linear-gradient(
+            120deg, 
+            #ffffff 0%, 
+            #d3d3d3 25%, 
+            #ffffff 50%, 
+            #d3d3d3 75%, 
+            #ffffff 100%
+        );
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: shine 3s linear infinite;
+    }
+
+    @keyframes shine {
+        0% {
+            background-position: 200% center;
+        }
+        100% {
+            background-position: -200% center;
+        }
+    }
+
+    .about_us {
+        margin: 2em;
+    }
+
+    .about_us div{
+        background: #262a35;
+        border-radius: 10px;
+        border-color: #3c4355;
+        border-width: 5px;
+        border-style: solid;
+        padding: 20px;
+        text-align: center;
+    }
+    .about_us a{
+        color: #00ff40;
+        text-decoration: none;
+    }
+    .about_us a:hover{
+        color: #F8F8F8;
+    }
+</style>
+
 {% endblock %}
