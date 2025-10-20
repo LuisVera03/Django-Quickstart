@@ -4,7 +4,7 @@
 <html lang="en"{% if dark_mode %} data-theme="dark"{% endif %}>
     <head>
         <title>Django QuickStart</title>
-        <link href="" rel="icon">
+        <link href="{% static 'img/icono.ico' %}" rel="icon">
         <meta name="viewport" content="initial-scale=1, width=device-width,shrink-to-fit=no">
         <!-- Boostrap icons -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
@@ -42,7 +42,7 @@
                 <a href="{% url 'home_rest_basic' %}">Home</a> |
                 <a href="/pages/about/">About</a> |
                 <a href="/pages/policies/">Policies</a> |
-                <span>Role: {% if user.groups.all.0.name == 'Admins' %}Administrator{% elif user.groups.all.0.name == 'Customers' %}Customer{% else %}No role assigned{% endif %}</span>
+                <span>{% if user.groups.all.0.name == 'Admins' %}Administrator{% elif user.groups.all.0.name == 'Customers' %}Customer{% else %}No role assigned{% endif %}</span>
             </div>
             <div class="navbar-right">
                 <i class="bi bi-person-fill"></i>
