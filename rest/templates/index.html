@@ -5,13 +5,13 @@
     <div class="header">
         <h1>Django Quick Start</h1>
     </div>
-    <div class="about_us">
+    <div class="section">
         <h2 style="font-size: 2.25em;">About Us</h2>
-        <div>
+        <div class="content">
             <img src="{% static 'img/icono.png' %}" alt="About Us" style="width: 200px;height: 200px;border-color: #169667;border-width: 5px; border-style: solid; border-radius: 20px; box-shadow: 8px 8px 10px #0000008c;">
             <p>Welcome to Django Quick Start — a project created by two junior developers who wanted to make building Django projects faster and easier.</p>
             <p>We know how time-consuming it can be to start a new web app from scratch, so we built this space to share ready-to-use templates, examples, and snippets that anyone can copy and paste to get started right away.</p>
-            <p>Our goal is simple: help other developers (especially beginners) save time, learn faster, and focus on building cool stuff instead of repeating the same setup over and over again.</p>
+            <p>Our <span class="important">goal</span> is simple: help other developers (especially beginners) save time, learn faster, and focus on building cool stuff instead of repeating the same setup over and over again.</p>
             <p>We’re still learning and improving every day — and Django Quick Start grows with us.</p>
             <p>Meet the developers behind this project:
             <p><a href="https://www.linkedin.com/in/agustin-palopoli-220739368"><i class="bi bi-linkedin"></i> Agustín Palopoli</a></p>
@@ -19,9 +19,92 @@
             <p>Thanks for checking out our project! We hope it helps you kickstart your next Django app</p>
         </div>
     </div>
-    <a href="{% url 'login_rest_basic' %}">Rest Basic</a>
-    <p><a href="{% url 'login_layer_and_generic' %}">Layer and generic</a></p>
-    <p><a href="{% url 'login_json' %}">JSON</a></p>
+    <div class="section">
+        <h2 style="font-size: 2.25em;">Project Overview</h2>
+        <div class="double-div">
+            <div class="content-none" style="text-align: none;">
+                <h2 style="text-align: center;">Usage Example</h2>
+                <ul style="list-style-type: none">
+                    <li>
+                        <strong>1) Register a User</strong>
+                        <ul>
+                            <li>Use the registration page from any app.</li>
+                            <li>New users are automatically added to the Customers group.</li>
+                        </ul>
+                    </li>
+
+                    <li>
+                        <strong>2) Explore ORM Examples</strong>
+                        <ul>
+                            <li>Navigate: Login → Menu → "Making Queries".</li>
+                            <li>Visit each example to see both code and output.</li>
+                        </ul>
+                    </li>
+
+                    <li>
+                        <strong>3) Practice CRUD Operations</strong>
+                        <ul>
+                            <li><span class="badge">Rest</span> App: Traditional template-based CRUD.</li>
+                            <li><span class="badge">Layer &amp; Generic</span>: Layered CBV CRUD structure.</li>
+                            <li><span class="badge">JSON</span> App: JSON endpoints for testing.</li>
+                        </ul>
+                    </li>
+
+                    <li>
+                        <strong>4) Manage Permissions (Admins)</strong>
+                        <ul>
+                            <li>Create a superuser or promote a user to the Admins group.</li>
+                            <li>Use the “User Management” page to modify roles and permissions.</li>
+                        </ul>
+                    </li>
+
+                    <li>
+                        <strong>5) Try Extra Features</strong>
+                        <ul>
+                            <li>Upload images or files.</li>
+                            <li>Export data to PDF / Excel.</li>
+                            <li>Send a sample email.</li>
+                            <li>Toggle persistent dark mode.</li>
+                            <li>Check user activity logs.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="content-none">
+                <h2 style="text-align: center;">Key Features</h2>
+                <ul>
+                    <li>Multiple CRUD examples (Templates, Forms, JSON, and Generic Views)</li>
+                    <li>Complete authentication system with users, groups, and permissions</li>
+                    <li>Django ORM queries from basics to advanced (filter, Q, F, aggregation)</li>
+                    <li>Clean layered architecture (Repository → Service → View)</li>
+                    <li>Extra features: Dark Mode, exports, emails, uploads, custom tags, and more</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="section" style="padding-bottom: 2em;">
+        <h2 style="font-size: 2.25em;">Apps</h2>
+        <div class="triple-div">
+            <div class="apps" >
+                <i class="bi bi-diagram-3"></i>
+                <p style="font-size: 2em;margin: 0;">REST</p>
+                <p class="app-description">Traditional template-based CRUD operations</p>
+                <a class="app-button" href="{% url 'login_rest_basic' %}">Enter App</a>
+            </div>
+            <div class="apps" >
+                <i class="bi bi-stack"></i>
+                <p style="font-size: 2em;margin: 0;">LAYER & GENERIC</p>
+                <p class="app-description">Layered architecture and Class-Based Views</p>
+                <a class="app-button" href="{% url 'login_layer_and_generic' %}">Enter App</a>
+            </div>
+            <div class="apps" >
+                <i class="bi-braces"></i>
+                <p style="font-size: 2em;margin: 0;">JSON</p>
+                <p class="app-description">API endpoints and JSON data handling</p>
+                <a class="app-button" href="{% url 'login_json' %}">Enter App</a>
+            </div>
+        </div>
+    </div>
 </div>
 
 <style>
@@ -69,11 +152,11 @@
         }
     }
 
-    .about_us {
-        margin: 2em;
+    .section {
+        padding: 0em 2em 0em 2em;
     }
 
-    .about_us div{
+    .section .content{
         background: #262a35;
         border-radius: 10px;
         border-color: #3c4355;
@@ -82,13 +165,89 @@
         padding: 20px;
         text-align: center;
     }
-    .about_us a{
+
+    .section .content a{
         color: #00ff40;
         text-decoration: none;
     }
-    .about_us a:hover{
+    .section .content a:hover{
         color: #F8F8F8;
     }
+
+    .section .content-none{
+        background: #262a35;
+        border-radius: 10px;
+        border-color: #3c4355;
+        border-width: 5px;
+        border-style: solid;
+        padding: 20px;
+    }
+
+    .triple-div {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(1, 1fr);
+            gap: 8px;
+    }
+    .triple-div .apps i {
+        font-size: 5em;
+    }
+    .apps {
+        background: #262a35;
+        border-radius: 10px;
+        border-color: #3c4355;
+        border-width: 5px;
+        border-style: solid;
+        padding: 20px;
+        text-align: center;
+        color: #F8F8F8;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .apps:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        border-color: #169667;
+        background: #2d3344;
+    }
+
+    .app-description {
+        margin: 1em 1em 1.5em 1em;
+        font-size: 0.9em;
+        opacity: 0.8;
+        min-height: 2.5em;
+    }
+
+    .app-button {
+        background: #169667;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 5px;
+        color: white;
+        font-weight: bold;
+        font-family: "Kode Mono", monospace;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+    .app-button:hover {
+        background: #1aad79;
+        transform: scale(1.05);
+    }
+
+    .apps i {
+        transition: all 0.3s ease;
+    }
+
+    .apps:hover i {
+        transform: scale(1.1);
+        color: #169667;
+    }
+    
 </style>
 
 {% endblock %}
