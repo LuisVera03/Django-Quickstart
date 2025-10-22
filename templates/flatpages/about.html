@@ -26,8 +26,7 @@
             <div class="navbar-center">
                 <a href="{% url request.session.home_url %}">Home</a> |
                 <a href="/pages/about/">About</a> |
-                <a href="/pages/policies/">Policies</a> |
-                <span>Role: {% if user.groups.all.0.name == 'Admins' %}Administrator{% elif user.groups.all.0.name == 'Customers' %}Customer{% else %}No role assigned{% endif %}</span>
+                <a href="/pages/policies/">Policies</a>
             </div>
             <div class="navbar-right">
                 <i class="bi bi-person-fill"></i>
