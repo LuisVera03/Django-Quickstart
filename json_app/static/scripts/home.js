@@ -37,7 +37,6 @@ function getCrudUrl(table) {
 
 // This function is called when the user clicks on a table link
 function showTable(table, page=1) {
-    console.log(table)
     document.getElementById('current_table').innerText = table.replace('table', 'Table ');
     currentTable = table;
     loadStoredPageSize(table);
@@ -242,12 +241,32 @@ function renderFormFields(data = {}) {
                 default:
                     formFields.push(renderTextInput(field, data[field]));
             }
-        // For other tables, render text inputs for all fields
+        } else if (currentTable === 'table2') {
+            // For Table2, render a select with two options for positive_small_int field
+            if (field === 'positive_small_int') {
+                const options = [
+                    { id: 1, label: 'option1' },
+                    { id: 2, label: 'option2' }
+                ];
+                formFields.push(`
+                    <div class="form-row">
+                        <label class="label_field">${formatHeader(field)}:</label>
+                        <select class="input_field" name="${field}">
+                            ${options.map(opt => `
+                                <option value="${opt.id}" ${data[field] === opt.id ? 'selected' : ''}>
+                                    ${opt.label}
+                                </option>
+                            `).join('')}
+                        </select>
+                    </div>`);
+            } else {
+                formFields.push(renderTextInput(field, data[field]));
+            }
         } else {
             formFields.push(renderTextInput(field, data[field]));
         }
     });
-    console.log(formFields);
+    
     document.getElementById('formFields').innerHTML = formFields.join('');
 }
 

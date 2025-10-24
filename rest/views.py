@@ -249,7 +249,7 @@ def add_data(request):
                 # Django doesn't accept empty string ('') as valid value for fields that allow null=True or blank=True. In those cases, you need to pass None.
                 foreign_key_id = request.POST.get('foreign_key') or None
                 one_to_one_id = request.POST.get('one_to_one') or None
-                many_to_many_ids = request.POST.get('many_to_many')
+                many_to_many_ids = request.POST.getlist('many_to_many')
                 
                 # Handle date field
                 date_field_value = request.POST.get('date_field')
@@ -515,7 +515,7 @@ def form(request,table):
         if form.is_valid():
             form.save()
             messages.success(request, f"{model_name} created successfully.")
-            return redirect(add_data_form)
+            return redirect(get_data_form)
         messages.error(request, "Invalid form.")
     else:
         form = form_class()
