@@ -199,7 +199,7 @@ def crud(request):
 
 # View to display data from all three tables
 @require_GET
-@permission_required('rest_basic.view_data', raise_exception=True)
+@permission_required('rest.view_data', raise_exception=True)
 def get_data(request):
     table3 = Table3.objects.all()
     table2 = Table2.objects.all()
@@ -207,7 +207,7 @@ def get_data(request):
     return render(request, 'get_data.html',{"table3":table3,"table2":table2,"table1":table1})
 
 # View to add data to the tables
-@permission_required('rest_basic.add_data', raise_exception=True)
+@permission_required('rest.add_data', raise_exception=True)
 def add_data(request):
     if request.method == 'POST':
         form_type = request.POST.get('form_type')
@@ -309,7 +309,7 @@ def add_data(request):
         })
 
 # View to update data in the tables
-@permission_required('rest_basic.change_data', raise_exception=True)
+@permission_required('rest.change_data', raise_exception=True)
 def update_data(request):
     # Fetch all records from the three tables
     table1 = Table1.objects.all()
@@ -428,7 +428,7 @@ def update_data(request):
     })
 
 # View to delete data from Table1 (soft delete by marking as inactive)
-@permission_required('rest_basic.change_data', raise_exception=True)
+@permission_required('rest.change_data', raise_exception=True)
 def delete_data_1(request):
     active_items = Table1.objects.filter(boolean_field=True)
     inactive_items = Table1.objects.filter(boolean_field=False)
@@ -456,7 +456,7 @@ def delete_data_1(request):
     })
 
 # View to permanently delete data from Table1
-@permission_required('rest_basic.delete_data', raise_exception=True)
+@permission_required('rest.delete_data', raise_exception=True)
 def delete_data_2(request):
     records = Table1.objects.all()
     deleting = None
@@ -489,7 +489,7 @@ def delete_data_2(request):
 
 # View to display data from all three tables using forms
 @require_GET
-@permission_required('rest_basic.view_data', raise_exception=True)
+@permission_required('rest.view_data', raise_exception=True)
 def get_data_form(request):
     table3 = Table3.objects.all()
     table2 = Table2.objects.all()
@@ -497,7 +497,7 @@ def get_data_form(request):
     return render(request, 'get_data_form.html',{"table3":table3,"table2":table2,"table1":table1})
 
 # View to handle form submissions for adding new records
-@permission_required('rest_basic.add_data', raise_exception=True)
+@permission_required('rest.add_data', raise_exception=True)
 def form(request,table):
     form_map = {
         "table1": (Table1Form, "Table1"),
@@ -524,12 +524,12 @@ def form(request,table):
 
 # View to display the form selection page for adding new records
 @require_GET
-@permission_required('rest_basic.add_data', raise_exception=True)
+@permission_required('rest.add_data', raise_exception=True)
 def add_data_form(request):
     return render(request, 'add_data_form.html')
 
 # View to handle form submissions for updating existing records
-@permission_required('rest_basic.change_data', raise_exception=True)
+@permission_required('rest.change_data', raise_exception=True)
 def update_form(request,table,id):
     form_class = None
     model_name = ""
@@ -566,7 +566,7 @@ def update_form(request,table,id):
 
 # View to display the form selection page for updating records
 @require_GET
-@permission_required('rest_basic.view_data', raise_exception=True)
+@permission_required('rest.change_data', raise_exception=True)
 def update_data_form(request):
     table3 = Table3.objects.all()
     table2 = Table2.objects.all()
@@ -575,7 +575,7 @@ def update_data_form(request):
 
 # User management view (only for admins)
 @login_required
-@permission_required('rest_basic.manage_users', raise_exception=True)
+@permission_required('rest.manage_users', raise_exception=True)
 def user_management(request):
     if request.method == 'POST':
         user_id = request.POST.get('user_id')
